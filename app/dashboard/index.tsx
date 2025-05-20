@@ -1,61 +1,73 @@
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { useLeads } from '@/hooks/useLeads';
+import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// import FetchLead from '@/components/dashboard/FetchLead';
-import { router } from 'expo-router';
 
 export default function DashboardScreen() {
-  const { leads } = useLeads();
+  
 
   const statusBoxes = [
     {
       title: 'DNP',
-      count: leads.filter(lead => lead.status === 'dnp').length,
+      count: "50",
       color: '#0062FF',
       bgColor: '#E6F0FF',
       status: 'dnp'
     },
     {
       title: 'Demo',
-      count: leads.filter(lead => lead.status === 'demo').length,
+      count: "45",
       color: '#FF9500',
       bgColor: '#FFF5E6',
       status: 'demo'
     },
     {
       title: 'Dormats',
-      count: leads.filter(lead => lead.status === 'dormats').length,
+      count: "23",
       color: '#34C759',
       bgColor: '#E6FFF0',
       status: 'dormats'
     },
     {
       title: 'Converted',
-      count: leads.filter(lead => lead.status === 'converted').length,
+      count: "98",
       color: '#D32F2F',
       bgColor: '#FFEBEE',
       status: 'converted'
     },
     {
       title: 'Busy',
-      count: leads.filter(lead => lead.status === 'busy').length,
+      count: "56",
       color: '#9C27B0',
-      bgColor: '#F3E5F5',
+      bgColor: '#d5bdaf',
       status: 'busy'
     },
     {
       title: 'Emails',
-      count: leads.filter(lead => lead.status === 'emails').length,
+      count: "34",
       color: '#9C27B0',
-      bgColor: '#F3E5F5',
+      bgColor: '#ffc6ff',
       status: 'emails'
     },
     {
-      title: 'later',
-      count: leads.filter(lead => lead.status === 'later').length,
+      title: 'Out of station',
+      count: "72",
       color: '#9C27B0',
-      bgColor: '#F3E5F5',
+      bgColor: '#d8e2dc',
+      status: 'Out of station'
+    },
+    {
+      title: 'Intrested',
+      count: "56",
+      color: '#9C27B0',
+      bgColor: '#ccd5ae',
+      status: 'Intrested'
+    },
+    {
+      title: 'later',
+      count: "40",
+      color: '#9C27B0',
+      bgColor: '#F3E5F2',
       status: 'later'
     }
   ];
@@ -85,12 +97,12 @@ export default function DashboardScreen() {
               style={[styles.statusBox, { backgroundColor: box.bgColor }]}
               onPress={() => handleStatusPress(box.status)}
             >
-              <Text style={[styles.statusNumber, { color: box.color }]}>
-                {box.count}
-              </Text>
-              <Text style={styles.statusTitle}>{box.title}</Text>
-              <View style={[styles.indexBadge, { backgroundColor: box.color }]}>
-                <Text style={styles.indexNumber}>{index + 1}</Text>
+              <View style = {styles.box1}>
+
+                <Text style={[styles.statusNumber, { color: box.color }]}>
+                  {box.count}
+                </Text>
+                <Text style={styles.statusTitle}>{box.title}</Text>
               </View>
             </TouchableOpacity>
           ))}
@@ -141,23 +153,14 @@ const styles = StyleSheet.create({
   },
   statusTitle: {
     fontSize: 14,
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-Bold',
     color: '#333',
     textAlign: 'center',
   },
-  indexBadge: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  indexNumber: {
-    color: '#FFF',
-    fontSize: 12,
-    fontFamily: 'Inter-Bold',
-  },
+
+  box1: {
+    flex: 1,
+    alignItems: "center", 
+    justifyContent: "center"
+  }
 });
