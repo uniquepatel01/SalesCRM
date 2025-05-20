@@ -4,6 +4,11 @@
     "slug": "SalesCRM",
     "version": "1.0.0",
     "orientation": "portrait",
+    "splash": {
+      "image": "./assets/images/crm-logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "icon": "./assets/images/icon.png",
     "scheme": "salescrm",
     "userInterfaceStyle": "automatic",
@@ -13,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/crm-logo.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
@@ -28,7 +33,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/crm-logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
