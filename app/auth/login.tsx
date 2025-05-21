@@ -19,8 +19,6 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const togglePasswordVisibility = () => {
@@ -45,7 +43,7 @@ export default function Login() {
       <View style={styles.header}>
         <View style={styles.iconContainer}>
           <Image 
-            source={require("../../assets/images/avtar.png")}
+            source={require("../auth/avtar.png")}
             style={styles.avatar}
           />
         </View>
@@ -92,17 +90,12 @@ export default function Login() {
 
         <TouchableOpacity 
           style={styles.loginButton} 
-          // onPress={handleLogin}
-          disabled={isLoading}
           onPress={handleLogin}
         >
           <Text style={styles.buttonText}>
-            {isLoading ? 'Logging in...' : 'Login'}
-            
+            Login
           </Text>
-        </TouchableOpacity>
-
-        
+        </TouchableOpacity> 
       </View>
     </KeyboardAvoidingView>
   );
@@ -122,11 +115,10 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#2196F3',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
-    overflow: 'hidden',
+    
   },
   avatar: {
     width: '100%',

@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   },
   statusTitle: {
     fontSize: 14,
-    fontFamily: 'Inter-Bold',
+    fontFamily: 'Inter-SemiBold',
     color: '#333',
     textAlign: 'center',
   },
