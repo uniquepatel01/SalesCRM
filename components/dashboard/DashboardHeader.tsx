@@ -1,14 +1,17 @@
 import { router } from 'expo-router';
-import { Moon, User } from 'lucide-react-native';
+import { Moon, Sun, User } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View, useColorScheme } from 'react-native';
+import { useTheme } from "../../ThemeContext"; // adjust path as needed
 
 type DashboardHeaderProps = {
   user: any;
 };
 
 export default function DashboardHeader({ user }: DashboardHeaderProps) {
+  const { darkMode, toggleTheme } = useTheme();
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const colorScheme = useColorScheme();
 
   const greeting = () => {
     return 'Welcome Uniquepatel'
@@ -21,20 +24,34 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
     router.push('/profile');
   };
 
+  // Example: apply dark mode styles conditionally
+  const containerStyle = [
+    styles.container,
+    darkMode && { backgroundColor: "#222", borderBottomColor: "#444" }
+  ];
+  const textStyle = [
+    styles.name,
+    darkMode && { color: "#fff" }
+  ];
+  const greetingStyle = [
+    styles.greeting,
+    darkMode && { color: "#ccc" }
+  ];
+
   return (
-    <View style={styles.container}>
+    <View style={containerStyle}>
       <View style={styles.header}>
         <View style={styles.leftSection}>
           <View style={styles.titleContainer}>
-            <Text style={styles.name}>{'Gold CRM'}</Text>
-            <Text style={styles.greeting}>{greeting()}</Text>
+            <Text style={textStyle}>{'Gold CRM'}</Text>
+            <Text style={greetingStyle}>{greeting()}</Text>
           </View>
         </View>
         
         <View style={styles.rightSection}>
           <View>
             <TouchableOpacity onPress={() => setDropdownVisible(!dropdownVisible)}>
-              <User size={36} />
+              <User size={36} color={darkMode ? "#fff" : "#222"} />
             </TouchableOpacity>
             {/* Dropdown with outside click handling */}
             <Modal
@@ -45,23 +62,23 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
             >
               <Pressable style={styles.modalOverlay} onPress={() => setDropdownVisible(false)}>
                 <View style={styles.dropdownWrapper}>
-                  <View style={styles.dropdown}>
+                  <View style={[styles.dropdown, darkMode && { backgroundColor: "#333" }]}>
                     <TouchableOpacity style={styles.dropdownItem} onPress={() => { setDropdownVisible(false); handleProfile(); }}>
-                      <Text style={styles.dropdownText}>Profile</Text>
+                      <Text style={[styles.dropdownText, darkMode && { color: "#fff" }]}>Profile</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.dropdownItem}>
-                      <Text style={styles.dropdownText}>Analytics</Text>
+                      <Text style={[styles.dropdownText, darkMode && { color: "#fff" }]}>Analytics</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.dropdownItem} onPress={() => { setDropdownVisible(false); handleLogout(); }}>
-                      <Text style={styles.dropdownText}>Logout</Text>
+                      <Text style={[styles.dropdownText, darkMode && { color: "#fff" }]}>Logout</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
               </Pressable>
             </Modal>
           </View>
-          <TouchableOpacity>
-            <Moon size={36}/>
+          <TouchableOpacity onPress={toggleTheme}>
+            {darkMode ? <Sun size={36} color="#FFD700" /> : <Moon size={36} color="#222" />}
           </TouchableOpacity>
         </View>
       </View>

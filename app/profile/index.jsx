@@ -1,10 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useTheme } from "../../ThemeContext"; // adjust path as needed
 
 const STORAGE_KEY = "profile_fields";
 
 export default function Profile() {
+    const { darkMode } = useTheme();
+
     const [fields, setFields] = useState({
         Name: "MANISH GUPTA",
         Designation: "MANISH GUPTA",
@@ -15,7 +18,6 @@ export default function Profile() {
         Country: "INDIA",
     });
 
-    // Load saved fields on mount
     useEffect(() => {
         (async () => {
             const saved = await AsyncStorage.getItem(STORAGE_KEY);
@@ -30,7 +32,6 @@ export default function Profile() {
     const handleSave = async () => {
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(fields));
         Alert.alert("Profile Saved", "Your changes have been saved.");
-        // router.push('/dashboard'); // Uncomment if you want to navigate after save
     };
 
     return (
@@ -39,57 +40,92 @@ export default function Profile() {
             behavior={Platform.OS === "ios" ? "padding" : undefined}
             keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
         >
-            <View style={styles.profileContainer}>
+            <View style={[
+                styles.profileContainer,
+                darkMode && { backgroundColor: "#181818" }
+            ]}>
                 {/* Header */}
                 <View style={styles.profileHeader}>
-                    <Text style={styles.profileTitle}>Profile</Text>
-                    <View style={{ width: 40 }} />
+                    <Text style={[
+                        styles.profileTitle,
+                        darkMode && { color: "#fff" }
+                    ]}>Profile</Text>
                 </View>
 
                 {/* Avatar */}
                 <View style={styles.profileAvatarSection}>
-                    <View style={styles.profileAvatar}>
+                    <View style={[
+                        styles.profileAvatar,
+                        darkMode && { backgroundColor: "#333" }
+                    ]}>
                         <View style={{ alignItems: "center", justifyContent: "center" }}>
                             <View style={{
                                 width: 60,
                                 height: 60,
                                 borderRadius: 30,
-                                backgroundColor: "#bbb",
+                                backgroundColor: darkMode ? "#444" : "#bbb",
                                 alignItems: "center",
                                 justifyContent: "center"
                             }}>
                                 <Text style={{ color: "#fff", fontSize: 32 }}>👤</Text>
                             </View>
                         </View>
-                        <View style={styles.profileAvatarCamera}>
-                            <Text style={{ color: "#fff", fontSize: 16 }}>+</Text>
+                        <View style={[
+                            styles.profileAvatarCamera,
+                            darkMode && { backgroundColor: "#FFD700", borderColor: "#181818" }
+                        ]}>
+                            <Text style={{ color: darkMode ? "#222" : "#fff", fontSize: 16 }}>+</Text>
                         </View>
                     </View>
                 </View>
 
                 {/* Profile Info */}
                 <ScrollView
-                    contentContainerStyle={[styles.profileInfoList, { paddingBottom: 120 }]}
+                    contentContainerStyle={[
+                        styles.profileInfoList,
+                        { paddingBottom: 250 }
+                    ]}
                     keyboardShouldPersistTaps="handled"
                 >
                     {Object.entries(fields).map(([label, value]) => (
-                        <View style={styles.profileInfoRow} key={label}>
-                            <Text style={styles.profileInfoLabel}>{label}</Text>
+                        <View
+                            style={[
+                                styles.profileInfoRow,
+                                darkMode && { backgroundColor: "#222", borderColor: "#333" }
+                            ]}
+                            key={label}
+                        >
+                            <Text style={[
+                                styles.profileInfoLabel,
+                                darkMode && { color: "#bbb", backgroundColor: "#222", borderRightColor: "#333" }
+                            ]}>
+                                {label}
+                            </Text>
                             <TextInput
-                                style={styles.profileInfoValue}
+                                style={[
+                                    styles.profileInfoValue,
+                                    darkMode && { color: "#fff", backgroundColor: "#222" }
+                                ]}
                                 value={value}
                                 onChangeText={text => handleChange(label, text)}
                                 placeholder={label}
-                                placeholderTextColor="#aaa"
+                                placeholderTextColor={darkMode ? "#888" : "#aaa"}
                                 autoCapitalize="none"
                             />
                         </View>
                     ))}
 
-                    {/* Save Button INSIDE ScrollView */}
                     <View style={styles.profileSaveBtnSection}>
-                        <TouchableOpacity style={styles.profileSaveBtn} onPress={handleSave}>
-                            <Text style={{ color: "#fff", fontWeight: "700", fontSize: 18, letterSpacing: 2 }}>SAVE</Text>
+                        <TouchableOpacity style={[
+                            styles.profileSaveBtn,
+                            darkMode && { backgroundColor: "#FFD700" }
+                        ]} onPress={handleSave}>
+                            <Text style={{
+                                color: darkMode ? "#222" : "#fff",
+                                fontWeight: "700",
+                                fontSize: 18,
+                                letterSpacing: 2
+                            }}>SAVE</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -114,7 +150,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         borderBottomWidth: 1,
         borderBottomColor: "#eee",
-        backgroundColor: "#fff",
+        backgroundColor: "transparent",
+        justifyContent: "space-between"
     },
     profileTitle: {
         flex: 1,
@@ -122,6 +159,7 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         fontSize: 22,
         letterSpacing: 1,
+        color: "#222"
     },
     profileAvatarSection: {
         alignItems: "center",
@@ -201,5 +239,5 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 2,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,        shadowRadius: 8,        elevation: 2,    },});
+    },
+});

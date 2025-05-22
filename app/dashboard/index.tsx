@@ -1,10 +1,12 @@
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import { router } from 'expo-router';
+import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '../../ThemeContext'; // adjust path if needed
 
 export default function DashboardScreen() {
-  
+  const { darkMode, toggleTheme } = useTheme();
 
   const statusBoxes = [
     {
@@ -79,30 +81,36 @@ export default function DashboardScreen() {
     });
   };
 
-  // TODO: Replace this mock user with actual user fetching logic
   const user = { name: 'Guest' };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, darkMode && { backgroundColor: "#222" }]} edges={['top']}>
       <DashboardHeader user={user} />
-      {/* <FetchLead/> */}
-      
       <ScrollView style={styles.content}>
-        <Text style={styles.sectionTitle}>Lead Status Overview</Text>
-        
+        <Text style={[styles.sectionTitle, darkMode && { color: "#fff" }]}>Lead Status Overview</Text>
         <View style={styles.statusGrid}>
           {statusBoxes.map((box, index) => (
             <TouchableOpacity
               key={box.status}
-              style={[styles.statusBox, { backgroundColor: box.bgColor }]}
+              style={[
+                styles.statusBox,
+                { backgroundColor: box.bgColor }
+              ]}
               onPress={() => handleStatusPress(box.status)}
             >
-              <View style = {styles.box1}>
-
-                <Text style={[styles.statusNumber, { color: box.color }]}>
+              <View style={styles.box1}>
+                <Text style={[
+                  styles.statusNumber,
+                  darkMode && { color: "#000" }
+                ]}>
                   {box.count}
                 </Text>
-                <Text style={styles.statusTitle}>{box.title}</Text>
+                <Text style={[
+                  styles.statusTitle,
+                  darkMode && { color: "#000" }
+                ]}>
+                  {box.title}
+                </Text>
               </View>
             </TouchableOpacity>
           ))}
