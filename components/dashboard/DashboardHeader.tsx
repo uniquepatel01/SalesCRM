@@ -1,6 +1,7 @@
+import { router } from 'expo-router';
+import { Moon, User } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { User, Moon, ArrowRight, AlignLeftIcon } from 'lucide-react-native';
+import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type DashboardHeaderProps = {
   user: any;
@@ -11,6 +12,13 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
 
   const greeting = () => {
     return 'Welcome Uniquepatel'
+  };
+
+  const handleLogout = () => {
+    router.push('/auth/login');
+  };
+  const handleProfile = () => {
+    router.push('/profile');
   };
 
   return (
@@ -28,25 +36,34 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
             <TouchableOpacity onPress={() => setDropdownVisible(!dropdownVisible)}>
               <User size={36} />
             </TouchableOpacity>
-            {dropdownVisible && (
-              <View style={styles.dropdown}>
-                <TouchableOpacity style={styles.dropdownItem}>
-                  <Text style={styles.dropdownText}>Profile</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.dropdownItem}>
-                  <Text style={styles.dropdownText}>Analytics</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.dropdownItem}>
-                  <Text style={styles.dropdownText}>Logout</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            {/* Dropdown with outside click handling */}
+            <Modal
+              visible={dropdownVisible}
+              transparent
+              animationType="fade"
+              onRequestClose={() => setDropdownVisible(false)}
+            >
+              <Pressable style={styles.modalOverlay} onPress={() => setDropdownVisible(false)}>
+                <View style={styles.dropdownWrapper}>
+                  <View style={styles.dropdown}>
+                    <TouchableOpacity style={styles.dropdownItem} onPress={() => { setDropdownVisible(false); handleProfile(); }}>
+                      <Text style={styles.dropdownText}>Profile</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.dropdownItem}>
+                      <Text style={styles.dropdownText}>Analytics</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.dropdownItem} onPress={() => { setDropdownVisible(false); handleLogout(); }}>
+                      <Text style={styles.dropdownText}>Logout</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Pressable>
+            </Modal>
           </View>
           <TouchableOpacity>
             <Moon size={36}/>
           </TouchableOpacity>
         </View>
-
       </View>
 
       <View style={styles.buttonContainer}>
@@ -121,10 +138,18 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   // Add dropdown styles
+  dropdownWrapper: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    marginTop: 50,
+    marginRight: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.01)',
+  },
   dropdown: {
-    position: 'absolute',
-    top: 45,
-    right: 0,
     backgroundColor: '#fff',
     borderRadius: 8,
     shadowColor: '#000',
