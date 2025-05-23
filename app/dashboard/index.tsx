@@ -14,28 +14,39 @@ export default function DashboardScreen() {
       count: "50",
       color: '#0062FF',
       bgColor: '#E6F0FF',
-      status: 'dnp'
+      status: 'dnp',
+      route: '/dnp'
     },
     {
       title: 'Demo',
       count: "45",
       color: '#FF9500',
       bgColor: '#FFF5E6',
-      status: 'demo'
+      status: 'demo',
+      route: '/demoClients'
     },
     {
-      title: 'Dormats',
+      title: 'Call me Later',
       count: "23",
       color: '#34C759',
       bgColor: '#E6FFF0',
-      status: 'dormats'
+      status: 'dormats',
+      route: 'callmeLater'
     },
     {
-      title: 'Converted',
+      title: 'Wrong Number',
       count: "98",
       color: '#D32F2F',
       bgColor: '#FFEBEE',
-      status: 'converted'
+      status: 'Wrong Number',
+      route: 'wrongNumber'
+    },
+    {
+      title: 'Converted',
+      count: "56",
+      color: '#9C27B0',
+      bgColor: '#d5bdaf',
+      status: 'Converted'
     },
     {
       title: 'Busy',
@@ -66,7 +77,7 @@ export default function DashboardScreen() {
       status: 'Intrested'
     },
     {
-      title: 'later',
+      title: 'Dormates',
       count: "40",
       color: '#9C27B0',
       bgColor: '#F3E5F2',
@@ -74,10 +85,10 @@ export default function DashboardScreen() {
     }
   ];
 
-  const handleStatusPress = (status: string) => {
+  const handleStatusPress = (box: typeof statusBoxes[0]) => {
     router.push({
-      pathname: '../leads',
-      params: { filter: status }
+      pathname: box.route ? box.route : '/dashboard',
+      params: { filter: box.status }
     });
   };
 
@@ -96,7 +107,7 @@ export default function DashboardScreen() {
                 styles.statusBox,
                 { backgroundColor: box.bgColor }
               ]}
-              onPress={() => handleStatusPress(box.status)}
+              onPress={() => handleStatusPress(box)}
             >
               <View style={styles.box1}>
                 <Text style={[
