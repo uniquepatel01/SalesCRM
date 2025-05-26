@@ -23,6 +23,9 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
   const handleProfile = () => {
     router.push('/profile');
   };
+  const handleAnalytics = () => {
+    router.push('/myAnalytics');
+  };
 
   // Example: apply dark mode styles conditionally
   const containerStyle = [
@@ -66,7 +69,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
                     <TouchableOpacity style={styles.dropdownItem} onPress={() => { setDropdownVisible(false); handleProfile(); }}>
                       <Text style={[styles.dropdownText, darkMode && { color: "#fff" }]}>Profile</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.dropdownItem}>
+                    <TouchableOpacity style={styles.dropdownItem} onPress={() => { setDropdownVisible(false); handleAnalytics(); }}>
                       <Text style={[styles.dropdownText, darkMode && { color: "#fff" }]}>Analytics</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.dropdownItem} onPress={() => { setDropdownVisible(false); handleLogout(); }}>
