@@ -1,70 +1,76 @@
 import React from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useTheme } from "../../ThemeContext"; // Adjust path if needed
 
-export default function callmeLater(){
+export default function CallmeLater() {
+    const { darkMode } = useTheme();
+
     const dnpBoxes = [
-        {
-            companyName : "Start Exporter",
-            Name: "Manish Gupta", 
-            MobileNo: "+91 9876543210",
-            Date: "20/05/25"            
-        },
-        {
-            companyName : "Three Marin Start Exporter",
-            Name: "Manish Gupta", 
-            MobileNo: "+91 9876543210",
-            Date: "20/05/25"            
-        },
-        {
-            companyName : "Adani BsL Group",
-            Name: "Manish Gupta", 
-            MobileNo: "+91 9876543210",
-            Date: "20/05/25"            
-        },
-        {
-            companyName : "Ztibra Foundation",
-            Name: "Manish Gupta", 
-            MobileNo: "+91 9876543210",
-            Date: "20/05/25"            
-        },
-        {
-            companyName : "Ztibra Foundation",
-            Name: "Manish Gupta", 
-            MobileNo: "+91 9876543210",
-            Date: "20/05/25"            
-        },
-        {
-            companyName : "Ztibra Foundation",
-            Name: "Manish Gupta", 
-            MobileNo: "+91 9876543210",
-            Date: "20/05/25"            
-        },
-        {
-            companyName : "Ztibra Foundation",
-            Name: "Manish Gupta", 
-            MobileNo: "+91 9876543210",
-            Date: "20/05/25"            
-        },
+        { companyName: "Start Exporter", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
+        { companyName: "Three Marin Start Exporter", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
+        { companyName: "Adani BsL Group", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
+        { companyName: "Ztibra Foundation", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
+        { companyName: "Ztibra Foundation", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
+        { companyName: "Ztibra Foundation", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
+        { companyName: "Ztibra Foundation", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
     ];
 
-    return(
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.sectionTitle}>Did Not Pick</Text>
+    return (
+        <SafeAreaView style={[
+            styles.container,
+            darkMode && { backgroundColor: "#181A20" }
+        ]}>
+            <Text style={[
+                styles.sectionTitle,
+                darkMode && { color: "#fff", backgroundColor: "#181A20" }
+            ]}>
+                Did Not Pick
+            </Text>
             <ScrollView contentContainerStyle={styles.content}>
                 {dnpBoxes.map((box, idx) => (
-                    <View key={idx} style={styles.box}>
-                        <Text style={styles.company}>{box.companyName}</Text>
+                    <View
+                        key={idx}
+                        style={[
+                            styles.box,
+                            darkMode && { backgroundColor: "#23262F" }
+                        ]}
+                    >
+                        <Text style={[
+                            styles.company,
+                            darkMode && { color: "#7BB1FF" }
+                        ]}>
+                            {box.companyName}
+                        </Text>
                         <View style={styles.row}>
-                            <Text style={styles.label}>
-                                <Text style={styles.value}>{box.Name}</Text>
+                            <Text style={[
+                                styles.label,
+                                darkMode && { color: "#fff" }
+                            ]}>
+                                <Text style={[
+                                    styles.value,
+                                    darkMode && { color: "#fff" }
+                                ]}>{box.Name}</Text>
                             </Text>
-                            <Text style={[styles.label, { marginLeft: 16 }]}>
-                                <Text style={styles.value}>{box.MobileNo}</Text>
+                            <Text style={[
+                                styles.label,
+                                { marginLeft: 16 },
+                                darkMode && { color: "#fff" }
+                            ]}>
+                                <Text style={[
+                                    styles.value,
+                                    darkMode && { color: "#fff" }
+                                ]}>{box.MobileNo}</Text>
                             </Text>
                         </View>
                         <View style={styles.dateRow}>
-                            <View style={styles.dateBadge}>
-                                <Text style={[styles.value, { color: "white" }]}>{box.Date}</Text>
+                            <View style={[
+                                styles.dateBadge,
+                                darkMode && { backgroundColor: "#3B82F6" }
+                            ]}>
+                                <Text style={[
+                                    styles.value,
+                                    { color: "white" }
+                                ]}>{box.Date}</Text>
                             </View>
                         </View>
                     </View>
@@ -128,7 +134,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 6,
-        gap: 16, // Add this for spacing between Name and Mobile
+        gap: 16,
     },
     dateRow: {
         flexDirection: 'row',
