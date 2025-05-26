@@ -1,22 +1,17 @@
+import { router } from "expo-router"; // Import router
 import React from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "../../ThemeContext"; // Adjust path if needed
-
-const demoClients = [
-  { company: "THREE STAR MARINE EXPORTS", name: "Rama Swami", days: 6 },
-  { company: "THREE STAR MARINE EXPORTS", name: "Rama Swami", days: 6 },
-  { company: "THREE STAR MARINE EXPORTS", name: "Rama Swami", days: 6 },
-  { company: "THREE STAR MARINE EXPORTS", name: "Rama Swami", days: 6 },
-  { company: "THREE STAR MARINE EXPORTS", name: "Rama Swami", days: 6 },
-  { company: "THREE STAR MARINE EXPORTS", name: "Rama Swami", days: 6 },
-  { company: "THREE STAR MARINE EXPORTS", name: "Rama Swami", days: 6 },
-  { company: "THREE STAR MARINE EXPORTS", name: "Rama Swami", days: 6 },
-  { company: "THREE STAR MARINE EXPORTS", name: "Rama Swami", days: 6 },
-  { company: "THREE STAR MARINE EXPORTS", name: "Rama Swami", days: 6 },
-];
+import { demoClients } from "../../data/demoClientsData";
 
 export default function DemoClientsScreen() {
   const { darkMode } = useTheme();
+
+
+
+  const handlePress = (client, idx) => {
+    router.push(`/demoClients/${idx}?company=${encodeURIComponent(client.company)}&name=${encodeURIComponent(client.name)}&days=${client.days}`);
+  };
 
   return (
     <SafeAreaView
@@ -34,50 +29,54 @@ export default function DemoClientsScreen() {
         >
           DEMO CLIENTS
         </Text>
-        {/* Placeholder for symmetry */}
         <View style={{ width: 28 }} />
       </View>
       <ScrollView contentContainerStyle={styles.content}>
         {demoClients.map((client, idx) => (
-          <View
+          <TouchableOpacity
             key={idx}
-            style={[
-              styles.card,
-              darkMode && { backgroundColor: "#23262F" },
-            ]}
+            onPress={() => handlePress(client, idx)}
+            activeOpacity={0.8}
           >
-            <Text
-              style={[
-                styles.company,
-                darkMode && { color: "#fff" },
-              ]}
-            >
-              {client.company}
-            </Text>
             <View
               style={[
-                styles.infoBox,
-                darkMode && { backgroundColor: "#35383F" },
+                styles.card,
+                darkMode && { backgroundColor: "#23262F" },
               ]}
             >
               <Text
                 style={[
-                  styles.name,
+                  styles.company,
                   darkMode && { color: "#fff" },
                 ]}
               >
-                Name : {client.name}
+                {client.company}
               </Text>
-              <Text
+              <View
                 style={[
-                  styles.days,
-                  darkMode && { color: "#bbb" },
+                  styles.infoBox,
+                  darkMode && { backgroundColor: "#35383F" },
                 ]}
               >
-                Demo taken : {client.days} days
-              </Text>
+                <Text
+                  style={[
+                    styles.name,
+                    darkMode && { color: "#fff" },
+                  ]}
+                >
+                  Name : {client.name}
+                </Text>
+                <Text
+                  style={[
+                    styles.days,
+                    darkMode && { color: "#bbb" },
+                  ]}
+                >
+                  Demo taken : {client.days} days
+                </Text>
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </SafeAreaView>
