@@ -1,3 +1,23 @@
+export type DemoClient = {
+  company: string;
+  name: string;
+  days: number;
+  contactPerson: string;
+  source: string;
+  businessType: string;
+  businessVolume: string;
+  email: string;
+  mobile: string;
+  altMobile: string;
+  demoTaken: string;
+  address: string;
+  remarks: { date: string; text: string }[];
+  statuses: string[];
+  action: string;
+};
+
+
+
 export const demoClients = [
   {
     company: "THREE STAR MARINE EXPORTS",

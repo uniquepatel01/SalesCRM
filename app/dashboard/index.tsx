@@ -46,7 +46,8 @@ export default function DashboardScreen() {
       count: "56",
       color: '#9C27B0',
       bgColor: '#d5bdaf',
-      status: 'Converted'
+      status: 'Converted',
+      route: '/convertedClients'
     },
     {
       title: 'Busy',

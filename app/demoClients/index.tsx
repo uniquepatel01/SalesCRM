@@ -2,15 +2,18 @@ import { router } from "expo-router"; // Import router
 import React from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "../../ThemeContext"; // Adjust path if needed
-import { demoClients } from "../../data/demoClientsData";
+import { DemoClient,demoClients } from "../../data/demoClientsData";
 
 export default function DemoClientsScreen() {
   const { darkMode } = useTheme();
 
 
 
-  const handlePress = (client, idx) => {
-    router.push(`/demoClients/${idx}?company=${encodeURIComponent(client.company)}&name=${encodeURIComponent(client.name)}&days=${client.days}`);
+  const handlePress = (client: DemoClient, idx: number) => {
+    router.push({
+      pathname: "/demoClients/[id]",
+      params: { id: idx.toString() }
+    });
   };
 
   return (

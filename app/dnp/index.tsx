@@ -1,20 +1,18 @@
+import { router } from "expo-router";
 import React from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
-import { useTheme } from "../../ThemeContext"; // Adjust path if needed
+import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTheme } from "../../ThemeContext";
+import { DnpClient, dnpClients } from "../../data/dnpClientsData";
 
 export default function DnpScreen() {
     const { darkMode } = useTheme();
 
-    const dnpBoxes = [
-        { companyName: "Start Exporter", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
-        { companyName: "Three Marin Start Exporter", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
-        { companyName: "Adani BsL Group", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
-        { companyName: "Ztibra Foundation", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
-        { companyName: "Ztibra Foundation", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
-        { companyName: "Ztibra Foundation", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
-        { companyName: "Ztibra Foundation", Name: "Manish Gupta", MobileNo: "+91 9876543210", Date: "20/05/25" },
-    ];
-
+  const handlePress = (client: DnpClient, idx: number) => {
+    router.push({
+      pathname: "/dnp/[id]",
+      params: { id: idx.toString() }
+    });
+  };
     return (
         <SafeAreaView style={[
             styles.container,
@@ -27,53 +25,58 @@ export default function DnpScreen() {
                 Did Not Pick
             </Text>
             <ScrollView contentContainerStyle={styles.content}>
-                {dnpBoxes.map((box, idx) => (
-                    <View
+                {dnpClients.map((client, idx) => (
+                    <TouchableOpacity
                         key={idx}
-                        style={[
-                            styles.box,
-                            darkMode && { backgroundColor: "#23262F" }
-                        ]}
+                        onPress={() => handlePress(client, idx)}
+                        activeOpacity={0.85}
                     >
-                        <Text style={[
-                            styles.company,
-                            darkMode && { color: "#7BB1FF" }
-                        ]}>
-                            {box.companyName}
-                        </Text>
-                        <View style={styles.row}>
+                        <View
+                            style={[
+                                styles.box,
+                                darkMode && { backgroundColor: "#23262F" }
+                            ]}
+                        >
                             <Text style={[
-                                styles.label,
-                                darkMode && { color: "#fff" }
+                                styles.company,
+                                darkMode && { color: "#7BB1FF" }
                             ]}>
-                                <Text style={[
-                                    styles.value,
-                                    darkMode && { color: "#fff" }
-                                ]}>{box.Name}</Text>
+                                {client.company}
                             </Text>
-                            <Text style={[
-                                styles.label,
-                                { marginLeft: 16 },
-                                darkMode && { color: "#fff" }
-                            ]}>
+                            <View style={styles.row}>
                                 <Text style={[
-                                    styles.value,
+                                    styles.label,
                                     darkMode && { color: "#fff" }
-                                ]}>{box.MobileNo}</Text>
-                            </Text>
-                        </View>
-                        <View style={styles.dateRow}>
-                            <View style={[
-                                styles.dateBadge,
-                                darkMode && { backgroundColor: "#E94444" }
-                            ]}>
+                                ]}>
+                                    <Text style={[
+                                        styles.value,
+                                        darkMode && { color: "#fff" }
+                                    ]}>{client.name}</Text>
+                                </Text>
                                 <Text style={[
-                                    styles.value,
-                                    { color: "white" }
-                                ]}>{box.Date}</Text>
+                                    styles.label,
+                                    { marginLeft: 16 },
+                                    darkMode && { color: "#fff" }
+                                ]}>
+                                    <Text style={[
+                                        styles.value,
+                                        darkMode && { color: "#fff" }
+                                    ]}>{client.mobile}</Text>
+                                </Text>
+                            </View>
+                            <View style={styles.dateRow}>
+                                <View style={[
+                                    styles.dateBadge,
+                                    darkMode && { backgroundColor: "#E94444" }
+                                ]}>
+                                    <Text style={[
+                                        styles.value,
+                                        { color: "white" }
+                                    ]}>{client.demoTaken}</Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 ))}
             </ScrollView>
         </SafeAreaView>
