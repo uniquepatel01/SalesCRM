@@ -1,8 +1,8 @@
-import * as Haptics from 'expo-haptics';
-import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react-native';
-import { useState } from 'react';
+import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react-native";
+import { useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
@@ -13,39 +13,44 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
+} from "react-native";
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("demo@gmail.com");
+  const [password, setPassword] = useState("Pass@123");
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const togglePasswordVisibility = () => {
-    if (Platform.OS !== 'web') {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setShowPassword(!showPassword);
   };
 
-    const handleLogin = () => {
+  const handleLogin = () => {
     // Navigate to dashboard after "login"
-    router.push('/dashboard');
+    const mockEmail = "demo@gmail.com";
+    const mockPassword = "Pass@123";
+
+    if (email === mockEmail && password === mockPassword) {
+      router.push("/dashboard");
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      alert("Invalid email or password");
+    }
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
       <StatusBar style="dark" />
-      
+
       <View style={styles.header}>
         <View style={styles.iconContainer}>
-          <Image 
-            source={require("../auth/avtar.png")}
-            style={styles.avatar}
-          />
+          <Image source={require("../auth/avtar.png")} style={styles.avatar} />
         </View>
         <Text style={styles.title}>Login to your account</Text>
       </View>
@@ -75,10 +80,7 @@ export default function Login() {
             autoCapitalize="none"
             placeholderTextColor="#9e9e9e"
           />
-          <Pressable 
-            onPress={togglePasswordVisibility} 
-            style={styles.eyeIcon}
-          >
+          <Pressable onPress={togglePasswordVisibility} style={styles.eyeIcon}>
             {showPassword ? (
               <Eye color="#757575" size={22} />
             ) : (
@@ -87,15 +89,9 @@ export default function Login() {
           </Pressable>
         </View>
 
-
-        <TouchableOpacity 
-          style={styles.loginButton} 
-          onPress={handleLogin}
-        >
-          <Text style={styles.buttonText}>
-            Login
-          </Text>
-        </TouchableOpacity> 
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
@@ -104,10 +100,10 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7f7f7',
+    backgroundColor: "#f7f7f7",
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 80,
     marginBottom: 40,
   },
@@ -115,27 +111,26 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 24,
-    
   },
   avatar: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   title: {
     fontSize: 22,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
   },
   form: {
     paddingHorizontal: 24,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#EEEEEE',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#EEEEEE",
     borderRadius: 30,
     marginBottom: 16,
     paddingHorizontal: 16,
@@ -146,26 +141,26 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: '100%',
-    color: '#333',
+    height: "100%",
+    color: "#333",
     fontSize: 16,
   },
   eyeIcon: {
     padding: 10,
   },
   errorText: {
-    color: '#e53935',
+    color: "#e53935",
     marginBottom: 16,
     marginLeft: 8,
   },
   loginButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: "#2196F3",
     borderRadius: 30,
     height: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -175,9 +170,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
-  
 });
