@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { Moon, Sun, User } from 'lucide-react-native';
 import React, { useState } from 'react';
+
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View, useColorScheme } from 'react-native';
 import { useTheme } from "../../ThemeContext"; // adjust path as needed
 
@@ -14,7 +15,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
   const colorScheme = useColorScheme();
 
   const greeting = () => {
-    return 'Welcome Uniquepatel'
+    return 'Welcome john Doe'
   };
 
   const handleLogout = () => {
@@ -54,7 +55,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
         <View style={styles.rightSection}>
           <View>
             <TouchableOpacity onPress={() => setDropdownVisible(!dropdownVisible)}>
-              <User size={36} color={darkMode ? "#fff" : "#222"} />
+              <User size={28} color={darkMode ? "#fff" : "#222"} />
             </TouchableOpacity>
             {/* Dropdown with outside click handling */}
             <Modal
@@ -81,17 +82,19 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
             </Modal>
           </View>
           <TouchableOpacity onPress={toggleTheme}>
-            {darkMode ? <Sun size={36} color="#FFD700" /> : <Moon size={36} color="#222" />}
+            {darkMode ? <Sun size={28} color="#FFD700" /> : <Moon size={28} color="#222" />}
           </TouchableOpacity>
         </View>
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={[styles.customButton, { backgroundColor: '#A6B7DC', width: 221 }]}>
+        <TouchableOpacity style={[styles.customButton, { backgroundColor: '#A6B7DC', paddingHorizontal:20 , maxHeight:50 }]}>
           <Text style={styles.buttonText}>Fetch Lead</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.customButton, { backgroundColor: '#3790A1', width: 340, height:50, }]}>
-          <Text style={styles.buttonText}>Manish Gupta
+        <TouchableOpacity style={styles.leadBtn}>
+          <Text style={styles.leadCompanyName}> University college Company
+          </Text>
+            <Text style={{fontWeight:"semibold",letterSpacing:0.6,fontSize:17,color:"#222"}} >Manish Gupta
           </Text>
         </TouchableOpacity>
       </View>
@@ -101,11 +104,33 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFF',
-    paddingVertical: 12,
+    backgroundColor: '#f7f5fb',
+    paddingVertical: 10,
     paddingHorizontal: 18,
+    maxHeight:"70%",
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
+  },
+  leadBtn:{
+    backgroundColor: '#3790a1',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    display: 'flex',
+    justifyContent: 'center',
+    marginRight:10,
+   alignItems: 'center',
+   minWidth:"50%",
+    maxWidth:'65%',
+    
+  },
+  leadCompanyName: {
+    fontSize: 16,
+    textAlign:"center",
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 2,
+    letterSpacing:0.6
   },
   header: {
     flexDirection: 'row',
@@ -122,10 +147,15 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer:{
-    margin: 20,
-    gap:10,
-    justifyContent:'center',
-    alignItems:'center'
+    marginTop:10,
+     gap:12,
+    display:'flex',
+    alignItems:"center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+   marginHorizontal: 10,
+   minHeight: 150,
+   position:"relative"
   },
 
   customButton: {
@@ -149,13 +179,22 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontFamily: 'Inter-Regular',
-    fontSize: 14,
+    fontSize: 16,
     color: '#666',
+    letterSpacing:0.7
   },
   name: {
     fontFamily: 'Inter-SemiBold',
-    fontSize: 20,
-    color: '#333',
+    fontSize: 38,
+    letterSpacing:0.8,
+    fontWeight:"semibold",
+    color: '#ffd66b',
+   
+  
+   textDecorationLine:"underline",
+  
+   
+
   },
   // Add dropdown styles
   dropdownWrapper: {

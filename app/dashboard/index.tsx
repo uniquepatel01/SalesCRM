@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 16,
+    paddingBottom:70
   },
   statusBox: {
     width: "47%",
