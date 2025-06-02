@@ -143,10 +143,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F7F9FC",
+    
   },
   content: {
     flex: 1,
     padding: 16,
+    paddingBottom: 16,
   },
   sectionTitle: {
     fontSize: 20,
