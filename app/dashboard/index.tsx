@@ -78,11 +78,12 @@ export default function DashboardScreen() {
       status: "out of station",
     },
     {
-      title: "Intrested",
+      title: "Not Intrested",
       count: "56",
       color: "#9C27B0",
       bgColor: "#ccd5ae",
-      status: "intrested",
+      status: "not intrested",
+      route: "/notInterested",
     },
     {
       title: "Dormants",
@@ -160,6 +161,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 16,
+    paddingBottom:70
   },
   statusBox: {
     width: "47%",
