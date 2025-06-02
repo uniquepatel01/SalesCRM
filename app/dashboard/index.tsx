@@ -95,7 +95,7 @@ export default function DashboardScreen() {
 
   const handleStatusPress = (box: (typeof statusBoxes)[0]) => {
     router.push({
-      pathname: box.route ? box.route : "/dashboard",
+      pathname: (box.route || "/dashboard") as "/dashboard",
       params: { filter: box.status },
     });
   };
