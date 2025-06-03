@@ -76,6 +76,7 @@ export default function DashboardScreen() {
       color: "#9C27B0",
       bgColor: "#d8e2dc",
       status: "out of station",
+      route: "/outOfStation",
     },
     {
       title: "Not Intrested",
