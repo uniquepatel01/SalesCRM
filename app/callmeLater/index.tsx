@@ -1,6 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "../../ThemeContext";
 import { CallmeLater, callmeLaterClients } from "../../data/callmeLaterData";
 
@@ -8,10 +9,10 @@ export default function callmeLaterScreen() {
   const { darkMode } = useTheme();
 
   const handlePress = (client: CallmeLater, idx: number) => {
-        router.push({
-          pathname: "/callmeLater/[id]",
-          params: { id: idx.toString() },
-        });
+    router.push({
+      pathname: "/callmeLater/[id]",
+      params: { id: idx.toString() },
+    });
   };
 
   return (
@@ -19,12 +20,32 @@ export default function callmeLaterScreen() {
       styles.container,
       darkMode && { backgroundColor: "#181A20" }
     ]}>
-      <Text style={[
-        styles.sectionTitle,
-        darkMode && { color: "#fff", backgroundColor: "#181A20" }
-      ]}>
-        Call Me Later Clients
-      </Text>
+      {/* Header Row with Back Arrow and Centered Title */}
+      <View style={styles.headerRow}>
+        {/* Back Arrow Icon */}
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 100,
+            backgroundColor: "transparent",
+            padding: 4,
+          }}
+        >
+          <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+        </Pressable>
+        <Text style={[
+          styles.sectionTitle,
+          darkMode && { color: "#fff", backgroundColor: "#181A20" },
+          { flex: 1, textAlign: "center", marginTop: 0, marginBottom: 0 }
+        ]}>
+          Call Me Later
+        </Text>
+        {/* Spacer to balance the row */}
+        <View style={{ width: 32 }} />
+      </View>
       <ScrollView contentContainerStyle={styles.content}>
         {callmeLaterClients.map((client, idx) => (
           <TouchableOpacity
@@ -149,5 +170,13 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingHorizontal: 12,
     paddingVertical: 4,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 0,
+    marginBottom: 8,
+    paddingHorizontal: 8,
+    justifyContent: "center",
   },
 });

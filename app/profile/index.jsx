@@ -1,8 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Pressable } from "react-native";
 import { useTheme } from "../../ThemeContext"; // adjust path as needed
-
+import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 const STORAGE_KEY = "profile_fields";
 
 export default function Profile() {
@@ -46,6 +47,20 @@ export default function Profile() {
             ]}>
                 {/* Header */}
                 <View style={styles.profileHeader}>
+                          {/* Back Arrow Icon */}
+                          <Pressable
+                            onPress={() => router.back()}
+                            style={{
+                              position: "absolute",
+                              top: 35,
+                              left: 10,
+                              zIndex: 100,
+                              backgroundColor: "transparent",
+                              padding: 4,
+                            }}
+                          >
+                            <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+                          </Pressable>
                     <Text style={[
                         styles.profileTitle,
                         darkMode && { color: "#fff" }

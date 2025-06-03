@@ -1,6 +1,7 @@
-import { useLocalSearchParams } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import { Linking, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Linking, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useTheme } from "../../ThemeContext";
 import { CallmeLater, callmeLaterClients } from "../../data/callmeLaterData"; // Changed import
 
@@ -43,10 +44,40 @@ export default function callmeLaterDetails() {
       darkMode && { backgroundColor: "#181A20" }
     ]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={[
-          styles.header,
-          darkMode && { color: "#fff" }
-        ]}>CALL ME LATER</Text> {/* Changed title */}
+        {/* Header Row with Back Arrow and Centered Title */}
+        <View style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: 10,
+          marginBottom: 8,
+          minHeight: 40,
+        }}>
+          <Pressable
+            onPress={() => router.back()}
+            style={{
+              padding: 4,
+              borderRadius: 20,
+              position: "absolute",
+              left: 0,
+              zIndex: 10,
+            }}
+            hitSlop={10}
+          >
+            <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+          </Pressable>
+          <Text
+            style={[
+              styles.header,
+              darkMode && { color: "#fff" },
+              { flex: 1, textAlign: "center", marginTop: 0, marginBottom: 0 }
+            ]}
+          >
+            CALL ME LATER
+          </Text>
+          {/* Spacer to balance the row */}
+          <View style={{ width: 32 }} />
+        </View>
 
         <Text style={[
           styles.company,
@@ -103,7 +134,7 @@ export default function callmeLaterDetails() {
           ))}
         </View>
 
-       
+
 
         {/* Buttons */}
         <View style={styles.buttonRow}>
