@@ -136,6 +136,7 @@ export default function DashboardScreen() {
             </TouchableOpacity>
           ))}
         </View>
+        
       </ScrollView>
     </SafeAreaView>
   );
