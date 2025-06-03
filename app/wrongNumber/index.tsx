@@ -1,6 +1,8 @@
 import React from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useTheme } from "../../ThemeContext"; // Adjust path if needed
+import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function WrongNumber() {
     const { darkMode } = useTheme();
@@ -20,6 +22,20 @@ export default function WrongNumber() {
             styles.container,
             darkMode && { backgroundColor: "#181A20" }
         ]}>
+                    {/* Back Arrow Icon */}
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 100,
+            backgroundColor: "transparent",
+            padding: 4,
+          }}
+        >
+          <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+        </Pressable>
             <Text style={[
                 styles.sectionTitle,
                 darkMode && { color: "#fff", backgroundColor: "#181A20" }

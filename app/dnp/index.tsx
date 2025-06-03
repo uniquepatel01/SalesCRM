@@ -1,23 +1,38 @@
 import { router } from "expo-router";
 import React from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "../../ThemeContext";
 import { DnpClient, dnpClients } from "../../data/dnpClientsData";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function DnpScreen() {
     const { darkMode } = useTheme();
 
-  const handlePress = (client: DnpClient, idx: number) => {
-    router.push({
-      pathname: "/dnp/[id]",
-      params: { id: idx.toString() }
-    });
-  };
+    const handlePress = (client: DnpClient, idx: number) => {
+        router.push({
+            pathname: "/dnp/[id]",
+            params: { id: idx.toString() }
+        });
+    };
     return (
         <SafeAreaView style={[
             styles.container,
             darkMode && { backgroundColor: "#181A20" }
         ]}>
+            {/* Back Arrow Icon */}
+            <Pressable
+                onPress={() => router.back()}
+                style={{
+                    position: "absolute",
+                    top: 10,
+                    left: 10,
+                    zIndex: 100,
+                    backgroundColor: "transparent",
+                    padding: 4,
+                }}
+            >
+                <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+            </Pressable>
             <Text style={[
                 styles.sectionTitle,
                 darkMode && { color: "#fff", backgroundColor: "#181A20" }

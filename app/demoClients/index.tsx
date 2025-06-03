@@ -1,8 +1,9 @@
 import { router } from "expo-router"; // Import router
 import React from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "../../ThemeContext"; // Adjust path if needed
-import { DemoClient,demoClients } from "../../data/demoClientsData";
+import { DemoClient, demoClients } from "../../data/demoClientsData";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function DemoClientsScreen() {
   const { darkMode } = useTheme();
@@ -24,6 +25,20 @@ export default function DemoClientsScreen() {
       ]}
     >
       <View style={styles.headerRow}>
+        {/* Back Arrow Icon */}
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 100,
+            backgroundColor: "transparent",
+            padding: 4,
+          }}
+        >
+          <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+        </Pressable>
         <Text
           style={[
             styles.header,

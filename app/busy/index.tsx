@@ -1,6 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import {
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -20,65 +22,82 @@ export default function BusyScreen() {
       params: { id: idx.toString() },
     });
   };
+
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
-      <Text
-        style={[
-          styles.sectionTitle,
-          darkMode && { color: "#fff", backgroundColor: "#181A20" },
-        ]}
-      >
-        BUSY
-      </Text>
-      <ScrollView contentContainerStyle={styles.content}>
-        {busyClients.map((client, idx) => (
-          <TouchableOpacity
-            key={idx}
-            onPress={() => handlePress(client, idx)}
-            activeOpacity={0.85}
-          >
-            <View
-              style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
+      <View style={{ flex: 1, position: "relative" }}>
+        {/* Back Arrow Icon */}
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 100,
+            backgroundColor: "transparent",
+            padding: 4,
+          }}
+        >
+          <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+        </Pressable>
+        <Text
+          style={[
+            styles.sectionTitle,
+            darkMode && { color: "#fff", backgroundColor: "#181A20" },
+          ]}
+        >
+          BUSY
+        </Text>
+        <ScrollView contentContainerStyle={styles.content}>
+          {busyClients.map((client, idx) => (
+            <TouchableOpacity
+              key={idx}
+              onPress={() => handlePress(client, idx)}
+              activeOpacity={0.85}
             >
-              <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
-                {client.company}
-              </Text>
-              <View style={styles.row}>
-                <Text style={[styles.label, darkMode && { color: "#fff" }]}>
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {client.name}
-                  </Text>
+              <View
+                style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
+              >
+                <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
+                  {client.company}
                 </Text>
-                <Text
-                  style={[
-                    styles.label,
-                    { marginLeft: 16 },
-                    darkMode && { color: "#fff" },
-                  ]}
-                >
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {client.mobile}
+                <View style={styles.row}>
+                  <Text style={[styles.label, darkMode && { color: "#fff" }]}>
+                    <Text style={[styles.value, darkMode && { color: "#fff" }]}>
+                      {client.name}
+                    </Text>
                   </Text>
-                </Text>
-              </View>
-              <View style={styles.dateRow}>
-                <View
-                  style={[
-                    styles.dateBadge,
-                    darkMode && { backgroundColor: "#E94444" },
-                  ]}
-                >
-                  <Text style={[styles.value, { color: "white" }]}>
-                    {client.demoTaken}
+                  <Text
+                    style={[
+                      styles.label,
+                      { marginLeft: 16 },
+                      darkMode && { color: "#fff" },
+                    ]}
+                  >
+                    <Text style={[styles.value, darkMode && { color: "#fff" }]}>
+                      {client.mobile}
+                    </Text>
                   </Text>
                 </View>
+                <View style={styles.dateRow}>
+                  <View
+                    style={[
+                      styles.dateBadge,
+                      darkMode && { backgroundColor: "#E94444" },
+                    ]}
+                  >
+                    <Text style={[styles.value, { color: "white" }]}>
+                      {client.demoTaken}
+                    </Text>
+                  </View>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
