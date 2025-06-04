@@ -1,8 +1,10 @@
-import { useLocalSearchParams } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   Linking,
   Modal,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -54,6 +56,20 @@ export default function OutOfStationClients() {
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Back Arrow Icon */}
+                <Pressable
+                  onPress={() => router.back()}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 10,
+                    zIndex: 100,
+                    backgroundColor: "transparent",
+                    padding: 4,
+                  }}
+                >
+                  <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+                </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
           Out Of Station Client
         </Text>
