@@ -68,7 +68,8 @@ export default function DashboardScreen() {
       count: "34",
       color: "#9C27B0",
       bgColor: "#ffc6ff",
-      status: "emails",
+      status: "email",
+      route: "/email",
     },
     {
       title: "Out of station",
