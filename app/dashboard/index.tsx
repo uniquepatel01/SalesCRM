@@ -92,6 +92,7 @@ export default function DashboardScreen() {
       color: "#9C27B0",
       bgColor: "#F3E5F2",
       status: "later",
+      route: "/dormant",
     },
   ];
 
