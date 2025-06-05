@@ -116,6 +116,7 @@ export default function DashboardScreen() {
         <Text style={[styles.sectionTitle, darkMode && { color: "#fff" }]}>
           Lead Status Overview
         </Text>
+
         <View style={styles.statusGrid}>
           {statusBoxes.map((box, index) => (
             <TouchableOpacity

@@ -1,8 +1,8 @@
 import { router } from 'expo-router';
-import { Moon, Sun, User } from 'lucide-react-native';
+import { Moon, Plus, Search, Sun, User } from 'lucide-react-native';
 import React, { useState } from 'react';
 
-import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View, useColorScheme } from 'react-native';
+import { Alert, Modal, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View, useColorScheme } from 'react-native';
 import { useTheme } from "../../ThemeContext"; // adjust path as needed
 
 type DashboardHeaderProps = {
@@ -12,6 +12,7 @@ type DashboardHeaderProps = {
 export default function DashboardHeader({ user }: DashboardHeaderProps) {
   const { darkMode, toggleTheme } = useTheme();
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [search, setSearch] = useState('');
   const colorScheme = useColorScheme();
 
   const greeting = () => {
@@ -26,6 +27,9 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
   };
   const handleAnalytics = () => {
     router.push('/myAnalytics');
+  };
+  const handleSearch = () => {
+    Alert.alert('Search', `You searched for: ${search}`);
   };
 
   // Example: apply dark mode styles conditionally
@@ -98,6 +102,59 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
           </Text>
         </TouchableOpacity>
       </View>
+      <View>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: darkMode ? '#222' : '#f0f0f0',
+            borderRadius: 24,
+            paddingHorizontal: 14,
+            paddingVertical: 6,
+            marginTop: 10,
+            marginBottom: 10,
+            flex: 1,
+            marginRight: 10,
+          }}>
+            <TextInput
+              style={{
+          flex: 1,
+          color: darkMode ? '#fff' : '#222',
+          fontSize: 20,
+          opacity: 0.7,
+          padding: 5,
+          marginBottom: 0,
+              }}
+              placeholder="Search..."
+              placeholderTextColor={darkMode ? "#aaa" : "#888"}
+              value={search}
+              onChangeText={setSearch}
+            />
+            <TouchableOpacity onPress={handleSearch}>
+              <Search size={22} color={darkMode ? "#fff" : "#222"} />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: '#3790a1',
+              borderRadius: 24,
+              paddingHorizontal: 18,
+              paddingVertical: 8,
+              alignSelf: 'flex-start',
+              marginTop: 10,
+            }}
+            onPress={() => router.push('/addLead/addlead')}
+          >
+            <Text style={{ color: '#fff', fontSize: 20, fontWeight: '600', marginRight: 8 }}>Add</Text>
+            <Plus size={22} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+
     </View>
   );
 }
@@ -105,7 +162,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#f7f5fb',
-    paddingVertical: 10,
+    paddingVertical: 0,
     paddingHorizontal: 18,
     maxHeight:"70%",
     borderBottomWidth: 1,
@@ -147,14 +204,14 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer:{
-    marginTop:10,
+    marginTop:0,
      gap:12,
     display:'flex',
     alignItems:"center",
     flexDirection: 'row',
     justifyContent: 'space-between',
    marginHorizontal: 10,
-   minHeight: 150,
+   minHeight: 120,
    position:"relative"
   },
 
@@ -188,7 +245,7 @@ const styles = StyleSheet.create({
     fontSize: 38,
     letterSpacing:0.8,
     fontWeight:"semibold",
-    color: '#ffd66b',
+    color: '#000000',
    
   
    textDecorationLine:"underline",
