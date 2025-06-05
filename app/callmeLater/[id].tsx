@@ -96,20 +96,9 @@ export default function callmeLaterDetails() {
           <Row label="Email" value={client.email} darkMode={darkMode} />
           <Row label="Mobile" value={client.mobile} darkMode={darkMode} />
           <Row label="Alternate Mobile" value={client.altMobile} darkMode={darkMode} />
-          <Row label="Demo Taken" value={client.demoTaken} darkMode={darkMode} />
+    
           <Row label="Address" value={client.address} darkMode={darkMode} multiline />
-          <View style={styles.tableRow}>
-            <View style={[styles.tableCell, styles.tableCellLabel, darkMode && { backgroundColor: "#23262F" }]}>
-              <Text style={[styles.tableCellText, darkMode && { color: "#fff" }]}>Converted Date</Text>
-            </View>
-            <View style={[styles.tableCell, styles.tableCellValue, darkMode && { backgroundColor: "#181A20" }]}>
-              <View style={styles.convertedDateBadge}>
-                <Text style={styles.convertedDateText}>
-                  {client.convertedDate || "-"}
-                </Text>
-              </View>
-            </View>
-          </View>
+         
         </View>
 
         {/* Remarks Section */}

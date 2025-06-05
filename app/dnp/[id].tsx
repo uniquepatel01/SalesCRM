@@ -1,9 +1,9 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { Linking, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useTheme } from "../../ThemeContext";
 import { dnpClients } from "../../data/dnpClientsData";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function DnpClientDetails() {
   const { id } = useLocalSearchParams();
@@ -202,10 +202,10 @@ export default function DnpClientDetails() {
                 <Text style={styles.saveBtnText}>ADD</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.callBtn, { flex: 1, marginLeft: 8 }]}
+                style={[styles.callBtn, { flex: 1, marginLeft: 8, backgroundColor:"red" }]}
                 onPress={() => setAddRemarkVisible(false)}
               >
-                <Text style={styles.callBtnText}>CANCEL</Text>
+                <Text style={[styles.callBtnText]}>CANCEL</Text>
               </TouchableOpacity>
             </View>
           </View>

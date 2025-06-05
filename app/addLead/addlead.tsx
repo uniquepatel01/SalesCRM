@@ -1,10 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "../../ThemeContext";
 
 // CustomDropdown component
 import { FlatList, Modal } from "react-native";
@@ -137,6 +140,10 @@ const dropdownModalStyles = StyleSheet.create({
 });
 
 export default function AddLead() {
+
+    const { darkMode } = useTheme();
+
+    
   // Dropdown states
   const [source, setSource] = useState("");
   const [businessType, setBusinessType] = useState("");
@@ -249,11 +256,26 @@ export default function AddLead() {
       >
         {/* Header */}
         <View style={styles.headerRow}>
-          <TouchableOpacity>
-            <Ionicons name="arrow-back" size={28} color="#000" />
-          </TouchableOpacity>
+          {/* Back Arrow Icon */}
+          <Pressable
+            onPress={() => router.back()}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 10,
+              zIndex: 100,
+              backgroundColor: "transparent",
+              padding: 4,
+            }}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={28}
+              color={darkMode ? "#fff" : "#000"}
+            />
+          </Pressable>
           <Text style={styles.headerTitle}>New Lead Entry</Text>
-          <View style={{ width: 28 }} /> {/* Placeholder for alignment */}
+          <View style={{ width: 28 }} />
         </View>
 
         {/* Dropdown Row 1 */}
@@ -267,7 +289,10 @@ export default function AddLead() {
             >
               <Picker.Item label="Source" value="" />
               <Picker.Item label="Referral" value="referral" />
-              <Picker.Item label="Website" value="website" />
+              <Picker.Item label="SMS" value="sms" />
+              <Picker.Item label="Email" value="email" />
+              <Picker.Item label="Social Media" value="socialmedia" />
+              <Picker.Item label="Digital Marketing" value="digital marketing" />
             </Picker>
           </View>
           <View style={styles.dropdownContainer}>
@@ -278,8 +303,11 @@ export default function AddLead() {
               dropdownIconColor="#222"
             >
               <Picker.Item label="Business Type" value="" />
-              <Picker.Item label="Retail" value="retail" />
-              <Picker.Item label="Wholesale" value="wholesale" />
+              <Picker.Item label="Money Changer" value="moneychanger" />
+              <Picker.Item label="Forex Trader" value="forex trader" />
+              <Picker.Item label="NRI/ Individula" value="nri" />
+              <Picker.Item label="Other" value="other" />
+              <Picker.Item label="Not Available" value="not available" />
             </Picker>
           </View>
         </View>
@@ -294,9 +322,11 @@ export default function AddLead() {
               dropdownIconColor="#222"
             >
               <Picker.Item label="Business Volume" value="" />
-              <Picker.Item label="Low" value="low" />
-              <Picker.Item label="Medium" value="medium" />
-              <Picker.Item label="High" value="high" />
+              <Picker.Item label="Below $50k USD" value="low" />
+              <Picker.Item label="Above $1lakh USD" value="low" />
+              <Picker.Item label="$2lakh USD" value="low" />
+              <Picker.Item label="$4.5lakh USD" value="low" />
+              <Picker.Item label="$10lakh+ USD" value="low" />
             </Picker>
           </View>
         </View>
@@ -311,8 +341,15 @@ export default function AddLead() {
               dropdownIconColor="#222"
             >
               <Picker.Item label="Feedback" value="" />
-              <Picker.Item label="Positive" value="positive" />
-              <Picker.Item label="Negative" value="negative" />
+              <Picker.Item label="Interested & Add me" value="positive" />
+              <Picker.Item label="Drop an Email" value="drop an email" />
+              <Picker.Item label="Not Interested" value="not interested" />
+              <Picker.Item label="Busy unreachable" value="busy" />
+              <Picker.Item label="Wrong/Incorrect Number" value="Wrong/Incorrect number" />
+              <Picker.Item label="Already taking from others" value="already taking from others" />
+              <Picker.Item label="Small Business" value="small business" />
+              <Picker.Item label="Leave a comment" value="leave a comment" />
+              <Picker.Item label="Did not pick" value="did not pick" />
             </Picker>
           </View>
         </View>
@@ -420,8 +457,9 @@ export default function AddLead() {
             dropdownIconColor="#222"
           >
             <Picker.Item label="ACTION" value="" />
-            <Picker.Item label="Follow Up" value="followup" />
-            <Picker.Item label="Close" value="close" />
+            <Picker.Item label="Demo" value="demo" />
+            <Picker.Item label="Converted" value="converted" />
+            <Picker.Item label="Dormants" value="dormants" />
           </Picker>
         </View>
 
@@ -506,6 +544,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 1,
     color: "#111",
+    marginLeft:'30%'
   },
   row: {
     flexDirection: "row",
