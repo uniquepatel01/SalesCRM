@@ -9,7 +9,7 @@ export type DnpClient = {
   email: string;
   mobile: string;
   altMobile: string;
-  demoTaken: string;
+  date: string; // <-- changed from demoTaken/converted to date
   address: string;
   remarks: { date: string; text: string }[];
   statuses: string[];
@@ -28,11 +28,11 @@ export const dnpClients: DnpClient[] = [
     email: "manish@startexporter.com",
     mobile: "+91 9876543210",
     altMobile: "+91 9123456780",
-    demoTaken: "5 days",
+    date: "15/05/25", // <-- added date
     address: "123, Export Lane, Mumbai, Maharashtra",
     remarks: [
       { date: "20/05/25", text: "Did not pick up" },
-      { date: "21/05/25", text: "Tried again, no response" }
+      { date: "21/05/25", text: "Tried again, no response" },
     ],
     statuses: ["DNP", "Dormant", "Future Client"],
     action: "",
@@ -48,11 +48,9 @@ export const dnpClients: DnpClient[] = [
     email: "manish@threemarin.com",
     mobile: "+91 9876543210",
     altMobile: "+91 9123456781",
-    demoTaken: "3 days",
+    date: "17/05/25",
     address: "456, Marine Drive, Chennai, Tamil Nadu",
-    remarks: [
-      { date: "20/05/25", text: "No answer" }
-    ],
+    remarks: [{ date: "20/05/25", text: "No answer" }],
     statuses: ["DNP", "Future Client", "Dormant"],
     action: "",
   },
@@ -67,11 +65,9 @@ export const dnpClients: DnpClient[] = [
     email: "manish@adanibsl.com",
     mobile: "+91 9876543210",
     altMobile: "+91 9123456782",
-    demoTaken: "7 days",
+    date: "13/05/25",
     address: "789, BSL Road, Ahmedabad, Gujarat",
-    remarks: [
-      { date: "20/05/25", text: "Did not pick up" }
-    ],
+    remarks: [{ date: "20/05/25", text: "Did not pick up" }],
     statuses: ["Dormant", "DNP", "Future Client"],
     action: "",
   },
@@ -86,11 +82,9 @@ export const dnpClients: DnpClient[] = [
     email: "manish@ztibra.org",
     mobile: "+91 9876543210",
     altMobile: "+91 9123456783",
-    demoTaken: "2 days",
+    date: "18/05/25",
     address: "101, Foundation Street, Delhi",
-    remarks: [
-      { date: "20/05/25", text: "No response" }
-    ],
+    remarks: [{ date: "20/05/25", text: "No response" }],
     statuses: ["DNP", "Future Client", "Dormant"],
     action: "",
   },
@@ -105,11 +99,9 @@ export const dnpClients: DnpClient[] = [
     email: "manish@ztibra.org",
     mobile: "+91 9876543210",
     altMobile: "+91 9123456784",
-    demoTaken: "4 days",
+    date: "16/05/25",
     address: "102, Foundation Street, Delhi",
-    remarks: [
-      { date: "20/05/25", text: "Did not pick up" }
-    ],
+    remarks: [{ date: "20/05/25", text: "Did not pick up" }],
     statuses: ["Future Client", "DNP", "Dormant"],
     action: "",
   },
@@ -124,11 +116,9 @@ export const dnpClients: DnpClient[] = [
     email: "manish@ztibra.org",
     mobile: "+91 9876543210",
     altMobile: "+91 9123456785",
-    demoTaken: "6 days",
+    date: "14/05/25",
     address: "103, Foundation Street, Delhi",
-    remarks: [
-      { date: "20/05/25", text: "No answer" }
-    ],
+    remarks: [{ date: "20/05/25", text: "No answer" }],
     statuses: ["Dormant", "Future Client", "DNP"],
     action: "",
   },
@@ -143,11 +133,9 @@ export const dnpClients: DnpClient[] = [
     email: "manish@ztibra.org",
     mobile: "+91 9876543210",
     altMobile: "+91 9123456786",
-    demoTaken: "1 day",
+    date: "19/05/25",
     address: "104, Foundation Street, Delhi",
-    remarks: [
-      { date: "20/05/25", text: "Did not pick up" }
-    ],
+    remarks: [{ date: "20/05/25", text: "Did not pick up" }],
     statuses: ["DNP", "Dormant", "Future Client"],
     action: "",
   },
