@@ -18,80 +18,80 @@ export default function DashboardScreen() {
     {
       title: "DNP",
       count: "50",
-      color: "#0062FF",
-      bgColor: "#E6F0FF",
+      color: "#1D4ED8", // Royal Blue
+      bgColor: "#D6E4FF", // Light Blue
       status: "dnp",
       route: "/dnp",
     },
     {
       title: "Demo",
       count: "45",
-      color: "#FF9500",
-      bgColor: "#FFF5E6",
+      color: "#F59E0B", // Amber
+      bgColor: "#FFEFC7", // Warm Yellow
       status: "demo",
       route: "/demoClients",
     },
     {
       title: "Call me Later",
       count: "23",
-      color: "#34C759",
-      bgColor: "#E6FFF0",
+      color: "#10B981", // Emerald Green
+      bgColor: "#D1FADF", // Bright Mint
       status: "dormats",
       route: "/callmeLater",
     },
     {
       title: "Wrong Number",
       count: "98",
-      color: "#D32F2F",
-      bgColor: "#FFEBEE",
+      color: "#DC2626", // Soft Red
+      bgColor: "#FFD6D6", // Prominent Pink-Red
       status: "Wrong Number",
       route: "/wrongNumber",
     },
     {
       title: "Converted",
       count: "56",
-      color: "#9C27B0",
-      bgColor: "#d5bdaf",
+      color: "#9333EA", // Deep Purple
+      bgColor: "#E9D5FF", // Lilac
       status: "Converted",
       route: "/convertedClients",
     },
     {
       title: "Busy",
       count: "56",
-      color: "#9C27B0",
-      bgColor: "#d5bdaf",
+      color: "#0EA5E9", // Cyan Blue
+      bgColor: "#C7F0FF", // Light Cyan
       status: "busy",
       route: "/busy",
     },
     {
       title: "Emails",
       count: "34",
-      color: "#9C27B0",
-      bgColor: "#ffc6ff",
+      color: "#0D9488", // Teal Green (distinct from violet)
+      bgColor: "#CCFBF1", // Soft Aqua-Mint
       status: "email",
       route: "/email",
     },
     {
       title: "Out of station",
       count: "72",
-      color: "#9C27B0",
-      bgColor: "#d8e2dc",
+      color: "#D97706", // Warm Amber (Orange-Brown)
+      bgColor: "#FFF3D9", // Light Tan/Peach
       status: "out of station",
       route: "/outOfStation",
     },
     {
-      title: "Not Intrested",
+      title: "Not Interested",
       count: "56",
-      color: "#9C27B0",
-      bgColor: "#ccd5ae",
-      status: "not intrested",
+      color: "#6B7280", // Cool Gray
+      bgColor: "#E5E7EB", // Light Gray
+      status: "not interested",
       route: "/notInterested",
     },
     {
       title: "Dormants",
       count: "40",
-      color: "#9C27B0",
-      bgColor: "#F3E5F2",
+      color: "#EC4899", // Pink
+      bgColor: "#FFD6EC", // Light Pink
       status: "later",
       route: "/dormant",
     },
@@ -139,7 +139,6 @@ export default function DashboardScreen() {
             </TouchableOpacity>
           ))}
         </View>
-        
       </ScrollView>
     </SafeAreaView>
   );
@@ -149,7 +148,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F7F9FC",
-    
   },
   content: {
     flex: 1,
@@ -166,7 +164,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 16,
-    paddingBottom:70
+    paddingBottom: 70,
   },
   statusBox: {
     width: "47%",
