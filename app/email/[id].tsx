@@ -1,8 +1,10 @@
-import { useLocalSearchParams } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   Linking,
   Modal,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -14,7 +16,7 @@ import {
 import { useTheme } from "../../ThemeContext";
 import { emailClients } from "../../data/emailClientsData";
 
-export default function EmailClients() {
+export default function EmailClientDetails() {
   const { id } = useLocalSearchParams();
   const client = emailClients[Number(id)];
   const { darkMode } = useTheme();
@@ -54,8 +56,26 @@ export default function EmailClients() {
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Back Arrow Icon */}
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 10,
+            zIndex: 100,
+            backgroundColor: "transparent",
+            padding: 4,
+          }}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#fff" : "#000"}
+          />
+        </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
-          Email only Client
+          EMAIL CLIENTS
         </Text>
 
         <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
@@ -89,11 +109,8 @@ export default function EmailClients() {
             value={client.altMobile}
             darkMode={darkMode}
           />
-          <Row
-            label="Demo Taken"
-            value={client.demoTaken}
-            darkMode={darkMode}
-          />
+          <Row label="Date" value={client.date} darkMode={darkMode} />{" "}
+          {/* Changed line */}
           <Row
             label="Address"
             value={client.address}
@@ -234,10 +251,13 @@ export default function EmailClients() {
                 <Text style={styles.saveBtnText}>ADD</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.callBtn, { flex: 1, marginLeft: 8 }]}
+                style={[
+                  styles.callBtn,
+                  { flex: 1, marginLeft: 8, backgroundColor: "red" },
+                ]}
                 onPress={() => setAddRemarkVisible(false)}
               >
-                <Text style={styles.callBtnText}>CANCEL</Text>
+                <Text style={[styles.callBtnText]}>CANCEL</Text>
               </TouchableOpacity>
             </View>
           </View>

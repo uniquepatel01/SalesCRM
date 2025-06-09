@@ -1,6 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import {
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -11,7 +13,7 @@ import {
 import { useTheme } from "../../ThemeContext";
 import { EmailClient, emailClients } from "../../data/emailClientsData";
 
-export default function EmailClients() {
+export default function EmailScreen() {
   const { darkMode } = useTheme();
 
   const handlePress = (client: EmailClient, idx: number) => {
@@ -24,6 +26,24 @@ export default function EmailClients() {
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
+      {/* Back Arrow Icon */}
+      <Pressable
+        onPress={() => router.back()}
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 10,
+          zIndex: 100,
+          backgroundColor: "transparent",
+          padding: 4,
+        }}
+      >
+        <Ionicons
+          name="arrow-back"
+          size={28}
+          color={darkMode ? "#fff" : "#000"}
+        />
+      </Pressable>
       <Text
         style={[
           styles.sectionTitle,
@@ -42,7 +62,7 @@ export default function EmailClients() {
             <View
               style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
             >
-              <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
+              <Text style={[styles.company, darkMode && { color: "#818CF8" }]}>
                 {client.company}
               </Text>
               <View style={styles.row}>
@@ -67,11 +87,18 @@ export default function EmailClients() {
                 <View
                   style={[
                     styles.dateBadge,
-                    darkMode && { backgroundColor: "#E94444" },
+                    darkMode
+                      ? { backgroundColor: "#FBCFE8" } // soft red for dark mode
+                      : { backgroundColor: "#FBCFE8" }, // soft red for light mode
                   ]}
                 >
-                  <Text style={[styles.value, { color: "white" }]}>
-                    {client.demoTaken}
+                  <Text
+                    style={[
+                      styles.value,
+                      { color: "#000" }, // white text for both modes
+                    ]}
+                  >
+                    {client.date}
                   </Text>
                 </View>
               </View>
@@ -146,7 +173,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   dateBadge: {
-    backgroundColor: "red",
+    backgroundColor: "#FFD6D6", // default soft red
     borderRadius: 50,
     paddingHorizontal: 12,
     paddingVertical: 4,
