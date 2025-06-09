@@ -1,7 +1,18 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import { Linking, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Linking,
+  Modal,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useTheme } from "../../ThemeContext";
 import { dnpClients } from "../../data/dnpClientsData";
 
@@ -10,7 +21,9 @@ export default function DnpClientDetails() {
   const client = dnpClients[Number(id)];
   const { darkMode } = useTheme();
 
-  const [selectedAction, setSelectedAction] = useState<string>(client.action || "");
+  const [selectedAction, setSelectedAction] = useState<string>(
+    client.action || ""
+  );
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Add Remark State
@@ -39,10 +52,9 @@ export default function DnpClientDetails() {
   };
 
   return (
-    <SafeAreaView style={[
-      styles.container,
-      darkMode && { backgroundColor: "#181A20" }
-    ]}>
+    <SafeAreaView
+      style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
+    >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Back Arrow Icon */}
         <Pressable
@@ -56,48 +68,75 @@ export default function DnpClientDetails() {
             padding: 4,
           }}
         >
-          <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#fff" : "#000"}
+          />
         </Pressable>
-        <Text style={[
-          styles.header,
-          darkMode && { color: "#fff" }
-        ]}>DNP CLIENTS</Text>
+        <Text style={[styles.header, darkMode && { color: "#fff" }]}>
+          DNP CLIENTS
+        </Text>
 
-        <Text style={[
-          styles.company,
-          darkMode && { color: "#7BB1FF" }
-        ]}>{client.company}</Text>
+        <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
+          {client.company}
+        </Text>
 
         {/* Details Table */}
-        <View style={[
-          styles.table,
-          darkMode && { backgroundColor: "#23262F" }
-        ]}>
-          <Row label="Contact person" value={client.contactPerson} darkMode={darkMode} />
+        <View
+          style={[styles.table, darkMode && { backgroundColor: "#23262F" }]}
+        >
+          <Row
+            label="Contact person"
+            value={client.contactPerson}
+            darkMode={darkMode}
+          />
           <Row label="Source" value={client.source} darkMode={darkMode} />
-          <Row label="Business Type" value={client.businessType} darkMode={darkMode} />
-          <Row label="Business Volume" value={client.businessVolume} darkMode={darkMode} />
+          <Row
+            label="Business Type"
+            value={client.businessType}
+            darkMode={darkMode}
+          />
+          <Row
+            label="Business Volume"
+            value={client.businessVolume}
+            darkMode={darkMode}
+          />
           <Row label="Email" value={client.email} darkMode={darkMode} />
           <Row label="Mobile" value={client.mobile} darkMode={darkMode} />
-          <Row label="Alternate Mobile" value={client.altMobile} darkMode={darkMode} />
-          <Row label="Demo Taken" value={client.demoTaken} darkMode={darkMode} />
-          <Row label="Address" value={client.address} darkMode={darkMode} multiline />
+          <Row
+            label="Alternate Mobile"
+            value={client.altMobile}
+            darkMode={darkMode}
+          />
+          <Row label="Date" value={client.date} darkMode={darkMode} />{" "}
+          {/* Changed line */}
+          <Row
+            label="Address"
+            value={client.address}
+            darkMode={darkMode}
+            multiline
+          />
         </View>
 
         {/* Remarks Section */}
         <View style={styles.remarksHeaderRow}>
-          <Text style={[
-            styles.remarksHeader,
-            darkMode && { color: "#fff" }
-          ]}>Remarks</Text>
-          <TouchableOpacity style={styles.addBtn} onPress={() => setAddRemarkVisible(true)}>
+          <Text style={[styles.remarksHeader, darkMode && { color: "#fff" }]}>
+            Remarks
+          </Text>
+          <TouchableOpacity
+            style={styles.addBtn}
+            onPress={() => setAddRemarkVisible(true)}
+          >
             <Text style={styles.addBtnText}>ADD</Text>
           </TouchableOpacity>
         </View>
-        <View style={[
-          styles.remarksTable,
-          darkMode && { backgroundColor: "#23262F" }
-        ]}>
+        <View
+          style={[
+            styles.remarksTable,
+            darkMode && { backgroundColor: "#23262F" },
+          ]}
+        >
           {client.remarks.map((remark, idx) => (
             <View key={idx} style={styles.remarksRow}>
               <Text style={styles.remarksDate}>{remark.date}</Text>
@@ -120,27 +159,32 @@ export default function DnpClientDetails() {
           </TouchableOpacity>
         </View>
         {dropdownOpen && (
-          <View style={[
-            styles.dropdown,
-            darkMode && { backgroundColor: "#23262F", borderColor: "#444" }
-          ]}>
+          <View
+            style={[
+              styles.dropdown,
+              darkMode && { backgroundColor: "#23262F", borderColor: "#444" },
+            ]}
+          >
             {actions.map((action, idx) => (
               <TouchableOpacity
                 key={action}
                 style={[
                   styles.dropdownItem,
-                  selectedAction === action && styles.dropdownItemSelected
+                  selectedAction === action && styles.dropdownItemSelected,
                 ]}
                 onPress={() => {
                   setSelectedAction(action);
                   setDropdownOpen(false);
                 }}
               >
-                <Text style={[
-                  styles.dropdownItemText,
-                  darkMode && { color: "#fff" },
-                  selectedAction === action && styles.dropdownItemTextSelected
-                ]}>
+                <Text
+                  style={[
+                    styles.dropdownItemText,
+                    darkMode && { color: "#fff" },
+                    selectedAction === action &&
+                      styles.dropdownItemTextSelected,
+                  ]}
+                >
                   {action}
                 </Text>
               </TouchableOpacity>
@@ -174,18 +218,23 @@ export default function DnpClientDetails() {
         onRequestClose={() => setAddRemarkVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={[
-            styles.modalContent,
-            darkMode && { backgroundColor: "#23262F" }
-          ]}>
-            <Text style={[
-              styles.modalTitle,
-              darkMode && { color: "#fff" }
-            ]}>Add Remark</Text>
+          <View
+            style={[
+              styles.modalContent,
+              darkMode && { backgroundColor: "#23262F" },
+            ]}
+          >
+            <Text style={[styles.modalTitle, darkMode && { color: "#fff" }]}>
+              Add Remark
+            </Text>
             <TextInput
               style={[
                 styles.input,
-                darkMode && { backgroundColor: "#181A20", color: "#fff", borderColor: "#444" }
+                darkMode && {
+                  backgroundColor: "#181A20",
+                  color: "#fff",
+                  borderColor: "#444",
+                },
               ]}
               placeholder="Enter remark"
               placeholderTextColor={darkMode ? "#aaa" : "#888"}
@@ -202,7 +251,10 @@ export default function DnpClientDetails() {
                 <Text style={styles.saveBtnText}>ADD</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.callBtn, { flex: 1, marginLeft: 8, backgroundColor:"red" }]}
+                style={[
+                  styles.callBtn,
+                  { flex: 1, marginLeft: 8, backgroundColor: "red" },
+                ]}
                 onPress={() => setAddRemarkVisible(false)}
               >
                 <Text style={[styles.callBtnText]}>CANCEL</Text>
@@ -226,26 +278,33 @@ type RowProps = {
 function Row({ label, value, darkMode, multiline }: RowProps) {
   return (
     <View style={styles.tableRow}>
-      <View style={[
-        styles.tableCell,
-        styles.tableCellLabel,
-        darkMode && { backgroundColor: "#23262F" }
-      ]}>
-        <Text style={[
-          styles.tableCellText,
-          darkMode && { color: "#fff" }
-        ]}>{label}</Text>
+      <View
+        style={[
+          styles.tableCell,
+          styles.tableCellLabel,
+          darkMode && { backgroundColor: "#23262F" },
+        ]}
+      >
+        <Text style={[styles.tableCellText, darkMode && { color: "#fff" }]}>
+          {label}
+        </Text>
       </View>
-      <View style={[
-        styles.tableCell,
-        styles.tableCellValue,
-        darkMode && { backgroundColor: "#23262F" }
-      ]}>
-        <Text style={[
-          styles.tableCellText,
-          darkMode && { color: "#fff" },
-          multiline && { fontSize: 13 }
-        ]}>{value}</Text>
+      <View
+        style={[
+          styles.tableCell,
+          styles.tableCellValue,
+          darkMode && { backgroundColor: "#23262F" },
+        ]}
+      >
+        <Text
+          style={[
+            styles.tableCellText,
+            darkMode && { color: "#fff" },
+            multiline && { fontSize: 13 },
+          ]}
+        >
+          {value}
+        </Text>
       </View>
     </View>
   );
