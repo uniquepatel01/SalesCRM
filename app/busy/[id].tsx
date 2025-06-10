@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -14,7 +15,6 @@ import {
 } from "react-native";
 import { useTheme } from "../../ThemeContext";
 import { busyClients } from "../../data/busyClientsData";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function BusyClientDetails() {
   const { id } = useLocalSearchParams();
@@ -68,7 +68,11 @@ export default function BusyClientDetails() {
             padding: 4,
           }}
         >
-          <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#fff" : "#000"}
+          />
         </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
           BUSY CLIENTS
@@ -105,11 +109,8 @@ export default function BusyClientDetails() {
             value={client.altMobile}
             darkMode={darkMode}
           />
-          <Row
-            label="Demo Taken"
-            value={client.demoTaken}
-            darkMode={darkMode}
-          />
+          <Row label="Date" value={client.date} darkMode={darkMode} />{" "}
+          {/* Changed line */}
           <Row
             label="Address"
             value={client.address}
@@ -181,7 +182,7 @@ export default function BusyClientDetails() {
                     styles.dropdownItemText,
                     darkMode && { color: "#fff" },
                     selectedAction === action &&
-                    styles.dropdownItemTextSelected,
+                      styles.dropdownItemTextSelected,
                   ]}
                 >
                   {action}
@@ -250,10 +251,13 @@ export default function BusyClientDetails() {
                 <Text style={styles.saveBtnText}>ADD</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.callBtn, { flex: 1, marginLeft: 8 }]}
+                style={[
+                  styles.callBtn,
+                  { flex: 1, marginLeft: 8, backgroundColor: "red" },
+                ]}
                 onPress={() => setAddRemarkVisible(false)}
               >
-                <Text style={styles.callBtnText}>CANCEL</Text>
+                <Text style={[styles.callBtnText]}>CANCEL</Text>
               </TouchableOpacity>
             </View>
           </View>
