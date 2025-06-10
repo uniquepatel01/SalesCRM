@@ -25,12 +25,8 @@ export default function BusyClientDetails() {
     client.action || ""
   );
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  // Add Remark State
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
-
-  // For re-rendering after adding a remark
   const [, forceUpdate] = useState({});
 
   const actions = client.statuses;
@@ -47,7 +43,7 @@ export default function BusyClientDetails() {
       client.remarks.push({ date: dateStr, text: remarkInput });
       setRemarkInput("");
       setAddRemarkVisible(false);
-      forceUpdate({}); // force re-render
+      forceUpdate({});
     }
   };
 
@@ -109,8 +105,7 @@ export default function BusyClientDetails() {
             value={client.altMobile}
             darkMode={darkMode}
           />
-          <Row label="Date" value={client.date} darkMode={darkMode} />{" "}
-          {/* Changed line */}
+          <Row label="Date" value={client.date} darkMode={darkMode} />
           <Row
             label="Address"
             value={client.address}
@@ -165,7 +160,7 @@ export default function BusyClientDetails() {
               darkMode && { backgroundColor: "#23262F", borderColor: "#444" },
             ]}
           >
-            {actions.map((action, idx) => (
+            {actions.map((action) => (
               <TouchableOpacity
                 key={action}
                 style={[
