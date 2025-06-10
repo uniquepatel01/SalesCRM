@@ -77,6 +77,7 @@ export default function BusyScreen() {
                   ]}
                 >
                   {client.mobile}
+                  <Text>{/* /=faltu ka  changes */}</Text>
                 </Text>
               </View>
               <View style={styles.dateRow}>
