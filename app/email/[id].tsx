@@ -1,3 +1,5 @@
+import ActionSelector from "@/components/ui/ActionSelector";
+import RemarksSection from "@/components/ui/RemarkSelector";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -27,6 +29,7 @@ export default function EmailClientDetails() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Add Remark State
+  
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
 
@@ -56,7 +59,9 @@ export default function EmailClientDetails() {
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
+
         {/* Back Arrow Icon */}
+
         <Pressable
           onPress={() => router.back()}
           style={{
@@ -83,6 +88,7 @@ export default function EmailClientDetails() {
         </Text>
 
         {/* Details Table */}
+
         <View
           style={[styles.table, darkMode && { backgroundColor: "#23262F" }]}
         >
@@ -110,7 +116,9 @@ export default function EmailClientDetails() {
             darkMode={darkMode}
           />
           <Row label="Date" value={client.date} darkMode={darkMode} />{" "}
+
           {/* Changed line */}
+
           <Row
             label="Address"
             value={client.address}
@@ -120,79 +128,27 @@ export default function EmailClientDetails() {
         </View>
 
         {/* Remarks Section */}
-        <View style={styles.remarksHeaderRow}>
-          <Text style={[styles.remarksHeader, darkMode && { color: "#fff" }]}>
-            Remarks
-          </Text>
-          <TouchableOpacity
-            style={styles.addBtn}
-            onPress={() => setAddRemarkVisible(true)}
-          >
-            <Text style={styles.addBtnText}>ADD</Text>
-          </TouchableOpacity>
-        </View>
-        <View
-          style={[
-            styles.remarksTable,
-            darkMode && { backgroundColor: "#23262F" },
-          ]}
-        >
-          {client.remarks.map((remark, idx) => (
-            <View key={idx} style={styles.remarksRow}>
-              <Text style={styles.remarksDate}>{remark.date}</Text>
-              <Text style={styles.remarksText}>{remark.text}</Text>
-            </View>
-          ))}
-        </View>
+
+        <RemarksSection
+          remarks={client.remarks}
+          onAddPress={() => setAddRemarkVisible(true)}
+          darkMode={darkMode}
+        />
+
 
         {/* Action Section */}
-        <View style={styles.actionSection}>
-          <TouchableOpacity
-            style={{ flexDirection: "row", alignItems: "center" }}
-            onPress={() => setDropdownOpen((open) => !open)}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.actionLabel}>
-              {selectedAction ? selectedAction : "ACTION"}
-            </Text>
-            <Text style={styles.actionArrow}>{dropdownOpen ? "▲" : "▼"}</Text>
-          </TouchableOpacity>
-        </View>
-        {dropdownOpen && (
-          <View
-            style={[
-              styles.dropdown,
-              darkMode && { backgroundColor: "#23262F", borderColor: "#444" },
-            ]}
-          >
-            {actions.map((action, idx) => (
-              <TouchableOpacity
-                key={action}
-                style={[
-                  styles.dropdownItem,
-                  selectedAction === action && styles.dropdownItemSelected,
-                ]}
-                onPress={() => {
-                  setSelectedAction(action);
-                  setDropdownOpen(false);
-                }}
-              >
-                <Text
-                  style={[
-                    styles.dropdownItemText,
-                    darkMode && { color: "#fff" },
-                    selectedAction === action &&
-                      styles.dropdownItemTextSelected,
-                  ]}
-                >
-                  {action}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
+
+        <ActionSelector
+          selectedAction={selectedAction}
+          actions={actions}
+          dropdownOpen={dropdownOpen}
+          setDropdownOpen={setDropdownOpen}
+          setSelectedAction={setSelectedAction}
+          darkMode={darkMode}
+        />
 
         {/* Buttons */}
+
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
             <Text style={styles.saveBtnText}>SAVE</Text>
@@ -211,6 +167,7 @@ export default function EmailClientDetails() {
       </ScrollView>
 
       {/* Add Remark Popup */}
+
       <Modal
         visible={addRemarkVisible}
         transparent
@@ -268,6 +225,7 @@ export default function EmailClientDetails() {
 }
 
 // Table row component
+
 type RowProps = {
   label: string;
   value: string;

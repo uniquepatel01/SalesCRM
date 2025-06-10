@@ -16,6 +16,9 @@ import {
 import { useTheme } from "../../ThemeContext";
 import { outOfStationClients } from "../../data/outOfStationClientsData";
 
+import RemarksSection from "@/components/ui/RemarkSelector";
+import ActionSelector from "@/components/ui/ActionSelector";
+
 export default function OutOfStationClients() {
   const { id } = useLocalSearchParams();
   const client = outOfStationClients[Number(id)];
@@ -57,19 +60,23 @@ export default function OutOfStationClients() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Back Arrow Icon */}
-                <Pressable
-                  onPress={() => router.back()}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 10,
-                    zIndex: 100,
-                    backgroundColor: "transparent",
-                    padding: 4,
-                  }}
-                >
-                  <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
-                </Pressable>
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 10,
+            zIndex: 100,
+            backgroundColor: "transparent",
+            padding: 4,
+          }}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#fff" : "#000"}
+          />
+        </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
           Out Of Station Client
         </Text>
@@ -119,77 +126,21 @@ export default function OutOfStationClients() {
         </View>
 
         {/* Remarks Section */}
-        <View style={styles.remarksHeaderRow}>
-          <Text style={[styles.remarksHeader, darkMode && { color: "#fff" }]}>
-            Remarks
-          </Text>
-          <TouchableOpacity
-            style={styles.addBtn}
-            onPress={() => setAddRemarkVisible(true)}
-          >
-            <Text style={styles.addBtnText}>ADD</Text>
-          </TouchableOpacity>
-        </View>
-        <View
-          style={[
-            styles.remarksTable,
-            darkMode && { backgroundColor: "#23262F" },
-          ]}
-        >
-          {client.remarks.map((remark, idx) => (
-            <View key={idx} style={styles.remarksRow}>
-              <Text style={styles.remarksDate}>{remark.date}</Text>
-              <Text style={styles.remarksText}>{remark.text}</Text>
-            </View>
-          ))}
-        </View>
+        <RemarksSection
+          remarks={client.remarks}
+          onAddPress={() => setAddRemarkVisible(true)}
+          darkMode={darkMode}
+        />
 
         {/* Action Section */}
-        <View style={styles.actionSection}>
-          <TouchableOpacity
-            style={{ flexDirection: "row", alignItems: "center" }}
-            onPress={() => setDropdownOpen((open) => !open)}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.actionLabel}>
-              {selectedAction ? selectedAction : "ACTION"}
-            </Text>
-            <Text style={styles.actionArrow}>{dropdownOpen ? "▲" : "▼"}</Text>
-          </TouchableOpacity>
-        </View>
-        {dropdownOpen && (
-          <View
-            style={[
-              styles.dropdown,
-              darkMode && { backgroundColor: "#23262F", borderColor: "#444" },
-            ]}
-          >
-            {actions.map((action, idx) => (
-              <TouchableOpacity
-                key={action}
-                style={[
-                  styles.dropdownItem,
-                  selectedAction === action && styles.dropdownItemSelected,
-                ]}
-                onPress={() => {
-                  setSelectedAction(action);
-                  setDropdownOpen(false);
-                }}
-              >
-                <Text
-                  style={[
-                    styles.dropdownItemText,
-                    darkMode && { color: "#fff" },
-                    selectedAction === action &&
-                      styles.dropdownItemTextSelected,
-                  ]}
-                >
-                  {action}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
+<ActionSelector
+  selectedAction={selectedAction}
+  actions={actions}
+  dropdownOpen={dropdownOpen}
+  setDropdownOpen={setDropdownOpen}
+  setSelectedAction={setSelectedAction}
+  darkMode={darkMode}
+/>
 
         {/* Buttons */}
         <View style={styles.buttonRow}>
