@@ -108,11 +108,6 @@ export default function BusyClientDetails() {
             darkMode={darkMode}
           />
           <Row
-            label="Demo Taken"
-            value={client.demoTaken}
-            darkMode={darkMode}
-          />
-          <Row
             label="Address"
             value={client.address}
             darkMode={darkMode}
@@ -121,6 +116,7 @@ export default function BusyClientDetails() {
         </View>
 
         {/* Remarks Section */}
+        
         <RemarksSection
           remarks={client.remarks}
           onAddPress={() => setAddRemarkVisible(true)}
@@ -128,6 +124,7 @@ export default function BusyClientDetails() {
         />
 
        {/* Action Button */}
+
         <ActionSelector
           selectedAction={selectedAction}
           actions={actions}
