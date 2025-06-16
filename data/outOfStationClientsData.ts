@@ -1,4 +1,4 @@
-export type BusyClient = {
+export type OutOfStationClient = {
   company: string;
   name: string;
   days: number;
@@ -16,7 +16,7 @@ export type BusyClient = {
   action: string;
 };
 
-export const busyClients: BusyClient[] = [
+export const outOfStationClients: OutOfStationClient[] = [
   {
     company: "START EXPORTER",
     name: "Manish Gupta",
@@ -41,6 +41,7 @@ export const busyClients: BusyClient[] = [
       "Call Me Later",
       "Not interested",
       "Out Of Station",
+      "Email",
     ],
     action: "",
   },
@@ -65,6 +66,7 @@ export const busyClients: BusyClient[] = [
       "Call Me Later",
       "Not interested",
       "Out Of Station",
+      "Email",
     ],
     action: "",
   },
@@ -137,6 +139,7 @@ export const busyClients: BusyClient[] = [
       "Call Me Later",
       "Not interested",
       "Out Of Station",
+      "Email",
     ],
     action: "",
   },
@@ -161,6 +164,7 @@ export const busyClients: BusyClient[] = [
       "Call Me Later",
       "Not interested",
       "Out Of Station",
+      "Email",
     ],
     action: "",
   },
@@ -184,6 +188,7 @@ export const busyClients: BusyClient[] = [
       "Future Client",
       "Call Me Later",
       "Not interested",
+      "Out Of Station",
       "Email",
     ],
     action: "",

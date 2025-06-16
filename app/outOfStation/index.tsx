@@ -16,7 +16,7 @@ import {
   outOfStationClients,
 } from "../../data/outOfStationClientsData";
 
-export default function OutOfStationClients() {
+export default function OutOfStationScreen() {
   const { darkMode } = useTheme();
 
   const handlePress = (client: OutOfStationClient, idx: number) => {
@@ -29,27 +29,31 @@ export default function OutOfStationClients() {
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
-            {/* Back Arrow Icon */}
-            <Pressable
-              onPress={() => router.back()}
-              style={{
-                position: "absolute",
-                top: 10,
-                left: 10,
-                zIndex: 100,
-                backgroundColor: "transparent",
-                padding: 4,
-              }}
-            >
-              <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
-            </Pressable>
+      {/* Back Arrow Icon */}
+      <Pressable
+        onPress={() => router.back()}
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 10,
+          zIndex: 100,
+          backgroundColor: "transparent",
+          padding: 4,
+        }}
+      >
+        <Ionicons
+          name="arrow-back"
+          size={28}
+          color={darkMode ? "#fff" : "#000"}
+        />
+      </Pressable>
       <Text
         style={[
           styles.sectionTitle,
           darkMode && { color: "#fff", backgroundColor: "#181A20" },
         ]}
       >
-        Out of Station
+        OUT OF STATION CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
         {outOfStationClients.map((client, idx) => (
@@ -61,36 +65,35 @@ export default function OutOfStationClients() {
             <View
               style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
             >
-              <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
+              <Text style={[styles.company, darkMode && { color: "#818CF8" }]}>
                 {client.company}
               </Text>
               <View style={styles.row}>
-                <Text style={[styles.label, darkMode && { color: "#fff" }]}>
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {client.name}
-                  </Text>
+                <Text style={[styles.value, darkMode && { color: "#fff" }]}>
+                  {client.name}
                 </Text>
                 <Text
                   style={[
-                    styles.label,
+                    styles.value,
                     { marginLeft: 16 },
                     darkMode && { color: "#fff" },
                   ]}
                 >
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {client.mobile}
-                  </Text>
+                  {client.mobile}
+                  <Text>{/* /=faltu ka  changes */}</Text>
                 </Text>
               </View>
               <View style={styles.dateRow}>
                 <View
                   style={[
                     styles.dateBadge,
-                    darkMode && { backgroundColor: "#E94444" },
+                    darkMode
+                      ? { backgroundColor: "#FBCFE8" }
+                      : { backgroundColor: "#FBCFE8" },
                   ]}
                 >
-                  <Text style={[styles.value, { color: "white" }]}>
-                    {client.demoTaken}
+                  <Text style={[styles.value, { color: "#000" }]}>
+                    {client.date}
                   </Text>
                 </View>
               </View>
@@ -165,7 +168,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   dateBadge: {
-    backgroundColor: "red",
+    backgroundColor: "#FFD6D6", // default soft red
     borderRadius: 50,
     paddingHorizontal: 12,
     paddingVertical: 4,
