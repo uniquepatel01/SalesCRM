@@ -4,6 +4,7 @@ import { Linking, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, 
 import { useTheme } from "../../ThemeContext";
 import { convertedClients } from "../../data/convertedClientsData";
 import { Ionicons } from "@expo/vector-icons";
+import RemarksSection from "@/components/ui/RemarkSelector";
 
 export default function ConvertedClientDetails() {
   const { id } = useLocalSearchParams();
@@ -97,26 +98,11 @@ export default function ConvertedClientDetails() {
         </View>
 
         {/* Remarks Section */}
-        <View style={styles.remarksHeaderRow}>
-          <Text style={[
-            styles.remarksHeader,
-            darkMode && { color: "#fff" }
-          ]}>Remarks</Text>
-          <TouchableOpacity style={styles.addBtn} onPress={() => setAddRemarkVisible(true)}>
-            <Text style={styles.addBtnText}>ADD</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={[
-          styles.remarksTable,
-          darkMode && { backgroundColor: "#23262F" }
-        ]}>
-          {client.remarks.map((remark, idx) => (
-            <View key={idx} style={styles.remarksRow}>
-              <Text style={styles.remarksDate}>{remark.date}</Text>
-              <Text style={styles.remarksText}>{remark.text}</Text>
-            </View>
-          ))}
-        </View>
+        <RemarksSection
+          remarks={client.remarks}
+          onAddPress={() => setAddRemarkVisible(true)}
+          darkMode={darkMode}
+        />
 
 
 
