@@ -53,7 +53,7 @@ export default function OutOfStationScreen() {
           darkMode && { color: "#fff", backgroundColor: "#181A20" },
         ]}
       >
-        Out Of Station Clients
+        OUT OF STATION CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
         {outOfStationClients.map((client, idx) => (
@@ -69,21 +69,18 @@ export default function OutOfStationScreen() {
                 {client.company}
               </Text>
               <View style={styles.row}>
-                <Text style={[styles.label, darkMode && { color: "#fff" }]}>
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {client.name}
-                  </Text>
+                <Text style={[styles.value, darkMode && { color: "#fff" }]}>
+                  {client.name}
                 </Text>
                 <Text
                   style={[
-                    styles.label,
+                    styles.value,
                     { marginLeft: 16 },
                     darkMode && { color: "#fff" },
                   ]}
                 >
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {client.mobile}
-                  </Text>
+                  {client.mobile}
+                  <Text>{/* /=faltu ka  changes */}</Text>
                 </Text>
               </View>
               <View style={styles.dateRow}>
@@ -91,16 +88,11 @@ export default function OutOfStationScreen() {
                   style={[
                     styles.dateBadge,
                     darkMode
-                      ? { backgroundColor: "#FBCFE8" } // soft red for dark mode
-                      : { backgroundColor: "#FBCFE8" }, // soft red for light mode
+                      ? { backgroundColor: "#FBCFE8" }
+                      : { backgroundColor: "#FBCFE8" },
                   ]}
                 >
-                  <Text
-                    style={[
-                      styles.value,
-                      { color: "#000" }, // white text for both modes
-                    ]}
-                  >
+                  <Text style={[styles.value, { color: "#000" }]}>
                     {client.date}
                   </Text>
                 </View>

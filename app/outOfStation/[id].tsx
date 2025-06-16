@@ -1,3 +1,6 @@
+import ActionSelector from "@/components/ui/ActionSelector";
+import RemarksSection from "@/components/ui/RemarkSelector";
+
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -15,8 +18,6 @@ import {
 } from "react-native";
 import { useTheme } from "../../ThemeContext";
 import { outOfStationClients } from "../../data/outOfStationClientsData";
-
-import RemarksSection from "@/components/ui/RemarkSelector";
 
 export default function OutOfStationClientDetails() {
   const { id } = useLocalSearchParams();
@@ -107,7 +108,7 @@ export default function OutOfStationClientDetails() {
             value={client.altMobile}
             darkMode={darkMode}
           />
-          <Row label="Date" value={client.date} darkMode={darkMode} />
+
           <Row
             label="Address"
             value={client.address}
@@ -117,58 +118,23 @@ export default function OutOfStationClientDetails() {
         </View>
 
         {/* Remarks Section */}
+
         <RemarksSection
           remarks={client.remarks}
           onAddPress={() => setAddRemarkVisible(true)}
           darkMode={darkMode}
         />
 
-        {/* Action Section */}
-        <View style={styles.actionSection}>
-          <TouchableOpacity
-            style={{ flexDirection: "row", alignItems: "center" }}
-            onPress={() => setDropdownOpen((open) => !open)}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.actionLabel}>
-              {selectedAction ? selectedAction : "ACTION"}
-            </Text>
-            <Text style={styles.actionArrow}>{dropdownOpen ? "▲" : "▼"}</Text>
-          </TouchableOpacity>
-        </View>
-        {dropdownOpen && (
-          <View
-            style={[
-              styles.dropdown,
-              darkMode && { backgroundColor: "#23262F", borderColor: "#444" },
-            ]}
-          >
-            {actions.map((action, idx) => (
-              <TouchableOpacity
-                key={action}
-                style={[
-                  styles.dropdownItem,
-                  selectedAction === action && styles.dropdownItemSelected,
-                ]}
-                onPress={() => {
-                  setSelectedAction(action);
-                  setDropdownOpen(false);
-                }}
-              >
-                <Text
-                  style={[
-                    styles.dropdownItemText,
-                    darkMode && { color: "#fff" },
-                    selectedAction === action &&
-                      styles.dropdownItemTextSelected,
-                  ]}
-                >
-                  {action}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
+        {/* Action Button */}
+
+        <ActionSelector
+          selectedAction={selectedAction}
+          actions={actions}
+          dropdownOpen={dropdownOpen}
+          setDropdownOpen={setDropdownOpen}
+          setSelectedAction={setSelectedAction}
+          darkMode={darkMode}
+        />
 
         {/* Buttons */}
         <View style={styles.buttonRow}>
