@@ -16,7 +16,7 @@ import {
 import { useTheme } from "../../ThemeContext";
 import { outOfStationClients } from "../../data/outOfStationClientsData";
 
-export default function OutOfStationClients() {
+export default function OutOfStationClientDetails() {
   const { id } = useLocalSearchParams();
   const client = outOfStationClients[Number(id)];
   const { darkMode } = useTheme();
@@ -25,12 +25,8 @@ export default function OutOfStationClients() {
     client.action || ""
   );
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  // Add Remark State
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
-
-  // For re-rendering after adding a remark
   const [, forceUpdate] = useState({});
 
   const actions = client.statuses;
@@ -47,7 +43,7 @@ export default function OutOfStationClients() {
       client.remarks.push({ date: dateStr, text: remarkInput });
       setRemarkInput("");
       setAddRemarkVisible(false);
-      forceUpdate({}); // force re-render
+      forceUpdate({});
     }
   };
 
@@ -57,21 +53,25 @@ export default function OutOfStationClients() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Back Arrow Icon */}
-                <Pressable
-                  onPress={() => router.back()}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 10,
-                    zIndex: 100,
-                    backgroundColor: "transparent",
-                    padding: 4,
-                  }}
-                >
-                  <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
-                </Pressable>
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 10,
+            zIndex: 100,
+            backgroundColor: "transparent",
+            padding: 4,
+          }}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#fff" : "#000"}
+          />
+        </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
-          Out Of Station Client
+          OUT OF STATION CLIENTS
         </Text>
 
         <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
@@ -105,11 +105,7 @@ export default function OutOfStationClients() {
             value={client.altMobile}
             darkMode={darkMode}
           />
-          <Row
-            label="Demo Taken"
-            value={client.demoTaken}
-            darkMode={darkMode}
-          />
+          <Row label="Date" value={client.date} darkMode={darkMode} />
           <Row
             label="Address"
             value={client.address}
@@ -164,7 +160,7 @@ export default function OutOfStationClients() {
               darkMode && { backgroundColor: "#23262F", borderColor: "#444" },
             ]}
           >
-            {actions.map((action, idx) => (
+            {actions.map((action) => (
               <TouchableOpacity
                 key={action}
                 style={[
@@ -250,10 +246,13 @@ export default function OutOfStationClients() {
                 <Text style={styles.saveBtnText}>ADD</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.callBtn, { flex: 1, marginLeft: 8 }]}
+                style={[
+                  styles.callBtn,
+                  { flex: 1, marginLeft: 8, backgroundColor: "red" },
+                ]}
                 onPress={() => setAddRemarkVisible(false)}
               >
-                <Text style={styles.callBtnText}>CANCEL</Text>
+                <Text style={[styles.callBtnText]}>CANCEL</Text>
               </TouchableOpacity>
             </View>
           </View>
