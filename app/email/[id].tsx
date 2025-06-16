@@ -1,5 +1,6 @@
 import ActionSelector from "@/components/ui/ActionSelector";
 import RemarksSection from "@/components/ui/RemarkSelector";
+
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -27,13 +28,8 @@ export default function EmailClientDetails() {
     client.action || ""
   );
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  // Add Remark State
-  
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
-
-  // For re-rendering after adding a remark
   const [, forceUpdate] = useState({});
 
   const actions = client.statuses;
@@ -50,7 +46,7 @@ export default function EmailClientDetails() {
       client.remarks.push({ date: dateStr, text: remarkInput });
       setRemarkInput("");
       setAddRemarkVisible(false);
-      forceUpdate({}); // force re-render
+      forceUpdate({});
     }
   };
 
@@ -59,9 +55,7 @@ export default function EmailClientDetails() {
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
-
         {/* Back Arrow Icon */}
-
         <Pressable
           onPress={() => router.back()}
           style={{
@@ -80,7 +74,7 @@ export default function EmailClientDetails() {
           />
         </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
-          EMAIL CLIENTS
+          Email CLIENTS
         </Text>
 
         <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
@@ -88,7 +82,6 @@ export default function EmailClientDetails() {
         </Text>
 
         {/* Details Table */}
-
         <View
           style={[styles.table, darkMode && { backgroundColor: "#23262F" }]}
         >
@@ -115,9 +108,6 @@ export default function EmailClientDetails() {
             value={client.altMobile}
             darkMode={darkMode}
           />
-          <Row label="Date" value={client.date} darkMode={darkMode} />{" "}
-
-          {/* Changed line */}
 
           <Row
             label="Address"
@@ -135,8 +125,7 @@ export default function EmailClientDetails() {
           darkMode={darkMode}
         />
 
-
-        {/* Action Section */}
+        {/* Action Button */}
 
         <ActionSelector
           selectedAction={selectedAction}
@@ -148,7 +137,6 @@ export default function EmailClientDetails() {
         />
 
         {/* Buttons */}
-
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
             <Text style={styles.saveBtnText}>SAVE</Text>
@@ -167,7 +155,6 @@ export default function EmailClientDetails() {
       </ScrollView>
 
       {/* Add Remark Popup */}
-
       <Modal
         visible={addRemarkVisible}
         transparent
@@ -225,7 +212,6 @@ export default function EmailClientDetails() {
 }
 
 // Table row component
-
 type RowProps = {
   label: string;
   value: string;
