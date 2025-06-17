@@ -9,7 +9,7 @@ export type NotInterestedClient = {
   email: string;
   mobile: string;
   altMobile: string;
-  date: string; // <-- changed from demoTaken/converted to date
+  date: string;
   address: string;
   remarks: { date: string; text: string }[];
   statuses: string[];
