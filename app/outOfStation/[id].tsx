@@ -1,3 +1,5 @@
+import ActionSelector from "@/components/ui/ActionSelector";
+import RemarksSection from "@/components/ui/RemarkSelector";
 
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -17,7 +19,7 @@ import {
 import { useTheme } from "../../ThemeContext";
 import { outOfStationClients } from "../../data/outOfStationClientsData";
 
-export default function OutOfStationClients() {
+export default function OutOfStationClientDetails() {
   const { id } = useLocalSearchParams();
   const client = outOfStationClients[Number(id)];
   const { darkMode } = useTheme();
@@ -47,14 +49,6 @@ export default function OutOfStationClients() {
       forceUpdate({});
     }
   };
-
-  if (!client) {
-    return (
-      <SafeAreaView>
-        <Text>Client not found.</Text>
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView
