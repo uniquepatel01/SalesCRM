@@ -19,7 +19,11 @@ import {
 import { useTheme } from "../../ThemeContext";
 import { outOfStationClients } from "../../data/outOfStationClientsData";
 
-export default function OutOfStationClientDetails() {
+import RemarksSection from "@/components/ui/RemarkSelector";
+import ActionSelector from "@/components/ui/ActionSelector";
+
+export default function OutOfStationClients() {
+
   const { id } = useLocalSearchParams();
   const client = outOfStationClients[Number(id)];
   const { darkMode } = useTheme();
