@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   dateBadge: {
-    backgroundColor: "#FFD6D6", // default soft red
+    backgroundColor: "#FFD6D6",
     borderRadius: 50,
     paddingHorizontal: 12,
     paddingVertical: 4,
