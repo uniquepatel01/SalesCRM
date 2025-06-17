@@ -1,5 +1,6 @@
 import ActionSelector from "@/components/ui/ActionSelector";
 import RemarksSection from "@/components/ui/RemarkSelector";
+
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -27,12 +28,8 @@ export default function NotInterestedClientDetails() {
     client.action || ""
   );
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  // Add Remark State
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
-
-  // For re-rendering after adding a remark
   const [, forceUpdate] = useState({});
 
   const actions = client.statuses;
@@ -49,7 +46,7 @@ export default function NotInterestedClientDetails() {
       client.remarks.push({ date: dateStr, text: remarkInput });
       setRemarkInput("");
       setAddRemarkVisible(false);
-      forceUpdate({}); // force re-render
+      forceUpdate({});
     }
   };
 
@@ -70,10 +67,14 @@ export default function NotInterestedClientDetails() {
             padding: 4,
           }}
         >
-          <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#fff" : "#000"}
+          />
         </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
-          Not Interested Client
+          NOT INTERESTED CLIENTS
         </Text>
 
         <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
@@ -107,11 +108,7 @@ export default function NotInterestedClientDetails() {
             value={client.altMobile}
             darkMode={darkMode}
           />
-          <Row
-            label="Demo Taken"
-            value={client.demoTaken}
-            darkMode={darkMode}
-          />
+
           <Row
             label="Address"
             value={client.address}
@@ -121,13 +118,15 @@ export default function NotInterestedClientDetails() {
         </View>
 
         {/* Remarks Section */}
+
         <RemarksSection
           remarks={client.remarks}
           onAddPress={() => setAddRemarkVisible(true)}
           darkMode={darkMode}
         />
 
-       {/* Action Button */}
+        {/* Action Button */}
+
         <ActionSelector
           selectedAction={selectedAction}
           actions={actions}
@@ -136,8 +135,6 @@ export default function NotInterestedClientDetails() {
           setSelectedAction={setSelectedAction}
           darkMode={darkMode}
         />
-
-
 
         {/* Buttons */}
         <View style={styles.buttonRow}>
@@ -198,10 +195,13 @@ export default function NotInterestedClientDetails() {
                 <Text style={styles.saveBtnText}>ADD</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.callBtn, { flex: 1, marginLeft: 8 }]}
+                style={[
+                  styles.callBtn,
+                  { flex: 1, marginLeft: 8, backgroundColor: "red" },
+                ]}
                 onPress={() => setAddRemarkVisible(false)}
               >
-                <Text style={styles.callBtnText}>CANCEL</Text>
+                <Text style={[styles.callBtnText]}>CANCEL</Text>
               </TouchableOpacity>
             </View>
           </View>
