@@ -1,3 +1,6 @@
+import ActionSelector from "@/components/ui/ActionSelector";
+import RemarksSection from "@/components/ui/RemarkSelector";
+
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
@@ -15,10 +18,12 @@ import {
 } from "react-native";
 import { useTheme } from "../../ThemeContext";
 import { outOfStationClients } from "../../data/outOfStationClientsData";
+
 import RemarksSection from "@/components/ui/RemarkSelector";
 import ActionSelector from "@/components/ui/ActionSelector";
 
 export default function OutOfStationClients() {
+
   const { id } = useLocalSearchParams();
   const client = outOfStationClients[Number(id)];
   const { darkMode } = useTheme();
@@ -27,12 +32,8 @@ export default function OutOfStationClients() {
     client.action || ""
   );
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  // Add Remark State
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
-
-  // For re-rendering after adding a remark
   const [, forceUpdate] = useState({});
 
   const actions = client.statuses;
@@ -49,7 +50,7 @@ export default function OutOfStationClients() {
       client.remarks.push({ date: dateStr, text: remarkInput });
       setRemarkInput("");
       setAddRemarkVisible(false);
-      forceUpdate({}); // force re-render
+      forceUpdate({});
     }
   };
 
@@ -77,7 +78,7 @@ export default function OutOfStationClients() {
           />
         </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
-          Out Of Station Client
+          OUT OF STATION CLIENTS
         </Text>
 
         <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
@@ -121,21 +122,23 @@ export default function OutOfStationClients() {
         </View>
 
         {/* Remarks Section */}
+
         <RemarksSection
           remarks={client.remarks}
           onAddPress={() => setAddRemarkVisible(true)}
           darkMode={darkMode}
         />
 
-        {/* Action Section */}
-<ActionSelector
-  selectedAction={selectedAction}
-  actions={actions}
-  dropdownOpen={dropdownOpen}
-  setDropdownOpen={setDropdownOpen}
-  setSelectedAction={setSelectedAction}
-  darkMode={darkMode}
-/>
+        {/* Action Button */}
+
+        <ActionSelector
+          selectedAction={selectedAction}
+          actions={actions}
+          dropdownOpen={dropdownOpen}
+          setDropdownOpen={setDropdownOpen}
+          setSelectedAction={setSelectedAction}
+          darkMode={darkMode}
+        />
 
         {/* Buttons */}
         <View style={styles.buttonRow}>
@@ -196,10 +199,13 @@ export default function OutOfStationClients() {
                 <Text style={styles.saveBtnText}>ADD</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.callBtn, { flex: 1, marginLeft: 8 }]}
+                style={[
+                  styles.callBtn,
+                  { flex: 1, marginLeft: 8, backgroundColor: "red" },
+                ]}
                 onPress={() => setAddRemarkVisible(false)}
               >
-                <Text style={styles.callBtnText}>CANCEL</Text>
+                <Text style={[styles.callBtnText]}>CANCEL</Text>
               </TouchableOpacity>
             </View>
           </View>

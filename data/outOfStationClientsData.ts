@@ -1,4 +1,6 @@
+
 export type outOfStationClient = {
+
   company: string;
   name: string;
   days: number;
@@ -16,7 +18,9 @@ export type outOfStationClient = {
   action: string;
 };
 
+
 export const outOfStationClients: outOfStationClient[] = [
+
   {
     company: "START EXPORTER",
     name: "Manish Gupta",
@@ -41,6 +45,7 @@ export const outOfStationClients: outOfStationClient[] = [
       "Call Me Later",
       "Not interested",
       "Out Of Station",
+      "Email",
     ],
     action: "",
   },
@@ -65,6 +70,7 @@ export const outOfStationClients: outOfStationClient[] = [
       "Call Me Later",
       "Not interested",
       "Out Of Station",
+      "Email",
     ],
     action: "",
   },
@@ -137,6 +143,7 @@ export const outOfStationClients: outOfStationClient[] = [
       "Call Me Later",
       "Not interested",
       "Out Of Station",
+      "Email",
     ],
     action: "",
   },
@@ -161,6 +168,7 @@ export const outOfStationClients: outOfStationClient[] = [
       "Call Me Later",
       "Not interested",
       "Out Of Station",
+      "Email",
     ],
     action: "",
   },
@@ -184,6 +192,7 @@ export const outOfStationClients: outOfStationClient[] = [
       "Future Client",
       "Call Me Later",
       "Not interested",
+      "Out Of Station",
       "Email",
     ],
     action: "",

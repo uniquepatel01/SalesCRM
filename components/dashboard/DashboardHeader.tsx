@@ -162,9 +162,8 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
           <Text style={styles.buttonText}>Fetch Lead</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.leadBtn}>
-          <Text style={styles.leadCompanyName}>
-            {" "}
-            University college Company
+          <Text style={styles.leadCompanyName} >
+          ForexBlues.com
           </Text>
           <Text
             style={{
