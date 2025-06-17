@@ -1,4 +1,6 @@
-export type OutOfStationClient = {
+
+export type outOfStationClient = {
+
   company: string;
   name: string;
   days: number;
@@ -16,7 +18,9 @@ export type OutOfStationClient = {
   action: string;
 };
 
-export const outOfStationClients: OutOfStationClient[] = [
+
+export const outOfStationClients: outOfStationClient[] = [
+
   {
     company: "START EXPORTER",
     name: "Manish Gupta",
