@@ -12,14 +12,13 @@ import {
 } from "react-native";
 import { useTheme } from "../../ThemeContext";
 import {
-  OutOfStationClient,
-  outOfStationClients,
+  outOfStationClients,outOfStationClient
 } from "../../data/outOfStationClientsData";
 
 export default function OutOfStationClients() {
   const { darkMode } = useTheme();
 
-  const handlePress = (client: OutOfStationClient, idx: number) => {
+  const handlePress = (client: outOfStationClient, idx: number) => {
     router.push({
       pathname: "/outOfStation/[id]",
       params: { id: idx.toString() },
@@ -89,9 +88,6 @@ export default function OutOfStationClients() {
                     darkMode && { backgroundColor: "#E94444" },
                   ]}
                 >
-                  <Text style={[styles.value, { color: "white" }]}>
-                    {client.demoTaken}
-                  </Text>
                 </View>
               </View>
             </View>

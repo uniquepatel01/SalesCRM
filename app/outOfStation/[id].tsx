@@ -15,7 +15,6 @@ import {
 } from "react-native";
 import { useTheme } from "../../ThemeContext";
 import { outOfStationClients } from "../../data/outOfStationClientsData";
-
 import RemarksSection from "@/components/ui/RemarkSelector";
 import ActionSelector from "@/components/ui/ActionSelector";
 
@@ -112,11 +111,7 @@ export default function OutOfStationClients() {
             value={client.altMobile}
             darkMode={darkMode}
           />
-          <Row
-            label="Demo Taken"
-            value={client.demoTaken}
-            darkMode={darkMode}
-          />
+
           <Row
             label="Address"
             value={client.address}
