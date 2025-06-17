@@ -3,13 +3,13 @@ import { useEffect } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
 export default function SplashScreen() {
-  const navigation = useNavigation();
+  const navigation: any = useNavigation();
 
   useEffect(() => {
     // Simulate a loading process like fetching resources
     const timeout = setTimeout(() => {
       // Replace 'Home' with your main screen route name
-      navigation.replace('auth/login');
+      navigation.navigate('auth/login');
     }, 2000);
     
     return () => clearTimeout(timeout);
@@ -19,7 +19,7 @@ export default function SplashScreen() {
     <View style={styles.container}>
       {/* Replace with your own image or remove if not needed */}
       <Image 
-        source={require('../../assets/images/crm-logo.png')}
+        source={require('../assets/images/crm-logo.png')}
         style={styles.logo}
         resizeMode="contain"
       />
