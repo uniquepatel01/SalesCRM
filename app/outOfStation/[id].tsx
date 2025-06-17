@@ -19,11 +19,7 @@ import {
 import { useTheme } from "../../ThemeContext";
 import { outOfStationClients } from "../../data/outOfStationClientsData";
 
-import RemarksSection from "@/components/ui/RemarkSelector";
-import ActionSelector from "@/components/ui/ActionSelector";
-
 export default function OutOfStationClients() {
-
   const { id } = useLocalSearchParams();
   const client = outOfStationClients[Number(id)];
   const { darkMode } = useTheme();
@@ -53,6 +49,14 @@ export default function OutOfStationClients() {
       forceUpdate({});
     }
   };
+
+  if (!client) {
+    return (
+      <SafeAreaView>
+        <Text>Client not found.</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView
