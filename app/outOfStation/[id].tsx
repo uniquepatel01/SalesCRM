@@ -1,5 +1,3 @@
-import ActionSelector from "@/components/ui/ActionSelector";
-import RemarksSection from "@/components/ui/RemarkSelector";
 
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
