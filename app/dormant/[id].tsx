@@ -1,10 +1,12 @@
 import ActionSelector from "@/components/ui/ActionSelector";
 import RemarksSection from "@/components/ui/RemarkSelector";
-import { useLocalSearchParams } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   Linking,
   Modal,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -51,11 +53,37 @@ export default function DormantClients() {
     }
   };
 
+  if (!client) {
+    return (
+      <SafeAreaView>
+        <Text>Client not found.</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Back Arrow Icon */}
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 10,
+            zIndex: 100,
+            backgroundColor: "transparent",
+            padding: 4,
+          }}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#fff" : "#000"}
+          />
+        </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
           Dormant Client
         </Text>
@@ -111,7 +139,7 @@ export default function DormantClients() {
           darkMode={darkMode}
         />
 
-       {/* Action Button */}
+        {/* Action Button */}
         <ActionSelector
           selectedAction={selectedAction}
           actions={actions}
