@@ -1,6 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import {
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -24,6 +26,24 @@ export default function DormantClients() {
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
+      {/* Back Arrow Icon */}
+      <Pressable
+        onPress={() => router.back()}
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 10,
+          zIndex: 100,
+          backgroundColor: "transparent",
+          padding: 4,
+        }}
+      >
+        <Ionicons
+          name="arrow-back"
+          size={28}
+          color={darkMode ? "#fff" : "#000"}
+        />
+      </Pressable>
       <Text
         style={[
           styles.sectionTitle,
