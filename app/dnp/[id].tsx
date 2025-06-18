@@ -1,8 +1,9 @@
+import ActionSelector from "@/components/ui/ActionSelector";
+import RemarksSection from "@/components/ui/RemarkSelector";
+
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import ActionSelector from "@/components/ui/ActionSelector";
-import RemarksSection from "@/components/ui/RemarkSelector";
 import {
   Linking,
   Modal,
@@ -16,21 +17,19 @@ import {
   View,
 } from "react-native";
 import { useTheme } from "../../ThemeContext";
-import { dnpClients } from "../../data/dnpClientsData";
+import { didNotPickClients } from "../../data/dnpClientsData";
 
-export default function DnpClientDetails() {
+export default function DidNotPickClientDetails() {
   const { id } = useLocalSearchParams();
-  const client = dnpClients[Number(id)];
+  const client = didNotPickClients[Number(id)];
   const { darkMode } = useTheme();
 
   const [selectedAction, setSelectedAction] = useState<string>(
     client.action || ""
   );
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
-
   const [, forceUpdate] = useState({});
 
   const actions = client.statuses;
@@ -56,6 +55,7 @@ export default function DnpClientDetails() {
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Back Arrow Icon */}
         <Pressable
           onPress={() => router.back()}
           style={{
@@ -74,13 +74,14 @@ export default function DnpClientDetails() {
           />
         </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
-          DNP CLIENTS
+          DID NOT PICK CLIENTS
         </Text>
 
         <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
           {client.company}
         </Text>
 
+        {/* Details Table */}
         <View
           style={[styles.table, darkMode && { backgroundColor: "#23262F" }]}
         >
@@ -107,7 +108,7 @@ export default function DnpClientDetails() {
             value={client.altMobile}
             darkMode={darkMode}
           />
-          <Row label="Date" value={client.date} darkMode={darkMode} />{" "}
+
           <Row
             label="Address"
             value={client.address}
@@ -117,13 +118,15 @@ export default function DnpClientDetails() {
         </View>
 
         {/* Remarks Section */}
+
         <RemarksSection
           remarks={client.remarks}
           onAddPress={() => setAddRemarkVisible(true)}
           darkMode={darkMode}
         />
 
-       {/* Action Button */}
+        {/* Action Button */}
+
         <ActionSelector
           selectedAction={selectedAction}
           actions={actions}
@@ -133,6 +136,7 @@ export default function DnpClientDetails() {
           darkMode={darkMode}
         />
 
+        {/* Buttons */}
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
             <Text style={styles.saveBtnText}>SAVE</Text>
@@ -150,6 +154,7 @@ export default function DnpClientDetails() {
         </View>
       </ScrollView>
 
+      {/* Add Remark Popup */}
       <Modal
         visible={addRemarkVisible}
         transparent
@@ -206,6 +211,7 @@ export default function DnpClientDetails() {
   );
 }
 
+// Table row component
 type RowProps = {
   label: string;
   value: string;

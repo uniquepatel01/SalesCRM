@@ -11,12 +11,12 @@ import {
   View,
 } from "react-native";
 import { useTheme } from "../../ThemeContext";
-import { DnpClient, dnpClients } from "../../data/dnpClientsData";
+import { DidNotPickClient, didNotPickClients } from "../../data/dnpClientsData";
 
-export default function DnpScreen() {
+export default function DidNotPickScreen() {
   const { darkMode } = useTheme();
 
-  const handlePress = (client: DnpClient, idx: number) => {
+  const handlePress = (client: DidNotPickClient, idx: number) => {
     router.push({
       pathname: "/dnp/[id]",
       params: { id: idx.toString() },
@@ -50,10 +50,10 @@ export default function DnpScreen() {
           darkMode && { color: "#fff", backgroundColor: "#181A20" },
         ]}
       >
-        Did Not Pick
+        DID NOT PICK CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {dnpClients.map((client, idx) => (
+        {didNotPickClients.map((client, idx) => (
           <TouchableOpacity
             key={idx}
             onPress={() => handlePress(client, idx)}
@@ -62,25 +62,22 @@ export default function DnpScreen() {
             <View
               style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
             >
-              <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
+              <Text style={[styles.company, darkMode && { color: "#818CF8" }]}>
                 {client.company}
               </Text>
               <View style={styles.row}>
-                <Text style={[styles.label, darkMode && { color: "#fff" }]}>
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {client.name}
-                  </Text>
+                <Text style={[styles.value, darkMode && { color: "#fff" }]}>
+                  {client.name}
                 </Text>
                 <Text
                   style={[
-                    styles.label,
+                    styles.value,
                     { marginLeft: 16 },
                     darkMode && { color: "#fff" },
                   ]}
                 >
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {client.mobile}
-                  </Text>
+                  {client.mobile}
+                  <Text>{/* /=faltu ka  changes */}</Text>
                 </Text>
               </View>
               <View style={styles.dateRow}>
@@ -88,16 +85,11 @@ export default function DnpScreen() {
                   style={[
                     styles.dateBadge,
                     darkMode
-                      ? { backgroundColor: "#FFB3B3" } // soft red for dark mode
-                      : { backgroundColor: "#FFD6D6" }, // soft red for light mode
+                      ? { backgroundColor: "#FBCFE8" }
+                      : { backgroundColor: "#FBCFE8" },
                   ]}
                 >
-                  <Text
-                    style={[
-                      styles.value,
-                      { color: "#000" }, // white text for both modes
-                    ]}
-                  >
+                  <Text style={[styles.value, { color: "#000" }]}>
                     {client.date}
                   </Text>
                 </View>

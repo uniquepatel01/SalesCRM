@@ -1,4 +1,4 @@
-export type DnpClient = {
+export type DidNotPickClient = {
   company: string;
   name: string;
   days: number;
@@ -16,7 +16,7 @@ export type DnpClient = {
   action: string;
 };
 
-export const dnpClients: DnpClient[] = [
+export const didNotPickClients: DidNotPickClient[] = [
   {
     company: "START EXPORTER",
     name: "Manish Gupta",
@@ -38,7 +38,6 @@ export const dnpClients: DnpClient[] = [
       "DNP",
       "Demo",
       "Busy",
-      "Email",
       "Future Client",
       "Call Me Later",
       "Not interested",
@@ -64,7 +63,6 @@ export const dnpClients: DnpClient[] = [
       "DNP",
       "Demo",
       "Busy",
-      "Email",
       "Future Client",
       "Call Me Later",
       "Not interested",
@@ -90,7 +88,6 @@ export const dnpClients: DnpClient[] = [
       "DNP",
       "Demo",
       "Busy",
-      "Email",
       "Future Client",
       "Call Me Later",
       "Not interested",
@@ -116,7 +113,6 @@ export const dnpClients: DnpClient[] = [
       "DNP",
       "Demo",
       "Busy",
-      "Email",
       "Future Client",
       "Call Me Later",
       "Not interested",
@@ -142,7 +138,6 @@ export const dnpClients: DnpClient[] = [
       "DNP",
       "Demo",
       "Busy",
-      "Email",
       "Future Client",
       "Call Me Later",
       "Not interested",
@@ -168,7 +163,6 @@ export const dnpClients: DnpClient[] = [
       "DNP",
       "Demo",
       "Busy",
-      "Email",
       "Future Client",
       "Call Me Later",
       "Not interested",
@@ -194,7 +188,6 @@ export const dnpClients: DnpClient[] = [
       "DNP",
       "Demo",
       "Busy",
-      "Email",
       "Future Client",
       "Call Me Later",
       "Not interested",
