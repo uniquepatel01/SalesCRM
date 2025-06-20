@@ -227,7 +227,9 @@ export default function AddLead() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setCities(data.data);
+        
+        setCities([...new Set(data.data.map((item: any) => item.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))] as string[]);
+        
         setCity("");
       })
       .finally(() => setLoadingCities(false));
