@@ -140,10 +140,8 @@ const dropdownModalStyles = StyleSheet.create({
 });
 
 export default function AddLead() {
+  const { darkMode } = useTheme();
 
-    const { darkMode } = useTheme();
-
-    
   // Dropdown states
   const [source, setSource] = useState("");
   const [businessType, setBusinessType] = useState("");
@@ -204,7 +202,11 @@ export default function AddLead() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setStates(data.data.states.map((item: any) => item.name));
+        setStates(
+          data.data.states.map((item: any) => {
+            return item.name;
+          })
+        );
         setState("");
         setCities([]);
         setCity("");
@@ -227,7 +229,16 @@ export default function AddLead() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setCities(data.data);
+        setCities(
+          Array.from(
+            new Set(
+              data.data.map((st: any) =>
+                st.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+              )
+            )
+          )
+        );
+
         setCity("");
       })
       .finally(() => setLoadingCities(false));
@@ -292,7 +303,10 @@ export default function AddLead() {
               <Picker.Item label="SMS" value="sms" />
               <Picker.Item label="Email" value="email" />
               <Picker.Item label="Social Media" value="socialmedia" />
-              <Picker.Item label="Digital Marketing" value="digital marketing" />
+              <Picker.Item
+                label="Digital Marketing"
+                value="digital marketing"
+              />
             </Picker>
           </View>
           <View style={styles.dropdownContainer}>
@@ -345,8 +359,14 @@ export default function AddLead() {
               <Picker.Item label="Drop an Email" value="drop an email" />
               <Picker.Item label="Not Interested" value="not interested" />
               <Picker.Item label="Busy unreachable" value="busy" />
-              <Picker.Item label="Wrong/Incorrect Number" value="Wrong/Incorrect number" />
-              <Picker.Item label="Already taking from others" value="already taking from others" />
+              <Picker.Item
+                label="Wrong/Incorrect Number"
+                value="Wrong/Incorrect number"
+              />
+              <Picker.Item
+                label="Already taking from others"
+                value="already taking from others"
+              />
               <Picker.Item label="Small Business" value="small business" />
               <Picker.Item label="Leave a comment" value="leave a comment" />
               <Picker.Item label="Did not pick" value="did not pick" />
@@ -390,8 +410,6 @@ export default function AddLead() {
               value={country}
               onSelect={(val) => {
                 setCountry(val);
-                setState("");
-                setCity("");
               }}
             />
           </View>
@@ -544,7 +562,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 1,
     color: "#111",
-    marginLeft:'30%'
+    marginLeft: "30%",
   },
   row: {
     flexDirection: "row",
