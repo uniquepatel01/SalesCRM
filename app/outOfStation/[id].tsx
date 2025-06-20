@@ -19,8 +19,7 @@ import {
 import { useTheme } from "../../ThemeContext";
 import { outOfStationClients } from "../../data/outOfStationClientsData";
 
-import RemarksSection from "@/components/ui/RemarkSelector";
-import ActionSelector from "@/components/ui/ActionSelector";
+
 
 export default function OutOfStationClients() {
 
