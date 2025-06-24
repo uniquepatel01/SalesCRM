@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { Moon, Plus, Search, Sun, User } from "lucide-react-native";
 import React, { useState } from "react";
 
+
 import {
   Alert,
   Modal,
@@ -149,6 +150,8 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
       </View>
 
       <View style={styles.buttonContainer}>
+
+        {/* fetch lead btn */}
         <TouchableOpacity
           style={[
             styles.customButton,
@@ -161,21 +164,16 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
         >
           <Text style={styles.buttonText}>Fetch Lead</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.leadBtn}>
+
+        {/* Company Name Box */}
+        <TouchableOpacity style={styles.leadBtn} onPress={() => router.push("./fetchLead")}>
           <Text style={styles.leadCompanyName} >
           ForexBlues.com
           </Text>
-          <Text
-            style={{
-              fontWeight: "semibold",
-              letterSpacing: 0.6,
-              fontSize: 17,
-              color: "#222",
-            }}
-          >
-            Manish Gupta
-          </Text>
+          
         </TouchableOpacity>
+
+
       </View>
       <View>
         <View
