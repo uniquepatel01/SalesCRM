@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { Moon, Plus, Search, Sun, User } from "lucide-react-native";
 import React, { useState } from "react";
 
+
 import {
   Alert,
   Modal,
@@ -162,6 +163,8 @@ console.log("Assigned lead:", { Company_name: data.Company_name, assignedTo: dat
       </View>
 
       <View style={styles.buttonContainer}>
+
+        {/* fetch lead btn */}
         <TouchableOpacity
           style={[
             styles.customButton,
@@ -175,12 +178,16 @@ console.log("Assigned lead:", { Company_name: data.Company_name, assignedTo: dat
         >
           <Text style={styles.buttonText}>Fetch Lead</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.leadBtn}>
+
+        {/* Company Name Box */}
+        <TouchableOpacity style={styles.leadBtn} onPress={() => router.push("./fetchLead")}>
           <Text style={styles.leadCompanyName} >
           {companyName }
           </Text>
           
         </TouchableOpacity>
+
+
       </View>
       <View>
         <View
