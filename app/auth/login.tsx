@@ -1,8 +1,10 @@
+import { setAgentEmail } from "@/store/leadSlice";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react-native";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   Image,
   KeyboardAvoidingView,
@@ -27,7 +29,7 @@ export default function Login() {
     }
     setShowPassword(!showPassword);
   };
-
+  const dispatch = useDispatch();
   const handleLogin = () => {
     // Navigate to dashboard after "login"
    if(!email)
@@ -35,6 +37,8 @@ export default function Login() {
       alert("Please enter your email");
       return;
     }
+
+    dispatch(setAgentEmail(email));
     router.push("/dashboard");
 
   };
