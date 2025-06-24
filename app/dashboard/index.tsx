@@ -1,5 +1,5 @@
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
 import {
   ScrollView,
@@ -103,8 +103,8 @@ export default function DashboardScreen() {
       params: { filter: box.status },
     });
   };
-
-  const user = { name: "Guest" };
+  const { email } = useLocalSearchParams();
+  const user = { email };
 
   return (
     <SafeAreaView

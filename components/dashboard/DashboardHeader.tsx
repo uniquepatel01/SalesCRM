@@ -20,13 +20,14 @@ type DashboardHeaderProps = {
 };
 
 export default function DashboardHeader({ user }: DashboardHeaderProps) {
+  const [name,setName]=useState("No Lead Assigned")
   const { darkMode, toggleTheme } = useTheme();
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [search, setSearch] = useState("");
   const colorScheme = useColorScheme();
-
+ 
   const greeting = () => {
-    return "Welcome john Doe";
+    return `Welcome ${user.email.split("@")[0].toUpperCase()}`;
   };
 
   const handleLogout = () => {
@@ -40,6 +41,18 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
   };
   const handleSearch = () => {
     Alert.alert("Search", `You searched for: ${search}`);
+  };
+  const fetchLead = async () => {
+    const response = await fetch("http://192.168.29.123:3000/forex-leads/assign", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ userId: user.email}) // 👈 your user ID here
+    });
+   const data = await response.json();
+   setName(data.Company_name)
+console.log("Assigned lead:", { Company_name: data.Company_name, assignedTo: data.assignedTo });
   };
 
   // Example: apply dark mode styles conditionally
@@ -159,22 +172,13 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
             },
           ]}
         >
-          <Text style={styles.buttonText}>Fetch Lead</Text>
+          <Pressable onPress={fetchLead}><Text style={styles.buttonText} >Fetch Lead</Text></Pressable>
         </TouchableOpacity>
         <TouchableOpacity style={styles.leadBtn}>
           <Text style={styles.leadCompanyName} >
-          ForexBlues.com
+          {name}
           </Text>
-          <Text
-            style={{
-              fontWeight: "semibold",
-              letterSpacing: 0.6,
-              fontSize: 17,
-              color: "#222",
-            }}
-          >
-            Manish Gupta
-          </Text>
+          
         </TouchableOpacity>
       </View>
       <View>

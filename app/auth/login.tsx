@@ -16,7 +16,7 @@ import {
 } from "react-native";
 
 export default function Login() {
-  const [email, setEmail] = useState("demo@gmail.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("Pass@123");
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
@@ -30,15 +30,10 @@ export default function Login() {
 
   const handleLogin = () => {
     // Navigate to dashboard after "login"
-    const mockEmail = "demo@gmail.com";
-    const mockPassword = "Pass@123";
+    if(!email)
+      return null
+    router.push({ pathname: "/dashboard", params: { email } });
 
-    if (email === mockEmail && password === mockPassword) {
-      router.push("/dashboard");
-    } else {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      alert("Invalid email or password");
-    }
   };
 
   return (
