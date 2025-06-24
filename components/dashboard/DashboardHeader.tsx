@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { Moon, Plus, Search, Sun, User } from "lucide-react-native";
 import React, { useState } from "react";
+import { useSelector } from 'react-redux';
 
 
 import {
@@ -15,20 +16,35 @@ import {
   useColorScheme,
 } from "react-native";
 import { useTheme } from "../../ThemeContext"; // adjust path as needed
+import { store } from "@/store";
 
 type DashboardHeaderProps = {
   user: any;
 };
 
 export default function DashboardHeader({ user }: DashboardHeaderProps) {
+  const [companyName, setCompanyName] = useState("No Company Assigned");
   const { darkMode, toggleTheme } = useTheme();
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [search, setSearch] = useState("");
   const colorScheme = useColorScheme();
-
+ const agentEmail = useSelector((state: any) => state.lead.assignedTo);
   const greeting = () => {
-    return "Welcome john Doe";
+    return `welcome ${agentEmail || "Agent"}`;
   };
+  const handleFetchLead = async () => {
+  const response = await fetch("http://192.168.29.123:3000/forex-leads/assign", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ userId: agentEmail}) // 👈 your user ID here
+    });
+   const data = await response.json();
+  setCompanyName(data.Company_name.replace(/^->\s*/, "") || "No Company Assigned");
+console.log("Assigned lead:", { Company_name: data.Company_name, assignedTo: data.assignedTo });
+  };
+ 
 
   const handleLogout = () => {
     router.push("/auth/login");
@@ -161,6 +177,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
               maxHeight: 50,
             },
           ]}
+          onPress={handleFetchLead} 
         >
           <Text style={styles.buttonText}>Fetch Lead</Text>
         </TouchableOpacity>
@@ -168,7 +185,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
         {/* Company Name Box */}
         <TouchableOpacity style={styles.leadBtn} onPress={() => router.push("./fetchLead")}>
           <Text style={styles.leadCompanyName} >
-          ForexBlues.com
+          {companyName }
           </Text>
           
         </TouchableOpacity>

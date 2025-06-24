@@ -1,8 +1,10 @@
+import { setAgentEmail } from "@/store/leadSlice";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react-native";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   Image,
   KeyboardAvoidingView,
@@ -16,7 +18,7 @@ import {
 } from "react-native";
 
 export default function Login() {
-  const [email, setEmail] = useState("demo@gmail.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("Pass@123");
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
@@ -27,18 +29,18 @@ export default function Login() {
     }
     setShowPassword(!showPassword);
   };
-
+  const dispatch = useDispatch();
   const handleLogin = () => {
     // Navigate to dashboard after "login"
-    const mockEmail = "demo@gmail.com";
-    const mockPassword = "Pass@123";
-
-    if (email === mockEmail && password === mockPassword) {
-      router.push("/dashboard");
-    } else {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      alert("Invalid email or password");
+   if(!email)
+    {
+      alert("Please enter your email");
+      return;
     }
+
+    dispatch(setAgentEmail(email));
+    router.push("/dashboard");
+
   };
 
   return (
