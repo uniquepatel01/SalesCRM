@@ -36,7 +36,15 @@ type Props = {
   onBack?: () => void;
 };
 
-const actions = ["Interested", "Call Back", "Not Interested"];
+const actions = [
+  "DNP",
+  "Demo",
+  "Busy",
+  "Future Client",
+  "Call Me Later",
+  "Not interested",
+  "Out Of Station",
+];
 
 // Default lead for testing
 const defaultLead: Lead = {
@@ -78,32 +86,31 @@ export default function FetchLead({ lead = defaultLead, onBack }: Props) {
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        
         {/* Back Arrow Icon */}
-                <Pressable
-                  onPress={() => router.back()}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 10,
-                    zIndex: 100,
-                    backgroundColor: "transparent",
-                    padding: 4,
-                  }}
-                >
-                  <Ionicons
-                    name="arrow-back"
-                    size={28}
-                    color={darkMode ? "#fff" : "#000"}
-                  />
-                </Pressable>
-                <Text style={[styles.header, darkMode && { color: "#fff" }]}>
-                  Details
-                </Text>
-        
-                <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
-                  {lead.company}
-                </Text>
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 10,
+            zIndex: 100,
+            backgroundColor: "transparent",
+            padding: 4,
+          }}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#fff" : "#000"}
+          />
+        </Pressable>
+        <Text style={[styles.header, darkMode && { color: "#fff" }]}>
+          Details
+        </Text>
+
+        <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
+          {lead.company}
+        </Text>
 
         <View style={styles.inputBox}>
           <Text>{lead.businessType}</Text>
@@ -233,7 +240,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
 
-    header: {
+  header: {
     fontSize: 24,
     fontWeight: "bold",
     letterSpacing: 1,
