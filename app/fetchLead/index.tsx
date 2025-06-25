@@ -1,14 +1,23 @@
+import ActionSelector from "@/components/ui/ActionSelector";
+import RemarksSection from "@/components/ui/RemarkSelector";
+
+
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import { useTheme } from "../../ThemeContext";
+
+
 
 type Remark = { date: string; text: string };
 type Lead = {
@@ -29,7 +38,7 @@ type Props = {
   onBack?: () => void;
 };
 
-const actions = ["ACTION", "Interested", "Call Back", "Not Interested"];
+const actions = ["Interested", "Call Back", "Not Interested"];
 
 // Default lead for testing
 const defaultLead: Lead = {
@@ -41,7 +50,6 @@ const defaultLead: Lead = {
   action: "ACTION",
   remarks: [
     { date: "22/04/25", text: "Call me later" },
-    { date: "22/04/25", text: "Call me later" },
   ],
   email: "manishgupta@gmail.com",
   mobile: "+91 7820500213",
@@ -49,26 +57,45 @@ const defaultLead: Lead = {
 };
 
 export default function FetchLead({ lead = defaultLead, onBack }: Props) {
+  const { darkMode } = useTheme();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [addRemarkVisible, setAddRemarkVisible] = useState(false);
+  const [remarkInput, setRemarkInput] = useState("");
+  const [, forceUpdate] = useState({});
   const [selectedAction, setSelectedAction] = useState(
     lead.action || actions[0]
   );
-  const [remarkInput, setRemarkInput] = useState("");
-  const [remarks, setRemarks] = useState<Remark[]>(lead.remarks || []);
 
   const handleAddRemark = () => {
     if (remarkInput.trim()) {
       const today = new Date();
-      const dateStr = today.toISOString().slice(2, 10).replace(/-/g, "/");
-      setRemarks([{ date: dateStr, text: remarkInput }, ...remarks]);
+      const dateStr = today.toLocaleDateString("en-GB").replace(/\//g, "/");
+      lead.remarks.push({ date: dateStr, text: remarkInput });
       setRemarkInput("");
+      setAddRemarkVisible(false);
+      forceUpdate({});
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {/* Back Arrow */}
-      <Pressable onPress={onBack} style={styles.backBtn}>
-        <Ionicons name="arrow-back" size={28} color="#000" />
+      <Pressable
+        onPress={() => router.back()}
+        style={{
+          position: "absolute",
+          top: 40,
+          left: 10,
+          zIndex: 100,
+          backgroundColor: "transparent",
+          padding: 4,
+        }}
+      >
+        <Ionicons
+          name="arrow-back"
+          size={28}
+          color={darkMode ? "#fff" : "#000"}
+        />
       </Pressable>
       <Text style={styles.title}>Details</Text>
 
@@ -88,49 +115,24 @@ export default function FetchLead({ lead = defaultLead, onBack }: Props) {
         <Text>{lead.state}</Text>
       </View>
 
-      {/* Action Dropdown */}
-      <View style={styles.inputBox}>
-        <TouchableOpacity
-          onPress={() => {}}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text>{selectedAction}</Text>
-          <Ionicons name="chevron-down" size={20} color="#000" />
-        </TouchableOpacity>
-        {/* Implement dropdown logic as needed */}
-      </View>
-
-      {/* Remarks Section */}
-      <View style={styles.remarksBox}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Text style={styles.remarksLabel}>Remarks</Text>
-          <TouchableOpacity style={styles.addBtn} onPress={handleAddRemark}>
-            <Text style={{ color: "#fff" }}>ADD</Text>
-          </TouchableOpacity>
-        </View>
-        <TextInput
-          style={styles.remarkInput}
-          value={remarkInput}
-          onChangeText={setRemarkInput}
-          placeholder="Add a remark"
+        {/* Remarks Section */}
+        
+        <RemarksSection
+          remarks={lead.remarks}
+          onAddPress={() => setAddRemarkVisible(true)}
+          darkMode={darkMode}
         />
-        {remarks.map((remark, idx) => (
-          <View key={idx} style={styles.remarkRow}>
-            <Text style={styles.remarkDate}>{remark.date}</Text>
-            <Text style={styles.remarkText}>{remark.text}</Text>
-          </View>
-        ))}
-      </View>
+        
+
+      {/* Action Dropdown */}
+      <ActionSelector
+        selectedAction={selectedAction}
+        actions={actions}
+        dropdownOpen={dropdownOpen}
+        setDropdownOpen={setDropdownOpen}
+        setSelectedAction={setSelectedAction}
+        darkMode={darkMode}
+      />
 
       {/* Email and Call Buttons */}
       <View style={styles.row}>
@@ -156,6 +158,60 @@ export default function FetchLead({ lead = defaultLead, onBack }: Props) {
       <TouchableOpacity style={styles.saveBtn}>
         <Text style={{ color: "#fff", fontWeight: "bold" }}>SAVE</Text>
       </TouchableOpacity>
+
+            {/* Add Remark Popup */}
+            <Modal
+              visible={addRemarkVisible}
+              transparent
+              animationType="fade"
+              onRequestClose={() => setAddRemarkVisible(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <View
+                  style={[
+                    styles.modalContent,
+                    darkMode && { backgroundColor: "#23262F" },
+                  ]}
+                >
+                  <Text style={[styles.modalTitle, darkMode && { color: "#fff" }]}>
+                    Add Remark
+                  </Text>
+                  <TextInput
+                    style={[
+                      styles.input,
+                      darkMode && {
+                        backgroundColor: "#181A20",
+                        color: "#fff",
+                        borderColor: "#444",
+                      },
+                    ]}
+                    placeholder="Enter remark"
+                    placeholderTextColor={darkMode ? "#aaa" : "#888"}
+                    value={remarkInput}
+                    onChangeText={setRemarkInput}
+                    multiline
+                    autoFocus
+                  />
+                  <View style={{ flexDirection: "row", marginTop: 16 }}>
+                    <TouchableOpacity
+                      style={[styles.saveBtn, { flex: 1, marginRight: 8 }]}
+                      onPress={handleAddRemark}
+                    >
+                      <Text style={styles.saveBtnText}>ADD</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.callBtn,
+                        { flex: 1, marginLeft: 8, backgroundColor: "red" },
+                      ]}
+                      onPress={() => setAddRemarkVisible(false)}
+                    >
+                      <Text style={[styles.callBtnText]}>CANCEL</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
     </ScrollView>
   );
 }
@@ -272,4 +328,47 @@ const styles = StyleSheet.create({
     marginTop: 16,
     width: "100%",
   },
+    modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 24,
+    width: "85%",
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 12,
+    color: "#222",
+    textAlign: "center",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 10,
+    minHeight: 60,
+    fontSize: 16,
+    backgroundColor: "#f7f7f7",
+    color: "#222",
+  },
+    callBtnText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 18,
+    letterSpacing: 1,
+  },
+    saveBtnText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 18,
+    letterSpacing: 1,
+  },
 });
+
