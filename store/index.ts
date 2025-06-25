@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import leadReducer from './leadSlice';
+import agentReducer from './agentSlice';
 
 export const store = configureStore({
   reducer: {
-    lead: leadReducer
+    agent: agentReducer
   }
 });
 

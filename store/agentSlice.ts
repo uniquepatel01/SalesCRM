@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface LeadState {
+interface AgentState {
   assignedTo: string;
 }
 
-const initialState: LeadState = {
+const initialState: AgentState = {
   assignedTo:""
 };
 
-const leadSlice = createSlice({
-  name: 'lead',
+const agentSlice = createSlice({
+  name: 'agent',
   initialState,
   reducers: {
     setAgentEmail:(state, action: PayloadAction<string>) => {
@@ -19,5 +19,5 @@ const leadSlice = createSlice({
   }
 });
 
-export const { setAgentEmail } = leadSlice.actions;
-export default leadSlice.reducer;
+export const { setAgentEmail } = agentSlice.actions;
+export default agentSlice.reducer;

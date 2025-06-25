@@ -23,12 +23,12 @@ type DashboardHeaderProps = {
 };
 
 export default function DashboardHeader({ user }: DashboardHeaderProps) {
-  const [companyName, setCompanyName] = useState("No Company Assigned");
+  const [companyName, setCompanyName] = useState("No Lead Assigned");
   const { darkMode, toggleTheme } = useTheme();
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [search, setSearch] = useState("");
   const colorScheme = useColorScheme();
- const agentEmail = useSelector((state: any) => state.lead.assignedTo);
+ const agentEmail = useSelector((state: any) => state.assignedTo);
   const greeting = () => {
     return `welcome ${agentEmail || "Agent"}`;
   };
@@ -205,7 +205,7 @@ console.log("Assigned lead:", { Company_name: data.Company_name, assignedTo: dat
             style={{
               flexDirection: "row",
               alignItems: "center",
-              backgroundColor: darkMode ? "#222" : "#f0f0f0",
+              backgroundColor: darkMode ? "#888" : "#f0f0f0",
               borderRadius: 24,
               paddingHorizontal: 14,
               paddingVertical: 6,
@@ -220,8 +220,8 @@ console.log("Assigned lead:", { Company_name: data.Company_name, assignedTo: dat
                 flex: 1,
                 color: darkMode ? "#fff" : "#222",
                 fontSize: 20,
-                opacity: 0.7,
-                padding: 5,
+                opacity: 0.8,
+                padding: 8,
                 marginBottom: 0,
               }}
               placeholder="Search..."
