@@ -16,7 +16,7 @@ import {
   useColorScheme,
 } from "react-native";
 import { useTheme } from "../../ThemeContext"; // adjust path as needed
-import { store } from "@/store";
+
 
 type DashboardHeaderProps = {
   user: any;
@@ -28,7 +28,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [search, setSearch] = useState("");
   const colorScheme = useColorScheme();
- const agentEmail = useSelector((state: any) => state.assignedTo);
+ const agentEmail = useSelector((state: any) => state.agent.assignedTo);
   const greeting = () => {
     return `welcome ${agentEmail || "Agent"}`;
   };
