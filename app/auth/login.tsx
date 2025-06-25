@@ -1,4 +1,4 @@
-import { setAgentEmail } from "@/store/leadSlice";
+import { setAgentEmail } from "@/store/agentSlice";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
