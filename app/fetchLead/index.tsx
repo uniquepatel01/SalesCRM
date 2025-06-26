@@ -76,6 +76,14 @@ export default function FetchLead({ lead = defaultLead, onBack }: Props) {
       forceUpdate({});
     }
   };
+  const updateLead= async()=>{
+     const res = await fetch('http://192.168.29.123:3000/leads/assigned', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: ""})
+          });
+          const data = await res.json();
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -86,7 +94,7 @@ export default function FetchLead({ lead = defaultLead, onBack }: Props) {
           position: "absolute",
           top: 40,
           left: 10,
-          zIndex: 100,
+          zIndex: 100, 
           backgroundColor: "transparent",
           padding: 4,
         }}
@@ -155,7 +163,7 @@ export default function FetchLead({ lead = defaultLead, onBack }: Props) {
       </View>
 
       {/* Save Button */}
-      <TouchableOpacity style={styles.saveBtn}>
+      <TouchableOpacity style={styles.saveBtn} onPress={updateLead}>
         <Text style={{ color: "#fff", fontWeight: "bold" }}>SAVE</Text>
       </TouchableOpacity>
 

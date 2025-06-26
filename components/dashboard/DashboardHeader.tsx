@@ -41,8 +41,8 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
       body: JSON.stringify({ userId: agentEmail}) // 👈 your user ID here
     });
    const data = await response.json();
-  setCompanyName(data.Company_name.replace(/^->\s*/, "") || "No Company Assigned");
-console.log("Assigned lead:", { Company_name: data.Company_name, assignedTo: data.assignedTo });
+  setCompanyName(data.Company_name.replace(/^->\s*/, "") || "No Lead Assigned");
+
   };
  
 
