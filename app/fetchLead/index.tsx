@@ -1,13 +1,13 @@
 import ActionSelector from "@/components/ui/ActionSelector";
 import RemarksSection from "@/components/ui/RemarkSelector";
 
-
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Modal,
   Pressable,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,8 +16,6 @@ import {
   View,
 } from "react-native";
 import { useTheme } from "../../ThemeContext";
-
-
 
 type Remark = { date: string; text: string };
 type Lead = {
@@ -38,7 +36,15 @@ type Props = {
   onBack?: () => void;
 };
 
-const actions = ["Interested", "Call Back", "Not Interested"];
+const actions = [
+  "DNP",
+  "Demo",
+  "Busy",
+  "Future Client",
+  "Call Me Later",
+  "Not interested",
+  "Out Of Station",
+];
 
 // Default lead for testing
 const defaultLead: Lead = {
@@ -48,9 +54,7 @@ const defaultLead: Lead = {
   address: "Sindoor Hazaribagh Jharkhand India 825301",
   state: "Jharkhand",
   action: "ACTION",
-  remarks: [
-    { date: "22/04/25", text: "Call me later" },
-  ],
+  remarks: [{ date: "22/04/25", text: "Call me later" }],
   email: "manishgupta@gmail.com",
   mobile: "+91 7820500213",
   altMobile: "+91 8270187976",
@@ -86,150 +90,178 @@ export default function FetchLead({ lead = defaultLead, onBack }: Props) {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {/* Back Arrow */}
-      <Pressable
-        onPress={() => router.back()}
-        style={{
-          position: "absolute",
-          top: 40,
-          left: 10,
-          zIndex: 100, 
-          backgroundColor: "transparent",
-          padding: 4,
-        }}
-      >
-        <Ionicons
-          name="arrow-back"
-          size={28}
-          color={darkMode ? "#fff" : "#000"}
-        />
-      </Pressable>
-      <Text style={styles.title}>Details</Text>
+    <SafeAreaView
+      style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Back Arrow Icon */}
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 10,
+            zIndex: 100,
+            backgroundColor: "transparent",
+            padding: 4,
+          }}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#fff" : "#000"}
+          />
+        </Pressable>
+        <Text style={[styles.header, darkMode && { color: "#fff" }]}>
+          Details
+        </Text>
 
-      <View style={styles.inputBox}>
-        <Text>{lead.businessType}</Text>
-      </View>
-      <View style={styles.inputBox}>
-        <Text>{lead.company}</Text>
-      </View>
-      <View style={styles.inputBox}>
-        <Text>{lead.businessVolume}</Text>
-      </View>
-      <View style={styles.inputBox}>
-        <Text>{lead.address}</Text>
-      </View>
-      <View style={styles.inputBox}>
-        <Text>{lead.state}</Text>
-      </View>
+        <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
+          {lead.company}
+        </Text>
+
+        <View style={styles.inputBox}>
+          <Text>{lead.businessType}</Text>
+        </View>
+        <View style={styles.inputBox}>
+          <Text>{lead.company}</Text>
+        </View>
+        <View style={styles.inputBox}>
+          <Text>{lead.businessVolume}</Text>
+        </View>
+        <View style={styles.inputBox}>
+          <Text>{lead.address}</Text>
+        </View>
+        <View style={styles.inputBox}>
+          <Text>{lead.state}</Text>
+        </View>
 
         {/* Remarks Section */}
-        
+
         <RemarksSection
           remarks={lead.remarks}
           onAddPress={() => setAddRemarkVisible(true)}
           darkMode={darkMode}
         />
-        
 
-      {/* Action Dropdown */}
-      <ActionSelector
-        selectedAction={selectedAction}
-        actions={actions}
-        dropdownOpen={dropdownOpen}
-        setDropdownOpen={setDropdownOpen}
-        setSelectedAction={setSelectedAction}
-        darkMode={darkMode}
-      />
+        {/* Action Dropdown */}
+        <ActionSelector
+          selectedAction={selectedAction}
+          actions={actions}
+          dropdownOpen={dropdownOpen}
+          setDropdownOpen={setDropdownOpen}
+          setSelectedAction={setSelectedAction}
+          darkMode={darkMode}
+        />
 
-      {/* Email and Call Buttons */}
-      <View style={styles.row}>
-        <Text style={styles.emailText}>{lead.email}</Text>
-        <TouchableOpacity style={styles.emailBtn}>
-          <Text style={{ color: "#fff" }}>E-mail</Text>
+        {/* Email and Call Buttons */}
+        <View style={styles.row}>
+          <Text style={styles.emailText}>{lead.email}</Text>
+          <TouchableOpacity style={styles.emailBtn}>
+            <Text style={{ color: "#fff" }}>E-mail</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.phoneText}>{lead.mobile}</Text>
+          <TouchableOpacity style={styles.callBtn}>
+            <Text style={{ color: "#fff" }}>Call</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.phoneText}>{lead.altMobile}</Text>
+          <TouchableOpacity style={styles.callBtn}>
+            <Text style={{ color: "#fff" }}>Call</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Save Button */}
+        <TouchableOpacity style={styles.saveBtn}>
+          <Text style={{ color: "#fff", fontWeight: "bold" }}>SAVE</Text>
         </TouchableOpacity>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.phoneText}>{lead.mobile}</Text>
-        <TouchableOpacity style={styles.callBtn}>
-          <Text style={{ color: "#fff" }}>Call</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.phoneText}>{lead.altMobile}</Text>
-        <TouchableOpacity style={styles.callBtn}>
-          <Text style={{ color: "#fff" }}>Call</Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
 
-      {/* Save Button */}
-      <TouchableOpacity style={styles.saveBtn} onPress={updateLead}>
-        <Text style={{ color: "#fff", fontWeight: "bold" }}>SAVE</Text>
-      </TouchableOpacity>
-
-            {/* Add Remark Popup */}
-            <Modal
-              visible={addRemarkVisible}
-              transparent
-              animationType="fade"
-              onRequestClose={() => setAddRemarkVisible(false)}
-            >
-              <View style={styles.modalOverlay}>
-                <View
-                  style={[
-                    styles.modalContent,
-                    darkMode && { backgroundColor: "#23262F" },
-                  ]}
-                >
-                  <Text style={[styles.modalTitle, darkMode && { color: "#fff" }]}>
-                    Add Remark
-                  </Text>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      darkMode && {
-                        backgroundColor: "#181A20",
-                        color: "#fff",
-                        borderColor: "#444",
-                      },
-                    ]}
-                    placeholder="Enter remark"
-                    placeholderTextColor={darkMode ? "#aaa" : "#888"}
-                    value={remarkInput}
-                    onChangeText={setRemarkInput}
-                    multiline
-                    autoFocus
-                  />
-                  <View style={{ flexDirection: "row", marginTop: 16 }}>
-                    <TouchableOpacity
-                      style={[styles.saveBtn, { flex: 1, marginRight: 8 }]}
-                      onPress={handleAddRemark}
-                    >
-                      <Text style={styles.saveBtnText}>ADD</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[
-                        styles.callBtn,
-                        { flex: 1, marginLeft: 8, backgroundColor: "red" },
-                      ]}
-                      onPress={() => setAddRemarkVisible(false)}
-                    >
-                      <Text style={[styles.callBtnText]}>CANCEL</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </Modal>
-    </ScrollView>
+      {/* Add Remark Popup */}
+      <Modal
+        visible={addRemarkVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setAddRemarkVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View
+            style={[
+              styles.modalContent,
+              darkMode && { backgroundColor: "#23262F" },
+            ]}
+          >
+            <Text style={[styles.modalTitle, darkMode && { color: "#fff" }]}>
+              Add Remark
+            </Text>
+            <TextInput
+              style={[
+                styles.input,
+                darkMode && {
+                  backgroundColor: "#181A20",
+                  color: "#fff",
+                  borderColor: "#444",
+                },
+              ]}
+              placeholder="Enter remark"
+              placeholderTextColor={darkMode ? "#aaa" : "#888"}
+              value={remarkInput}
+              onChangeText={setRemarkInput}
+              multiline
+              autoFocus
+            />
+            <View style={{ flexDirection: "row", marginTop: 16 }}>
+              <TouchableOpacity
+                style={[styles.saveBtn, { flex: 1, marginRight: 8 }]}
+                onPress={handleAddRemark}
+              >
+                <Text style={styles.saveBtnText}>ADD</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.callBtn,
+                  { flex: 1, marginLeft: 8, backgroundColor: "red" },
+                ]}
+                onPress={() => setAddRemarkVisible(false)}
+              >
+                <Text style={[styles.callBtnText]}>CANCEL</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    flex: 1,
     backgroundColor: "#fff",
-    flexGrow: 1,
-    alignItems: "center",
+    paddingTop: 50,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+    paddingHorizontal: 8,
+  },
+
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    letterSpacing: 1,
+    textAlign: "center",
+    marginBottom: 8,
+    color: "#222",
+  },
+  company: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 12,
+    color: "#222",
   },
   backBtn: {
     position: "absolute",
@@ -336,7 +368,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     width: "100%",
   },
-    modalOverlay: {
+  modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
@@ -366,17 +398,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#f7f7f7",
     color: "#222",
   },
-    callBtnText: {
+  callBtnText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 18,
     letterSpacing: 1,
   },
-    saveBtnText: {
+  saveBtnText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 18,
     letterSpacing: 1,
   },
 });
-
