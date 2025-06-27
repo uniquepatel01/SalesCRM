@@ -38,7 +38,7 @@ type Props = {
 
 const actions = [
   "DNP",
-  "Demo",
+  "Demo", 
   "Busy",
   "Future Client",
   "Call Me Later",
@@ -214,7 +214,7 @@ export default function FetchLead({ lead = defaultLead, onBack }: Props) {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
-                  styles.callBtn,
+                  styles.saveBtn,
                   { flex: 1, marginLeft: 8, backgroundColor: "red" },
                 ]}
                 onPress={() => setAddRemarkVisible(false)}
