@@ -1,28 +1,47 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface AssignLeadsState {
-  assignedGroupLeads: {}
-  allAssignedLeads: any[]
+
+
+interface AssignedLeadState {
+  assignedGroupLeads: object;
+
+  currentFetchedLead: object;
+  status:String
+  
+  
 }
 
-const initialState: AssignLeadsState = {
+const initialState: AssignedLeadState = {
   assignedGroupLeads: {},
-  allAssignedLeads: []
+  
+  currentFetchedLead: {},
+  status:"",
+ 
+  
 };
 
 const assignedLeadSlice = createSlice({
-  name: 'agent',
+  name: 'assignedLead',
   initialState,
   reducers: {
     setAssignLeads:(state, action: PayloadAction<Object>) => {
       state.assignedGroupLeads = action.payload;  
     },
-    setAllAssignedLeads:(state,action:PayloadAction<Array<any>>)=>{
-    state.allAssignedLeads=action.payload
-    }
+
+    setCurrentFetchedLead: (state, action: PayloadAction<Object>) => {
+      state.currentFetchedLead = action.payload;
+      
+    },
+    unsetCurrentLead:(state)=>{
+      state.currentFetchedLead={}
+    },
+    setChangedStatus: (state, action: PayloadAction<string>) => {
+      state.status = action.payload;
+    },
+
     
   }
 });
 
-export const { setAssignLeads,setAllAssignedLeads } = assignedLeadSlice.actions;
+export const { setAssignLeads,  setCurrentFetchedLead,setChangedStatus,unsetCurrentLead } = assignedLeadSlice.actions;
 export default assignedLeadSlice.reducer;

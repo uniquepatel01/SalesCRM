@@ -1,7 +1,8 @@
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import { setAllAssignedLeads, setAssignLeads } from "@/store/assignedLeadSlice";
+
+import { setAssignLeads } from "@/store/assignedLeadSlice";
 import { router } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -15,33 +16,45 @@ import { useTheme } from "../../ThemeContext"; // adjust path if needed
 
 export default function DashboardScreen() {
   const { darkMode, toggleTheme } = useTheme();
-  const dispatch = useDispatch();
-  const agentEmail = useSelector((state: any) => state.agent.assignedTo);
-  useEffect(() => {
-    
-      const fetchAssignedLeads = async () => {
-        try {
-          const res = await fetch('http://192.168.29.123:3000/leads/assigned', {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId: agentEmail })
-          });
-          const data = await res.json();
-        //  console.log({...data}[1])
-          dispatch(setAssignLeads({ ...data }[1]))
-          dispatch(setAllAssignedLeads({...data}[0]));
-        } catch (err) {
-          console.error("Error fetching assigned leads", err);
+  const [data,setData]=useState()
+  const agentEmail = useSelector((state: any) => state.agent.assignedTo)
+  const dispatch=useDispatch()
+  useEffect(()=>{
+  const unassignLead=async()=>{
+    try {
+       await fetch('http://192.168.29.123:3000/lead/unassign',
+        {
+          method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ userId: agentEmail})
         }
-      };
-
-      fetchAssignedLeads();
-     // ⏰ Delay of 3 seconds
-
-    // Cleanup: prevent the timeout if the component unmounts early
-   
-  });
- const {
+      )
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  unassignLead()
+  },[agentEmail])
+  useEffect(()=>{
+  const allTypes=async()=>{
+    const res=await fetch("http://192.168.29.123:3000/leads",{
+     method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ userId: agentEmail})
+    })
+    const data=await res.json()
+    dispatch(setAssignLeads(data))
+    
+  }
+  allTypes()
+},[agentEmail])
+ 
+  
+const {
   busy,
   converted,
   demo,
@@ -52,8 +65,11 @@ export default function DashboardScreen() {
   "not interested": notInterested,
   "out of station": outOfStation,
   "wrong number": wrongNumber
-}=useSelector((state:any)=> state.leads.assignedGroupLeads)
-  
+}= useSelector((state:any)=> state.leads.assignedGroupLeads)
+ 
+
+    
+ 
 
 
   const statusBoxes = [
@@ -146,14 +162,14 @@ export default function DashboardScreen() {
     });
   };
 
-  const user = { name: "Guest" };
+ 
 
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#222" }]}
       edges={["top"]}
     >
-      <DashboardHeader user={user} />
+      <DashboardHeader  />
       <ScrollView style={styles.content}>
         <Text style={[styles.sectionTitle, darkMode && { color: "#fff" }]}>
           Lead Status Overview

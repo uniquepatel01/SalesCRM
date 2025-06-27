@@ -4,17 +4,18 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  FlatList,
+  View
 } from "react-native";
+import { useSelector } from "react-redux";
 
 type Remark = {
+  comment: string;
   date: string;
-  text: string;
+  _id: string;
 };
 
 type Props = {
-  remarks: Remark[];
+  remarks:[]
   onAddPress: () => void;
   darkMode: boolean;
 };
@@ -24,6 +25,8 @@ export default function RemarksSection({
   onAddPress,
   darkMode,
 }: Props) {
+
+  const {Remarks}=useSelector((state:any)=>state.leads.currentFetchedLead)
   return (
     <>
       <View style={styles.remarksHeaderRow}>
@@ -40,15 +43,15 @@ export default function RemarksSection({
           darkMode && { backgroundColor: "#23262F" },
         ]}
       >
-        {remarks.map((remark, idx) => (
-          <View key={idx} style={styles.remarksRow}>
+        {remarks?.map((remark:Remark) => (
+          <View key={remark._id} style={styles.remarksRow}>
             <Text
               style={[
                 styles.remarksDate,
                 darkMode && { backgroundColor: "#444", color: "#fff" },
               ]}
             >
-              {remark.date}
+              {new Date(remark.date).toLocaleDateString("en-GB").replace(/\//g,"/")}
             </Text>
             <Text
               style={[
@@ -56,7 +59,7 @@ export default function RemarksSection({
                 darkMode && { color: "#fff" },
               ]}
             >
-              {remark.text}
+              {remark.comment}
             </Text>
           </View>
         ))}
