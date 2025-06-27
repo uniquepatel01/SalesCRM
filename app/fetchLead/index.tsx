@@ -24,6 +24,7 @@ import { useTheme } from "../../ThemeContext";
 
 
 const actions = [
+
     "converted",
       "demo",
       "dnp",
@@ -35,6 +36,7 @@ const actions = [
       "dormants",
       "emails"
   
+
 ];
 
 // Default lead for testing
@@ -241,7 +243,7 @@ const handleAddRemark = async() => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
-                  styles.callBtn,
+                  styles.saveBtn,
                   { flex: 1, marginLeft: 8, backgroundColor: "red" },
                 ]}
                 onPress={() => setAddRemarkVisible(false)}
