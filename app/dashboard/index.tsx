@@ -1,6 +1,8 @@
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+
+import { setAssignLeads } from "@/store/assignedLeadSlice";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -9,15 +11,71 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext"; // adjust path if needed
 
 export default function DashboardScreen() {
   const { darkMode, toggleTheme } = useTheme();
+  const [data,setData]=useState()
+  const agentEmail = useSelector((state: any) => state.agent.assignedTo)
+  const dispatch=useDispatch()
+  useEffect(()=>{
+  const unassignLead=async()=>{
+    try {
+       await fetch('http://192.168.29.123:3000/lead/unassign',
+        {
+          method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ userId: agentEmail})
+        }
+      )
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  unassignLead()
+  },[agentEmail])
+  useEffect(()=>{
+  const allTypes=async()=>{
+    const res=await fetch("http://192.168.29.123:3000/leads",{
+     method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ userId: agentEmail})
+    })
+    const data=await res.json()
+    dispatch(setAssignLeads(data))
+    
+  }
+  allTypes()
+},[agentEmail])
+ 
+  
+const {
+  busy,
+  converted,
+  demo,
+  dnp,
+  dormants,
+  emails,
+  "call me later": callMeLater,
+  "not interested": notInterested,
+  "out of station": outOfStation,
+  "wrong number": wrongNumber
+}= useSelector((state:any)=> state.leads.assignedGroupLeads)
+ 
+
+    
+ 
+
 
   const statusBoxes = [
     {
       title: "DNP",
-      count: "50",
+      count: dnp?.length ?? 0,
       color: "#1D4ED8", // Royal Blue
       bgColor: "#D6E4FF", // Light Blue
       status: "dnp",
@@ -25,7 +83,7 @@ export default function DashboardScreen() {
     },
     {
       title: "Demo",
-      count: "45",
+      count: demo?.length ?? 0,
       color: "#F59E0B", // Amber
       bgColor: "#FFEFC7", // Warm Yellow
       status: "demo",
@@ -33,7 +91,7 @@ export default function DashboardScreen() {
     },
     {
       title: "Call me Later",
-      count: "23",
+      count: callMeLater?.length ?? 0,
       color: "#10B981", // Emerald Green
       bgColor: "#D1FADF", // Bright Mint
       status: "dormats",
@@ -41,7 +99,7 @@ export default function DashboardScreen() {
     },
     {
       title: "Wrong Number",
-      count: "98",
+      count: wrongNumber?.length ?? 0,
       color: "#DC2626", // Soft Red
       bgColor: "#FFD6D6", // Prominent Pink-Red
       status: "Wrong Number",
@@ -49,7 +107,7 @@ export default function DashboardScreen() {
     },
     {
       title: "Converted",
-      count: "56",
+      count: converted?.length ?? 0,
       color: "#9333EA", // Deep Purple
       bgColor: "#E9D5FF", // Lilac
       status: "Converted",
@@ -57,7 +115,7 @@ export default function DashboardScreen() {
     },
     {
       title: "Busy",
-      count: "56",
+      count:busy?.length ?? 0,
       color: "#0EA5E9", // Cyan Blue
       bgColor: "#C7F0FF", // Light Cyan
       status: "busy",
@@ -65,7 +123,7 @@ export default function DashboardScreen() {
     },
     {
       title: "Emails",
-      count: "34",
+      count: emails?.length ?? 0,
       color: "#0D9488", // Teal Green (distinct from violet)
       bgColor: "#CCFBF1", // Soft Aqua-Mint
       status: "email",
@@ -73,7 +131,7 @@ export default function DashboardScreen() {
     },
     {
       title: "Out of station",
-      count: "72",
+      count: outOfStation?.length ?? 0,
       color: "#D97706", // Warm Amber (Orange-Brown)
       bgColor: "#FFF3D9", // Light Tan/Peach
       status: "out of station",
@@ -81,7 +139,7 @@ export default function DashboardScreen() {
     },
     {
       title: "Not Interested",
-      count: "56",
+      count: notInterested?.length ?? 0,
       color: "#6B7280", // Cool Gray
       bgColor: "#E5E7EB", // Light Gray
       status: "not interested",
@@ -89,7 +147,7 @@ export default function DashboardScreen() {
     },
     {
       title: "Dormants",
-      count: "40",
+      count: dormants?.length ?? 0,
       color: "#EC4899", // Pink
       bgColor: "#FFD6EC", // Light Pink
       status: "later",
@@ -104,14 +162,14 @@ export default function DashboardScreen() {
     });
   };
 
-  const user = { name: "Guest" };
+ 
 
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#222" }]}
       edges={["top"]}
     >
-      <DashboardHeader user={user} />
+      <DashboardHeader  />
       <ScrollView style={styles.content}>
         <Text style={[styles.sectionTitle, darkMode && { color: "#fff" }]}>
           Lead Status Overview

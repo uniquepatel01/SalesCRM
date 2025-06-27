@@ -19,6 +19,8 @@ export default function ActionSelector({
   setSelectedAction,
   darkMode,
 }: Props) {
+  
+ 
   return (
     <>
       <View style={styles.actionSection}>

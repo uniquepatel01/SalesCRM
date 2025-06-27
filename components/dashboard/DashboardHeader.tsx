@@ -1,9 +1,10 @@
 import { router } from "expo-router";
 import { Moon, Plus, Search, Sun, User } from "lucide-react-native";
-import React, { useState } from "react";
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 
 
+import { setCurrentFetchedLead, unsetCurrentLead, } from "@/store/assignedLeadSlice";
 import {
   Alert,
   Modal,
@@ -18,20 +19,33 @@ import {
 import { useTheme } from "../../ThemeContext"; // adjust path as needed
 
 
-type DashboardHeaderProps = {
-  user: any;
-};
 
-export default function DashboardHeader({ user }: DashboardHeaderProps) {
-  const [companyName, setCompanyName] = useState("No Lead Assigned");
+
+export default function DashboardHeader() {
+   
   const { darkMode, toggleTheme } = useTheme();
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [search, setSearch] = useState("");
   const colorScheme = useColorScheme();
+  const[CRMName,setCRM]=useState("");
+  const [prev,setPrev]=useState({});
  const agentEmail = useSelector((state: any) => state.agent.assignedTo);
+ const dispatch=useDispatch();
   const greeting = () => {
     return `welcome ${agentEmail || "Agent"}`;
   };
+  useEffect(()=>{
+    const crmName=async()=>{
+     const res= await fetch('http://192.168.29.123:3000/crm-name')
+     const data=await res.json()
+    setCRM(data)
+    }
+    crmName()
+    dispatch(unsetCurrentLead())
+  },[agentEmail])
+  
+ 
+ //----------------------handle click on fetch Lead Button------------------------------------------
   const handleFetchLead = async () => {
   const response = await fetch("http://192.168.29.123:3000/forex-leads/assign", {
       method: "POST",
@@ -40,13 +54,23 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
       },
       body: JSON.stringify({ userId: agentEmail}) // 👈 your user ID here
     });
+    
    const data = await response.json();
-  setCompanyName(data.Company_name.replace(/^->\s*/, "") || "No Company Assigned");
-console.log("Assigned lead:", { Company_name: data.Company_name, assignedTo: data.assignedTo });
+  
+    dispatch(setCurrentFetchedLead(data.assignedLead))
   };
- 
+
+  
+  const Company_name= useSelector((state:any)=>state.leads.currentFetchedLead?.Company_name || "No Lead Assigned")
+
+
 
   const handleLogout = () => {
+    if(Company_name!=="No Lead Assigned")
+    {
+        alert("Can't logout Lead Assigned")
+        return;
+    }
     router.push("/auth/login");
   };
   const handleProfile = () => {
@@ -72,7 +96,7 @@ console.log("Assigned lead:", { Company_name: data.Company_name, assignedTo: dat
       <View style={styles.header}>
         <View style={styles.leftSection}>
           <View style={styles.titleContainer}>
-            <Text style={textStyle}>{"Gold CRM"}</Text>
+            <Text style={textStyle}>{CRMName.slice(0,-2).toUpperCase()} CRM</Text>
             <Text style={greetingStyle}>{greeting()}</Text>
           </View>
         </View>
@@ -172,20 +196,22 @@ console.log("Assigned lead:", { Company_name: data.Company_name, assignedTo: dat
           style={[
             styles.customButton,
             {
-              backgroundColor: "#A6B7DC",
+              backgroundColor: "#815355",
               paddingHorizontal: 20,
               maxHeight: 50,
             },
+            Company_name!="No Lead Assigned"&&styles.disabledSaveBtn
           ]}
           onPress={handleFetchLead} 
+          disabled={Company_name!=="No Lead Assigned"}
         >
           <Text style={styles.buttonText}>Fetch Lead</Text>
         </TouchableOpacity>
 
         {/* Company Name Box */}
-        <TouchableOpacity style={styles.leadBtn} onPress={() => router.push("./fetchLead")}>
+        <TouchableOpacity style={[styles.leadBtn,Company_name=="No Lead Assigned"&&styles.disabledSaveBtn]} onPress={() => router.push("./fetchLead")} disabled={Company_name=="No Lead Assigned"}>
           <Text style={styles.leadCompanyName} >
-          {companyName }
+          {Company_name?.replace(/^->\s*/, "") || "No Lead Assigned" }
           </Text>
           
         </TouchableOpacity>
@@ -286,6 +312,9 @@ const styles = StyleSheet.create({
   rightSection: {
     flexDirection: "row",
     gap: 18,
+  },
+  disabledSaveBtn: {
+    opacity: 0.4, // visually indicate disabled
   },
 
   buttonContainer: {

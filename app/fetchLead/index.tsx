@@ -1,9 +1,11 @@
 import ActionSelector from "@/components/ui/ActionSelector";
 import RemarksSection from "@/components/ui/RemarkSelector";
 
+
+import { setAssignLeads, setChangedStatus, setCurrentFetchedLead, unsetCurrentLead } from "@/store/assignedLeadSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   Pressable,
@@ -15,71 +17,98 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
 
-type Remark = { date: string; text: string };
-type Lead = {
-  businessType: string;
-  company: string;
-  businessVolume: string;
-  address: string;
-  state: string;
-  action: string;
-  remarks: Remark[];
-  email: string;
-  mobile: string;
-  altMobile: string;
-};
 
-type Props = {
-  lead?: Lead; // Make prop optional
-  onBack?: () => void;
-};
+
 
 const actions = [
-  "DNP",
-  "Demo", 
-  "Busy",
-  "Future Client",
-  "Call Me Later",
-  "Not interested",
-  "Out Of Station",
+
+    "converted",
+      "demo",
+      "dnp",
+      "wrong number",
+      "call me later",
+      "busy",
+      "out of station",
+      "not interested",
+      "dormants",
+      "emails"
+  
+
 ];
 
 // Default lead for testing
-const defaultLead: Lead = {
-  businessType: "Forex",
-  company: "ANUPAM CERAMICS",
-  businessVolume: "49.99967 lakh/year",
-  address: "Sindoor Hazaribagh Jharkhand India 825301",
-  state: "Jharkhand",
-  action: "ACTION",
-  remarks: [{ date: "22/04/25", text: "Call me later" }],
-  email: "manishgupta@gmail.com",
-  mobile: "+91 7820500213",
-  altMobile: "+91 8270187976",
-};
 
-export default function FetchLead({ lead = defaultLead, onBack }: Props) {
+
+export default function FetchLead() {
   const { darkMode } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
   const [, forceUpdate] = useState({});
-  const [selectedAction, setSelectedAction] = useState(
-    lead.action || actions[0]
-  );
+const [changeStatus,setStatus]=useState("")
+ const agentId=useSelector((state: any) => state.agent.assignedTo);
+  const { _id: leadId } = useSelector((state:any)=>state.leads.currentFetchedLead)
 
-  const handleAddRemark = () => {
-    if (remarkInput.trim()) {
-      const today = new Date();
-      const dateStr = today.toLocaleDateString("en-GB").replace(/\//g, "/");
-      lead.remarks.push({ date: dateStr, text: remarkInput });
-      setRemarkInput("");
-      setAddRemarkVisible(false);
-      forceUpdate({});
-    }
+const dispatch=useDispatch()
+useEffect(()=>{
+dispatch(setChangedStatus(changeStatus))
+},[changeStatus])
+const handleSave= async()=>{
+ const response = await fetch("http://192.168.29.123:3000/lead/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ userId: agentId,leadId:leadId,status:changeStatus.toLowerCase()}) 
+    });
+   const data = await response.json();
+   // to normalize if status is filled and assigned to is empty
+   await fetch("http://192.168.29.123:3000/lead/normalize-status-assignee", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      }})
+
+   dispatch(setAssignLeads(data))
+  
+dispatch(unsetCurrentLead())
+
+router.push("/dashboard")
+}
+
+const handleAddRemark = async() => {
+     const res=await fetch('http://192.168.29.123:3000/lead/add-remark',{
+      
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ userId: agentId,leadId:leadId,commentText:remarkInput}) 
+     })
+     const data=await res.json()
+     dispatch(setCurrentFetchedLead(data));
+     setRemarkInput("")
+     setAddRemarkVisible(false)
   };
+
+  const {
+  Address="",
+  "Business_vol Lakh / Year": BusinessVolLakhPerYear="",
+  Company_name,
+  "E-mail id": EmailId="",
+  "Landline no": LandlineNo="",
+  "Mobile no": MobileNo="",
+  Remarks,
+  State="",
+  Status="",        // OR `status` if case-insensitive
+  _id="",
+  assignedTo="",
+  status="",        // Note: you have both `Status` and `status`
+  updatedAt="",
+} = useSelector((state:any)=>state.leads.currentFetchedLead)
 
   return (
     <SafeAreaView
@@ -109,65 +138,65 @@ export default function FetchLead({ lead = defaultLead, onBack }: Props) {
         </Text>
 
         <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
-          {lead.company}
+          {Company_name || ""}
         </Text>
 
         <View style={styles.inputBox}>
-          <Text>{lead.businessType}</Text>
+          <Text>{"forex" }</Text>
         </View>
         <View style={styles.inputBox}>
-          <Text>{lead.company}</Text>
+          <Text>{Company_name || ""}</Text>
         </View>
         <View style={styles.inputBox}>
-          <Text>{lead.businessVolume}</Text>
+          <Text>{parseFloat(BusinessVolLakhPerYear?.$numberDecimal || "0").toFixed(3)}</Text>
         </View>
         <View style={styles.inputBox}>
-          <Text>{lead.address}</Text>
+          <Text>{Address || ""}</Text>
         </View>
         <View style={styles.inputBox}>
-          <Text>{lead.state}</Text>
+          <Text>{State || ""}</Text>
         </View>
 
         {/* Remarks Section */}
 
         <RemarksSection
-          remarks={lead.remarks}
+        remarks={Remarks}
           onAddPress={() => setAddRemarkVisible(true)}
           darkMode={darkMode}
         />
 
         {/* Action Dropdown */}
         <ActionSelector
-          selectedAction={selectedAction}
+          selectedAction={changeStatus}
           actions={actions}
           dropdownOpen={dropdownOpen}
           setDropdownOpen={setDropdownOpen}
-          setSelectedAction={setSelectedAction}
+          setSelectedAction={setStatus}
           darkMode={darkMode}
         />
 
         {/* Email and Call Buttons */}
         <View style={styles.row}>
-          <Text style={styles.emailText}>{lead.email}</Text>
+          <Text style={styles.emailText}>{EmailId || "N/A"}</Text>
           <TouchableOpacity style={styles.emailBtn}>
             <Text style={{ color: "#fff" }}>E-mail</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
-          <Text style={styles.phoneText}>{lead.mobile}</Text>
+          <Text style={styles.phoneText}>{ MobileNo[1] || "N/A"}</Text>
           <TouchableOpacity style={styles.callBtn}>
             <Text style={{ color: "#fff" }}>Call</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
-          <Text style={styles.phoneText}>{lead.altMobile}</Text>
+          <Text style={styles.phoneText}>{LandlineNo[2] || "N/A"}</Text>
           <TouchableOpacity style={styles.callBtn}>
             <Text style={{ color: "#fff" }}>Call</Text>
           </TouchableOpacity>
         </View>
 
         {/* Save Button */}
-        <TouchableOpacity style={styles.saveBtn}>
+        <TouchableOpacity style={[styles.saveBtn,changeStatus.trim()===""&& styles.disabledSaveBtn]} onPress={handleSave} disabled={changeStatus.trim()===""}>
           <Text style={{ color: "#fff", fontWeight: "bold" }}>SAVE</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -239,7 +268,9 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     paddingHorizontal: 8,
   },
-
+disabledSaveBtn: {
+    opacity: 0.4, // visually indicate disabled
+  },
   header: {
     fontSize: 24,
     fontWeight: "bold",
