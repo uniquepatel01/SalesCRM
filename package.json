@@ -48,7 +48,9 @@
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
     "redux-toolkit": "^1.1.2",
-    "expo-crypto": "~14.1.5"
+    "expo-crypto": "~14.1.5",
+    "expo-notifications": "~0.31.3",
+    "expo-device": "~7.1.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

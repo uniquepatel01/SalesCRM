@@ -15,7 +15,7 @@ type Remark = {
 };
 
 type Props = {
-  remarks:[]
+  remarks: any[]
   onAddPress: () => void;
   darkMode: boolean;
 };

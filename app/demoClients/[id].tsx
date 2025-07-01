@@ -1,45 +1,129 @@
+import ActionSelector from "@/components/ui/ActionSelector";
+import RemarksSection from "@/components/ui/RemarkSelector";
+import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Linking, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
 import { demoClients } from "../../data/demoClientsData";
-import { Ionicons } from "@expo/vector-icons";
-import RemarksSection from "@/components/ui/RemarkSelector";
-import ActionSelector from "@/components/ui/ActionSelector";
+
+const actions = [
+
+    "converted",
+      
+      "dnp",
+      "wrong number",
+      "call me later",
+      "busy",
+      "out of station",
+      "not interested",
+      "dormants",
+      "emails"
+  
+
+];
+const dummy = {
+  Address: "",
+  "Business_vol Lakh / Year": { $numberDecimal: "" } as { $numberDecimal: string },
+  Company_name: "",
+  "E-mail id": "",
+  "Landline no": "",
+  "Mobile no": "",
+  Remarks: [],
+  State: "",
+  Status: "",
+  _id: "",
+  assignedTo: "",
+  status: "",
+  updatedAt: "",
+};
+
 
 export default function DemoClientDetails() {
-  const { id } = useLocalSearchParams();
+ const { id } = useLocalSearchParams();
+  
   const client = demoClients[Number(id)];
   const { darkMode } = useTheme();
+  const agentEmail = useSelector((state: any) => state.agent.assignedTo);
 
-  const [selectedAction, setSelectedAction] = useState<string>(client.action || "");
+ const [selectedAction, setSelectedAction] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Add Remark State
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
+  const [lead,setLead]=useState()
 
   // For re-rendering after adding a remark
   const [, forceUpdate] = useState({});
 
-  const actions = client.statuses;
 
-  const handleSave = () => {
-    client.action = selectedAction;
-    alert(`Saved action: ${selectedAction || "None"}`);
-  };
 
-  const handleAddRemark = () => {
-    if (remarkInput.trim()) {
-      const today = new Date();
-      const dateStr = today.toLocaleDateString("en-GB").replace(/\//g, "/");
-      client.remarks.push({ date: dateStr, text: remarkInput });
-      setRemarkInput("");
-      setAddRemarkVisible(false);
-      forceUpdate({}); // force re-render
-    }
-  };
+  
+  useEffect(()=>{
+      const fetchLead=async()=>{
+        const res=await fetch(`http://192.168.29.123:3000/lead-by/${id}`)
+        const data=await res.json()
+       
+        setLead(data)
+      }
+      fetchLead()
+  },[])
 
+  const {
+  Address = "",
+  "Business_vol Lakh / Year": BusinessVolLakhPerYear = { $numberDecimal: "" } as { $numberDecimal: string },
+  Company_name = "",
+  "E-mail id": EmailId = "",
+  "Landline no": LandlineNo = "",
+  "Mobile no": MobileNo = "",
+  Remarks ,
+  State = "",
+  Status = "",
+  _id = "",
+  assignedTo = "",
+  status = "",
+  updatedAt = "",
+} = lead||dummy ;
+
+ const handleSave= async()=>{
+      await fetch("http://192.168.29.123:3000/lead/update", {
+           method: "POST",
+           headers: {
+             "Content-Type": "application/json"
+           },
+           body: JSON.stringify({ userId: agentEmail,leadId:id,status:selectedAction.toLowerCase()}) 
+         });
+       
+        // to normalize if status is filled and assigned to is empty
+     router.push("/dashboard")
+     }
+
+  // const handleAddRemark = () => {
+  //   if (remarkInput.trim()) {
+  //     const today = new Date();
+  //     const dateStr = today.toLocaleDateString("en-GB").replace(/\//g, "/");
+  //     client.remarks.push({ date: dateStr, text: remarkInput });
+  //     setRemarkInput("");
+  //     setAddRemarkVisible(false);
+  //     forceUpdate({}); // force re-render
+  //   }
+  // };
+const handleAddRemark = async() => {
+       const res=await fetch('http://192.168.29.123:3000/lead/add-remark',{
+        
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ userId: agentEmail,leadId:id,commentText:remarkInput}) 
+       })
+       const data=await res.json()
+      setLead(data)
+       setRemarkInput("")
+       setAddRemarkVisible(false)
+    };
   return (
     <SafeAreaView style={[
       styles.container,
@@ -68,34 +152,39 @@ export default function DemoClientDetails() {
         <Text style={[
           styles.company,
           darkMode && { color: "#7BB1FF" }
-        ]}>{client.company}</Text>
+        ]}>{Company_name}</Text>
 
         {/* Details Table */}
         <View style={[
           styles.table,
           darkMode && { backgroundColor: "#23262F" }
         ]}>
-          <Row label="Contact person" value={client.contactPerson} darkMode={darkMode} />
-          <Row label="Source" value={client.source} darkMode={darkMode} />
-          <Row label="Business Type" value={client.businessType} darkMode={darkMode} />
-          <Row label="Business Volume" value={client.businessVolume} darkMode={darkMode} />
-          <Row label="Email" value={client.email} darkMode={darkMode} />
-          <Row label="Mobile" value={client.mobile} darkMode={darkMode} />
-          <Row label="Alternate Mobile" value={client.altMobile} darkMode={darkMode} />
-          <Row label="Demo Taken" value={client.demoTaken} darkMode={darkMode} />
-          <Row label="Address" value={client.address} darkMode={darkMode} multiline />
+          <Row label="Contact person" value={""} darkMode={darkMode} />
+          <Row label="Source" value={""} darkMode={darkMode} />
+          <Row label="Business Type" value={""} darkMode={darkMode} />
+          <Row label="Business Volume" value={BusinessVolLakhPerYear?.$numberDecimal ?? ""} darkMode={darkMode} />
+          <Row label="Email" value={EmailId} darkMode={darkMode} />
+          <Row label="Mobile" value={MobileNo["1"]} darkMode={darkMode} />
+          <Row label="Alternate Mobile" value={LandlineNo["2"]} darkMode={darkMode} />
+          <Row label="Demo Taken" value={(() => {
+            const updated = new Date(updatedAt);
+            const now = new Date();
+            const diffDays = Math.floor((now.getTime() - updated.getTime()) / (1000 * 60 * 60 * 24));
+            return diffDays.toLocaleString();
+          })()} darkMode={darkMode} />
+          <Row label="Address" value={Address} darkMode={darkMode} multiline />
         </View>
 
         {/* Remarks Section */}
         <RemarksSection
-          remarks={client.remarks}
+         remarks={Remarks}
           onAddPress={() => setAddRemarkVisible(true)}
           darkMode={darkMode}
         />
 
        {/* Action Button */}
         <ActionSelector
-          selectedAction={selectedAction}
+         selectedAction={selectedAction}
           actions={actions}
           dropdownOpen={dropdownOpen}
           setDropdownOpen={setDropdownOpen}
@@ -110,11 +199,11 @@ export default function DemoClientDetails() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.callBtn}
-            onPress={() => {
-              if (client.mobile) {
-                Linking.openURL(`tel:${client.mobile.replace(/\s+/g, "")}`);
-              }
-            }}
+            onPress={()=>{ if(MobileNo[1])
+                                  {
+                                    Linking.openURL(`tel:${MobileNo[1].length>10?MobileNo[1].slice(2):MobileNo[1]}`)
+                                  }
+                                }}
           >
             <Text style={styles.callBtnText}>CALL</Text>
           </TouchableOpacity>

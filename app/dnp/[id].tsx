@@ -3,7 +3,7 @@ import RemarksSection from "@/components/ui/RemarkSelector";
 
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Linking,
   Modal,
@@ -14,41 +14,121 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
-import { didNotPickClients } from "../../data/dnpClientsData";
+
+
+const actions = [
+
+    "converted",
+      "demo",
+   
+      "wrong number",
+      "call me later",
+      "busy",
+      "out of station",
+      "not interested",
+      "dormants",
+      "emails"
+  
+
+];
+const dummy = {
+  Address: "",
+  "Business_vol Lakh / Year": { $numberDecimal: "" } as { $numberDecimal: string },
+  Company_name: "",
+  "E-mail id": "",
+  "Landline no": "",
+  "Mobile no": "",
+  Remarks: [],
+  State: "",
+  Status: "",
+  _id: "",
+  assignedTo: "",
+  status: "",
+  updatedAt: "",
+};
 
 export default function DidNotPickClientDetails() {
   const { id } = useLocalSearchParams();
-  const client = didNotPickClients[Number(id)];
+  
+  const dispatch=useDispatch();
   const { darkMode } = useTheme();
+const agentEmail = useSelector((state: any) => state.agent.assignedTo);
 
-  const [selectedAction, setSelectedAction] = useState<string>(
-    client.action || ""
-  );
+  const [selectedAction, setSelectedAction] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
   const [, forceUpdate] = useState({});
+  const [lead,setLead]=useState()
 
-  const actions = client.statuses;
-
-  const handleSave = () => {
-    client.action = selectedAction;
-    alert(`Saved action: ${selectedAction || "None"}`);
-  };
-
-  const handleAddRemark = () => {
-    if (remarkInput.trim()) {
-      const today = new Date();
-      const dateStr = today.toLocaleDateString("en-GB").replace(/\//g, "/");
-      client.remarks.push({ date: dateStr, text: remarkInput });
-      setRemarkInput("");
-      setAddRemarkVisible(false);
-      forceUpdate({});
+useEffect(()=>{
+    const fetchLead=async()=>{
+      const res=await fetch(`http://192.168.29.123:3000/lead-by/${id}`)
+      const data=await res.json()
+     
+      setLead(data)
     }
-  };
+    fetchLead()
+},[])
+const {
+  Address = "",
+  "Business_vol Lakh / Year": BusinessVolLakhPerYear = { $numberDecimal: "" } as { $numberDecimal: string },
+  Company_name = "",
+  "E-mail id": EmailId = "",
+  "Landline no": LandlineNo = "",
+  "Mobile no": MobileNo = "",
+  Remarks ,
+  State = "",
+  Status = "",
+  _id = "",
+  assignedTo = "",
+  status = "",
+  updatedAt = "",
+} = lead||dummy ;
+
+
+    const handleSave= async()=>{
+     await fetch("http://192.168.29.123:3000/lead/update", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ userId: agentEmail,leadId:id,status:selectedAction.toLowerCase()}) 
+        });
+      
+       // to normalize if status is filled and assigned to is empty
+    router.push("/dashboard")
+    }
+  
+
+  // const handleAddRemark = () => {
+  //   if (remarkInput.trim()) {
+  //     const today = new Date();
+  //     const dateStr = today.toLocaleDateString("en-GB").replace(/\//g, "/");
+  //     [].push();
+  //     setRemarkInput("");
+  //     setAddRemarkVisible(false);
+  //     forceUpdate({});
+  //   }
+  // };
+  const handleAddRemark = async() => {
+       const res=await fetch('http://192.168.29.123:3000/lead/add-remark',{
+        
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ userId: agentEmail,leadId:id,commentText:remarkInput}) 
+       })
+       const data=await res.json()
+      setLead(data)
+       setRemarkInput("")
+       setAddRemarkVisible(false)
+    };
 
   return (
     <SafeAreaView
@@ -78,7 +158,7 @@ export default function DidNotPickClientDetails() {
         </Text>
 
         <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
-          {client.company}
+          {Company_name}
         </Text>
 
         {/* Details Table */}
@@ -87,31 +167,31 @@ export default function DidNotPickClientDetails() {
         >
           <Row
             label="Contact person"
-            value={client.contactPerson}
+            value={"contactperson"}
             darkMode={darkMode}
           />
-          <Row label="Source" value={client.source} darkMode={darkMode} />
+          <Row label="Source" value={"source"} darkMode={darkMode} />
           <Row
             label="Business Type"
-            value={client.businessType}
+            value={"business type"}
             darkMode={darkMode}
           />
           <Row
             label="Business Volume"
-            value={client.businessVolume}
+            value={BusinessVolLakhPerYear?.$numberDecimal ?? ""}
             darkMode={darkMode}
           />
-          <Row label="Email" value={client.email} darkMode={darkMode} />
-          <Row label="Mobile" value={client.mobile} darkMode={darkMode} />
+          <Row label="Email" value={EmailId} darkMode={darkMode} />
+          <Row label="Mobile" value= {MobileNo["1"]} darkMode={darkMode} />
           <Row
             label="Alternate Mobile"
-            value={client.altMobile}
+            value={LandlineNo["2"]}
             darkMode={darkMode}
           />
 
           <Row
             label="Address"
-            value={client.address}
+            value={Address}
             darkMode={darkMode}
             multiline
           />
@@ -120,7 +200,7 @@ export default function DidNotPickClientDetails() {
         {/* Remarks Section */}
 
         <RemarksSection
-          remarks={client.remarks}
+          remarks={Remarks}
           onAddPress={() => setAddRemarkVisible(true)}
           darkMode={darkMode}
         />
@@ -143,11 +223,12 @@ export default function DidNotPickClientDetails() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.callBtn}
-            onPress={() => {
-              if (client.mobile) {
-                Linking.openURL(`tel:${client.mobile.replace(/\s+/g, "")}`);
-              }
-            }}
+            onPress={()=>{
+                       if(MobileNo[1])
+                       {
+                         Linking.openURL(`tel:${MobileNo[1].length>10?MobileNo[1].slice(2):MobileNo[1]}`)
+                       }
+                     }}
           >
             <Text style={styles.callBtnText}>CALL</Text>
           </TouchableOpacity>

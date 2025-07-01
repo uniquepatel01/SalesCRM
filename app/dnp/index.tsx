@@ -10,16 +10,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
-import { DidNotPickClient, didNotPickClients } from "../../data/dnpClientsData";
 
 export default function DidNotPickScreen() {
   const { darkMode } = useTheme();
+ const {dnp}= useSelector((state:any)=>state.leads.assignedGroupLeads)
 
-  const handlePress = (client: DidNotPickClient, idx: number) => {
+
+  const handlePress = ( idx: string) => {
     router.push({
       pathname: "/dnp/[id]",
-      params: { id: idx.toString() },
+      params: { id: idx },
     });
   };
   return (
@@ -53,21 +55,37 @@ export default function DidNotPickScreen() {
         DID NOT PICK CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {didNotPickClients.map((client, idx) => (
-          <TouchableOpacity
+        {dnp.map((client:any, idx: number) => {
+           const {
+  Address="",
+  "Business_vol Lakh / Year": BusinessVolLakhPerYear="",
+  Company_name,
+  "E-mail id": EmailId="",
+  "Landline no": LandlineNo="",
+  "Mobile no": MobileNo="",
+  Remarks,
+  State="",
+  Status="",        // OR `status` if case-insensitive
+  _id="",
+  assignedTo="",
+  status="",        // Note: you have both `Status` and `status`
+  updatedAt="",
+  
+}=client
+         return <TouchableOpacity
             key={idx}
-            onPress={() => handlePress(client, idx)}
+            onPress={() => handlePress( _id)}
             activeOpacity={0.85}
           >
             <View
               style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
             >
               <Text style={[styles.company, darkMode && { color: "#818CF8" }]}>
-                {client.company}
+                {Company_name}
               </Text>
               <View style={styles.row}>
                 <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                  {client.name}
+                  {Remarks?.[Remarks.length-1]?.comment || ""}
                 </Text>
                 <Text
                   style={[
@@ -76,7 +94,7 @@ export default function DidNotPickScreen() {
                     darkMode && { color: "#fff" },
                   ]}
                 >
-                  {client.mobile}
+                  {MobileNo["1"]=="N/A"?"Mobile number not found":MobileNo["1"]}
                   <Text>{/* /=faltu ka  changes */}</Text>
                 </Text>
               </View>
@@ -90,13 +108,13 @@ export default function DidNotPickScreen() {
                   ]}
                 >
                   <Text style={[styles.value, { color: "#000" }]}>
-                    {client.date}
+                    {client.updatedAt.slice(0,-14)}
                   </Text>
                 </View>
               </View>
             </View>
           </TouchableOpacity>
-        ))}
+})}
       </ScrollView>
     </SafeAreaView>
   );
