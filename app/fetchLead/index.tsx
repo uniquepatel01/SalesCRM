@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  Linking,
   Modal,
   Pressable,
   SafeAreaView,
@@ -66,11 +67,7 @@ const handleSave= async()=>{
     });
    const data = await response.json();
    // to normalize if status is filled and assigned to is empty
-   await fetch("http://192.168.29.123:3000/lead/normalize-status-assignee", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      }})
+   
 
    dispatch(setAssignLeads(data))
   
@@ -183,8 +180,15 @@ const handleAddRemark = async() => {
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
-          <Text style={styles.phoneText}>{ MobileNo[1] || "N/A"}</Text>
-          <TouchableOpacity style={styles.callBtn}>
+          <Text style={styles.phoneText}>{ MobileNo[1]?.slice(2) || "N/A"}</Text>
+          <TouchableOpacity style={styles.callBtn}
+         onPress={()=>{
+                               if(MobileNo[1])
+                               {
+                                 Linking.openURL(`tel:${MobileNo[1].length>10?MobileNo[1]?.slice(2):MobileNo[1]}`)
+                               }
+                             }}
+          >
             <Text style={{ color: "#fff" }}>Call</Text>
           </TouchableOpacity>
         </View>

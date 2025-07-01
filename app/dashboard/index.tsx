@@ -1,6 +1,9 @@
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
 import { setAssignLeads } from "@/store/assignedLeadSlice";
+
+// import * as Notifications from 'expo-notifications';
+// import * as Device from 'expo-device';
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -19,24 +22,7 @@ export default function DashboardScreen() {
   const [data,setData]=useState()
   const agentEmail = useSelector((state: any) => state.agent.assignedTo)
   const dispatch=useDispatch()
-  useEffect(()=>{
-  const unassignLead=async()=>{
-    try {
-       await fetch('http://192.168.29.123:3000/lead/unassign',
-        {
-          method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ userId: agentEmail})
-        }
-      )
-    } catch (error) {
-      console.error(error)
-    }
-  }
-  unassignLead()
-  },[agentEmail])
+  
   useEffect(()=>{
   const allTypes=async()=>{
     const res=await fetch("http://192.168.29.123:3000/leads",{
@@ -50,6 +36,28 @@ export default function DashboardScreen() {
     dispatch(setAssignLeads(data))
     
   }
+  // const scheduleNotification = async () => {
+  //     if (Device.isDevice) {
+  //       const { status } = await Notifications.requestPermissionsAsync();
+  //       if (status !== 'granted') {
+  //         alert('Permission for notifications not granted!');
+  //         return;
+  //       }
+
+  //       await Notifications.scheduleNotificationAsync({
+  //         content: {
+  //           title: 'Hello User 👋',
+  //           body: 'Welcome to the app!',
+  //         },
+  //         trigger: null, // Show immediately
+  //       });
+  //     } else {
+  //       alert('Must use physical device for notifications');
+  //     }
+  //   };
+
+  //   scheduleNotification();
+  
   allTypes()
 },[agentEmail])
  

@@ -1,21 +1,21 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router"; // Import router
 import React from "react";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext"; // Adjust path if needed
-import { DemoClient, demoClients } from "../../data/demoClientsData";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function DemoClientsScreen() {
   const { darkMode } = useTheme();
 
+ const {demo}= useSelector((state:any)=>state.leads.assignedGroupLeads)
 
-
-  const handlePress = (client: DemoClient, idx: number) => {
-    router.push({
-      pathname: "/demoClients/[id]",
-      params: { id: idx.toString() }
-    });
-  };
+  const handlePress = ( idx: string) => {
+      router.push({
+        pathname: "/demoClients/[id]",
+        params: { id: idx },
+      });
+    };
 
   return (
     <SafeAreaView
@@ -50,11 +50,29 @@ export default function DemoClientsScreen() {
         <View style={{ width: 28 }} />
       </View>
       <ScrollView contentContainerStyle={styles.content}>
-        {demoClients.map((client, idx) => (
-          <TouchableOpacity
-            key={idx}
-            onPress={() => handlePress(client, idx)}
-            activeOpacity={0.8}
+        {demo?.map((client:any, idx: number) => {
+           const {
+  Address="",
+  "Business_vol Lakh / Year": BusinessVolLakhPerYear="",
+  Company_name,
+  "E-mail id": EmailId="",
+  "Landline no": LandlineNo="",
+  "Mobile no": MobileNo="",
+  Remarks,
+  State="",
+  Status="",        // OR `status` if case-insensitive
+  _id="",
+  assignedTo="",
+  status="",        // Note: you have both `Status` and `status`
+  updatedAt="",
+  
+}=client
+
+
+          return <TouchableOpacity
+          key={idx}
+            onPress={() => handlePress( _id)}
+            activeOpacity={0.85}
           >
             <View
               style={[
@@ -68,7 +86,7 @@ export default function DemoClientsScreen() {
                   darkMode && { color: "#fff" },
                 ]}
               >
-                {client.company}
+               {Company_name}
               </Text>
               <View
                 style={[
@@ -90,12 +108,12 @@ export default function DemoClientsScreen() {
                     darkMode && { color: "#bbb" },
                   ]}
                 >
-                  Demo taken : {client.days} days
+                  Demo Started : {new Date(updatedAt).toLocaleDateString()}
                 </Text>
               </View>
             </View>
           </TouchableOpacity>
-        ))}
+})}
       </ScrollView>
     </SafeAreaView>
   );
