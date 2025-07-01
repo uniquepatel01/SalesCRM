@@ -14,30 +14,28 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
 
-
 const actions = [
+  "converted",
+  "demo",
 
-    "converted",
-      "demo",
-   
-      "wrong number",
-      "call me later",
-      "busy",
-      "out of station",
-      "not interested",
-      "dormants",
-      "emails"
-  
-
+  "wrong number",
+  "call me later",
+  "busy",
+  "out of station",
+  "not interested",
+  "dormants",
+  "emails",
 ];
 const dummy = {
   Address: "",
-  "Business_vol Lakh / Year": { $numberDecimal: "" } as { $numberDecimal: string },
+  "Business_vol Lakh / Year": { $numberDecimal: "" } as {
+    $numberDecimal: string;
+  },
   Company_name: "",
   "E-mail id": "",
   "Landline no": "",
@@ -53,57 +51,61 @@ const dummy = {
 
 export default function DidNotPickClientDetails() {
   const { id } = useLocalSearchParams();
-  
-  const dispatch=useDispatch();
+
+  const dispatch = useDispatch();
   const { darkMode } = useTheme();
-const agentEmail = useSelector((state: any) => state.agent.assignedTo);
+  const agentEmail = useSelector((state: any) => state.agent.assignedTo);
 
   const [selectedAction, setSelectedAction] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
   const [, forceUpdate] = useState({});
-  const [lead,setLead]=useState()
+  const [lead, setLead] = useState();
 
-useEffect(()=>{
-    const fetchLead=async()=>{
-      const res=await fetch(`http://192.168.29.123:3000/lead-by/${id}`)
-      const data=await res.json()
-     
-      setLead(data)
-    }
-    fetchLead()
-},[])
-const {
-  Address = "",
-  "Business_vol Lakh / Year": BusinessVolLakhPerYear = { $numberDecimal: "" } as { $numberDecimal: string },
-  Company_name = "",
-  "E-mail id": EmailId = "",
-  "Landline no": LandlineNo = "",
-  "Mobile no": MobileNo = "",
-  Remarks ,
-  State = "",
-  Status = "",
-  _id = "",
-  assignedTo = "",
-  status = "",
-  updatedAt = "",
-} = lead||dummy ;
+  useEffect(() => {
+    const fetchLead = async () => {
+      const res = await fetch(`http://192.168.29.123:3000/lead-by/${id}`);
+      const data = await res.json();
 
+      setLead(data);
+    };
+    fetchLead();
+  }, []);
+  const {
+    Address = "",
+    "Business_vol Lakh / Year": BusinessVolLakhPerYear = {
+      $numberDecimal: "",
+    } as { $numberDecimal: string },
+    Company_name = "",
+    "E-mail id": EmailId = "",
+    "Landline no": LandlineNo = "",
+    "Mobile no": MobileNo = "",
+    Remarks,
+    State = "",
+    Status = "",
+    _id = "",
+    assignedTo = "",
+    status = "",
+    updatedAt = "",
+  } = lead || dummy;
 
-    const handleSave= async()=>{
-     await fetch("http://192.168.29.123:3000/lead/update", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ userId: agentEmail,leadId:id,status:selectedAction.toLowerCase()}) 
-        });
-      
-       // to normalize if status is filled and assigned to is empty
-    router.push("/dashboard")
-    }
-  
+  const handleSave = async () => {
+    await fetch("http://192.168.29.123:3000/lead/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: agentEmail,
+        leadId: id,
+        status: selectedAction.toLowerCase(),
+      }),
+    });
+
+    // to normalize if status is filled and assigned to is empty
+    router.push("/dashboard");
+  };
 
   // const handleAddRemark = () => {
   //   if (remarkInput.trim()) {
@@ -115,20 +117,23 @@ const {
   //     forceUpdate({});
   //   }
   // };
-  const handleAddRemark = async() => {
-       const res=await fetch('http://192.168.29.123:3000/lead/add-remark',{
-        
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ userId: agentEmail,leadId:id,commentText:remarkInput}) 
-       })
-       const data=await res.json()
-      setLead(data)
-       setRemarkInput("")
-       setAddRemarkVisible(false)
-    };
+  const handleAddRemark = async () => {
+    const res = await fetch("http://192.168.29.123:3000/lead/add-remark", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: agentEmail,
+        leadId: id,
+        commentText: remarkInput,
+      }),
+    });
+    const data = await res.json();
+    setLead(data);
+    setRemarkInput("");
+    setAddRemarkVisible(false);
+  };
 
   return (
     <SafeAreaView
@@ -178,23 +183,22 @@ const {
           />
           <Row
             label="Business Volume"
-            value={BusinessVolLakhPerYear?.$numberDecimal ?? ""}
+            value={
+              BusinessVolLakhPerYear?.$numberDecimal
+                ? Number(BusinessVolLakhPerYear.$numberDecimal).toFixed(2)
+                : ""
+            }
             darkMode={darkMode}
           />
           <Row label="Email" value={EmailId} darkMode={darkMode} />
-          <Row label="Mobile" value= {MobileNo["1"]} darkMode={darkMode} />
+          <Row label="Mobile" value={MobileNo["1"]} darkMode={darkMode} />
           <Row
             label="Alternate Mobile"
             value={LandlineNo["2"]}
             darkMode={darkMode}
           />
 
-          <Row
-            label="Address"
-            value={Address}
-            darkMode={darkMode}
-            multiline
-          />
+          <Row label="Address" value={Address} darkMode={darkMode} multiline />
         </View>
 
         {/* Remarks Section */}
@@ -223,12 +227,15 @@ const {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.callBtn}
-            onPress={()=>{
-                       if(MobileNo[1])
-                       {
-                         Linking.openURL(`tel:${MobileNo[1].length>10?MobileNo[1].slice(2):MobileNo[1]}`)
-                       }
-                     }}
+            onPress={() => {
+              if (MobileNo[1]) {
+                Linking.openURL(
+                  `tel:${
+                    MobileNo[1].length > 10 ? MobileNo[1].slice(2) : MobileNo[1]
+                  }`
+                );
+              }
+            }}
           >
             <Text style={styles.callBtnText}>CALL</Text>
           </TouchableOpacity>

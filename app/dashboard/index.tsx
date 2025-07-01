@@ -19,66 +19,59 @@ import { useTheme } from "../../ThemeContext"; // adjust path if needed
 
 export default function DashboardScreen() {
   const { darkMode, toggleTheme } = useTheme();
-  const [data,setData]=useState()
-  const agentEmail = useSelector((state: any) => state.agent.assignedTo)
-  const dispatch=useDispatch()
-  
-  useEffect(()=>{
-  const allTypes=async()=>{
-    const res=await fetch("http://192.168.29.123:3000/leads",{
-     method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ userId: agentEmail})
-    })
-    const data=await res.json()
-    dispatch(setAssignLeads(data))
-    
-  }
-  // const scheduleNotification = async () => {
-  //     if (Device.isDevice) {
-  //       const { status } = await Notifications.requestPermissionsAsync();
-  //       if (status !== 'granted') {
-  //         alert('Permission for notifications not granted!');
-  //         return;
-  //       }
+  const [data, setData] = useState();
+  const agentEmail = useSelector((state: any) => state.agent.assignedTo);
+  const dispatch = useDispatch();
 
-  //       await Notifications.scheduleNotificationAsync({
-  //         content: {
-  //           title: 'Hello User 👋',
-  //           body: 'Welcome to the app!',
-  //         },
-  //         trigger: null, // Show immediately
-  //       });
-  //     } else {
-  //       alert('Must use physical device for notifications');
-  //     }
-  //   };
+  useEffect(() => {
+    const allTypes = async () => {
+      const res = await fetch("http://192.168.29.123:3000/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: agentEmail }),
+      });
+      const data = await res.json();
+      dispatch(setAssignLeads(data));
+    };
+    // const scheduleNotification = async () => {
+    //     if (Device.isDevice) {
+    //       const { status } = await Notifications.requestPermissionsAsync();
+    //       if (status !== 'granted') {
+    //         alert('Permission for notifications not granted!');
+    //         return;
+    //       }
 
-  //   scheduleNotification();
-  
-  allTypes()
-},[agentEmail])
- 
-  
-const {
-  busy,
-  converted,
-  demo,
-  dnp,
-  dormants,
-  emails,
-  "call me later": callMeLater,
-  "not interested": notInterested,
-  "out of station": outOfStation,
-  "wrong number": wrongNumber
-}= useSelector((state:any)=> state.leads.assignedGroupLeads)
- 
+    //       await Notifications.scheduleNotificationAsync({
+    //         content: {
+    //           title: 'Hello User 👋',
+    //           body: 'Welcome to the app!',
+    //         },
+    //         trigger: null, // Show immediately
+    //       });
+    //     } else {
+    //       alert('Must use physical device for notifications');
+    //     }
+    //   };
 
-    
- 
+    //   scheduleNotification();
 
+    allTypes();
+  }, [agentEmail]);
+
+  const {
+    busy,
+    converted,
+    demo,
+    dnp,
+    dormants,
+    emails,
+    "call me later": callMeLater,
+    "not interested": notInterested,
+    "out of station": outOfStation,
+    "wrong number": wrongNumber,
+  } = useSelector((state: any) => state.leads.assignedGroupLeads);
 
   const statusBoxes = [
     {
@@ -102,7 +95,7 @@ const {
       count: callMeLater?.length ?? 0,
       color: "#10B981", // Emerald Green
       bgColor: "#D1FADF", // Bright Mint
-      status: "dormats",
+      status: "call me later",
       route: "/callmeLater",
     },
     {
@@ -123,7 +116,7 @@ const {
     },
     {
       title: "Busy",
-      count:busy?.length ?? 0,
+      count: busy?.length ?? 0,
       color: "#0EA5E9", // Cyan Blue
       bgColor: "#C7F0FF", // Light Cyan
       status: "busy",
@@ -170,14 +163,12 @@ const {
     });
   };
 
- 
-
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#222" }]}
       edges={["top"]}
     >
-      <DashboardHeader  />
+      <DashboardHeader />
       <ScrollView style={styles.content}>
         <Text style={[styles.sectionTitle, darkMode && { color: "#fff" }]}>
           Lead Status Overview
