@@ -10,16 +10,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
-import { DormantClient, dormantClients } from "../../data/dormantsClientsData";
 
-export default function DormantClients() {
+export default function DormantsScreen() {
   const { darkMode } = useTheme();
+  const dormants = useSelector(
+    (state: any) => state.leads.assignedGroupLeads["dormants"]
+  );
 
-  const handlePress = (client: DormantClient, idx: number) => {
+  const handlePress = (idx: string) => {
     router.push({
       pathname: "/dormant/[id]",
-      params: { id: idx.toString() },
+      params: { id: idx },
     });
   };
   return (
@@ -50,54 +53,74 @@ export default function DormantClients() {
           darkMode && { color: "#fff", backgroundColor: "#181A20" },
         ]}
       >
-        Dormant Clients
+        DORMANTS CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {dormantClients.map((client, idx) => (
-          <TouchableOpacity
-            key={idx}
-            onPress={() => handlePress(client, idx)}
-            activeOpacity={0.85}
-          >
-            <View
-              style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
+        {dormants.map((client: any, idx: number) => {
+          const {
+            Address = "",
+            "Business_vol Lakh / Year": BusinessVolLakhPerYear = "",
+            Company_name,
+            "E-mail id": EmailId = "",
+            "Landline no": LandlineNo = "",
+            "Mobile no": MobileNo = "",
+            Remarks,
+            State = "",
+            Status = "", // OR `status` if case-insensitive
+            _id = "",
+            assignedTo = "",
+            status = "", // Note: you have both `Status` and `status`
+            updatedAt = "",
+          } = client;
+          return (
+            <TouchableOpacity
+              key={idx}
+              onPress={() => handlePress(_id)}
+              activeOpacity={0.85}
             >
-              <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
-                {client.company}
-              </Text>
-              <View style={styles.row}>
-                <Text style={[styles.label, darkMode && { color: "#fff" }]}>
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {client.name}
-                  </Text>
-                </Text>
+              <View
+                style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
+              >
                 <Text
-                  style={[
-                    styles.label,
-                    { marginLeft: 16 },
-                    darkMode && { color: "#fff" },
-                  ]}
+                  style={[styles.company, darkMode && { color: "#818CF8" }]}
                 >
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {client.mobile}
-                  </Text>
+                  {Company_name}
                 </Text>
-              </View>
-              <View style={styles.dateRow}>
-                <View
-                  style={[
-                    styles.dateBadge,
-                    darkMode && { backgroundColor: "#E94444" },
-                  ]}
-                >
-                  <Text style={[styles.value, { color: "white" }]}>
-                    {client.demoTaken}
+                <View style={styles.row}>
+                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
+                    {Remarks?.[Remarks.length - 1]?.comment || ""}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.value,
+                      { marginLeft: 16 },
+                      darkMode && { color: "#fff" },
+                    ]}
+                  >
+                    {MobileNo["1"] == "N/A"
+                      ? "Mobile number not found"
+                      : MobileNo["1"]}
+                    <Text>{/* /=faltu ka  changes */}</Text>
                   </Text>
                 </View>
+                <View style={styles.dateRow}>
+                  <View
+                    style={[
+                      styles.dateBadge,
+                      darkMode
+                        ? { backgroundColor: "#FBCFE8" }
+                        : { backgroundColor: "#FBCFE8" },
+                    ]}
+                  >
+                    <Text style={[styles.value, { color: "#000" }]}>
+                      {client.updatedAt.slice(0, -14)}
+                    </Text>
+                  </View>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );
@@ -166,7 +189,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   dateBadge: {
-    backgroundColor: "red",
+    backgroundColor: "#FFD6D6", // default soft red
     borderRadius: 50,
     paddingHorizontal: 12,
     paddingVertical: 4,
