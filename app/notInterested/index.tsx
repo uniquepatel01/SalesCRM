@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router } from "expo-router"; // Import router
 import React from "react";
 import {
   Pressable,
@@ -10,96 +10,101 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useTheme } from "../../ThemeContext";
-import {
-  NotInterestedClient,
-  notInterestedClients,
-} from "../../data/notInterestedClientsData";
+import { useSelector } from "react-redux";
+import { useTheme } from "../../ThemeContext"; // Adjust path if needed
 
 export default function NotInterestedScreen() {
   const { darkMode } = useTheme();
 
-  const handlePress = (client: NotInterestedClient, idx: number) => {
+  const notInterested = useSelector(
+    (state: any) => state.leads.assignedGroupLeads["not interested"]
+  );
+
+  const handlePress = (idx: string) => {
     router.push({
       pathname: "/notInterested/[id]",
-      params: { id: idx.toString() },
+      params: { id: idx },
     });
   };
+
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
-      {/* Back Arrow Icon */}
-      <Pressable
-        onPress={() => router.back()}
-        style={{
-          position: "absolute",
-          top: 10,
-          left: 10,
-          zIndex: 100,
-          backgroundColor: "transparent",
-          padding: 4,
-        }}
-      >
-        <Ionicons
-          name="arrow-back"
-          size={28}
-          color={darkMode ? "#fff" : "#000"}
-        />
-      </Pressable>
-      <Text
-        style={[
-          styles.sectionTitle,
-          darkMode && { color: "#fff", backgroundColor: "#181A20" },
-        ]}
-      >
-        NOT INTERESTED CLIENTS
-      </Text>
+      <View style={styles.headerRow}>
+        {/* Back Arrow Icon */}
+        <Pressable
+          onPress={() => router.back()}
+          style={{
+            position: "absolute",
+            top: 10,
+            left: 10,
+            zIndex: 100,
+            backgroundColor: "transparent",
+            padding: 4,
+          }}
+        >
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#fff" : "#000"}
+          />
+        </Pressable>
+        <Text style={[styles.header, darkMode && { color: "#fff" }]}>
+          NOT INTERESTED CLIENTS
+        </Text>
+        <View style={{ width: 28 }} />
+      </View>
       <ScrollView contentContainerStyle={styles.content}>
-        {notInterestedClients.map((client, idx) => (
-          <TouchableOpacity
-            key={idx}
-            onPress={() => handlePress(client, idx)}
-            activeOpacity={0.85}
-          >
-            <View
-              style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
+        {notInterested?.map((client: any, idx: number) => {
+          const {
+            Address = "",
+            "Business_vol Lakh / Year": BusinessVolLakhPerYear = "",
+            Company_name,
+            "E-mail id": EmailId = "",
+            "Landline no": LandlineNo = "",
+            "Mobile no": MobileNo = "",
+            Remarks,
+            State = "",
+            Status = "", // OR `status` if case-insensitive
+            _id = "",
+            assignedTo = "",
+            status = "", // Note: you have both `Status` and `status`
+            updatedAt = "",
+          } = client;
+
+          return (
+            <TouchableOpacity
+              key={idx}
+              onPress={() => handlePress(_id)}
+              activeOpacity={0.85}
             >
-              <Text style={[styles.company, darkMode && { color: "#818CF8" }]}>
-                {client.company}
-              </Text>
-              <View style={styles.row}>
-                <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                  {client.name}
+              <View
+                style={[
+                  styles.card,
+                  darkMode && { backgroundColor: "#23262F" },
+                ]}
+              >
+                <Text style={[styles.company, darkMode && { color: "#fff" }]}>
+                  {Company_name}
                 </Text>
-                <Text
-                  style={[
-                    styles.value,
-                    { marginLeft: 16 },
-                    darkMode && { color: "#fff" },
-                  ]}
-                >
-                  {client.mobile}
-                  <Text>{/* /=faltu ka  changes */}</Text>
-                </Text>
-              </View>
-              <View style={styles.dateRow}>
                 <View
                   style={[
-                    styles.dateBadge,
-                    darkMode
-                      ? { backgroundColor: "#FBCFE8" }
-                      : { backgroundColor: "#FBCFE8" },
+                    styles.infoBox,
+                    darkMode && { backgroundColor: "#35383F" },
                   ]}
                 >
-                  <Text style={[styles.value, { color: "#000" }]}>
-                    {client.date}
+                  <Text style={[styles.name, darkMode && { color: "#fff" }]}>
+                    Name : {client.name}
+                  </Text>
+                  <Text style={[styles.days, darkMode && { color: "#bbb" }]}>
+                    Demo Started : {new Date(updatedAt).toLocaleDateString()}
                   </Text>
                 </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );
@@ -108,69 +113,62 @@ export default function NotInterestedScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F7F9FC",
+    backgroundColor: "#fff",
     marginTop: 40,
   },
-  content: {
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 16,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontFamily: "Inter-SemiBold",
-    color: "#333",
-    margin: 5,
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    letterSpacing: 1,
     textAlign: "center",
-    backgroundColor: "#F7F9FC",
-    paddingVertical: 12,
-    zIndex: 1,
+    flex: 1,
+    color: "#222",
   },
-  box: {
-    backgroundColor: "#E6F0FF",
-    borderRadius: 16,
-    padding: 20,
+  content: {
+    paddingHorizontal: 12,
+    paddingBottom: 24,
+  },
+  card: {
+    backgroundColor: "#F5F5F5",
+    borderRadius: 12,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
     alignItems: "center",
+    elevation: 1,
   },
   company: {
     fontSize: 18,
-    fontFamily: "Inter-Bold",
-    color: "#0062FF",
+    fontWeight: "bold",
     marginBottom: 8,
+    textAlign: "center",
+    letterSpacing: 1,
+    color: "#222",
   },
-  label: {
+  infoBox: {
+    backgroundColor: "#E5E5E5",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    width: "90%",
+  },
+  name: {
     fontSize: 16,
-    fontFamily: "Inter-SemiBold",
-    color: "#333",
+    fontWeight: "500",
     marginBottom: 2,
     textAlign: "center",
-  },
-  value: {
-    fontFamily: "Inter-Regular",
     color: "#222",
+  },
+  days: {
+    fontSize: 14,
+    color: "#555",
     textAlign: "center",
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 6,
-    gap: 16,
-  },
-  dateRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 4,
-  },
-  dateBadge: {
-    backgroundColor: "#FFD6D6",
-    borderRadius: 50,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
   },
 });
