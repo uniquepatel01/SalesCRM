@@ -1,55 +1,55 @@
 {
   "expo": {
-    "name": "SalesCRM",
-    "slug": "SalesCRM",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "splash": {
-      "image": "./assets/images/crm-logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "icon": "./assets/images/icon.png",
-    "scheme": "salescrm",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/crm-logo.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "foregroundImage": "./assets/images/crm-logo.png"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.uniquepatel01.SalesCRM"
     },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+    "experiments": {
+      "router": true
     },
+    "icon": "./assets/images/icon.png",
+    "ios": {
+      "supportsTablet": true
+    },
+    "name": "SalesCRM",
+    "newArchEnabled": true,
+    "orientation": "portrait",
+    "owner": "akshatsingh047",
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
+          "backgroundColor": "#ffffff",
           "image": "./assets/images/crm-logo.png",
           "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "resizeMode": "contain"
         }
       ]
     ],
-    "experiments": {
-      "router": true
+    "scheme": "salescrm",
+    "slug": "SalesCRM-akshatsingh047",
+    "splash": {
+      "backgroundColor": "#ffffff",
+      "image": "./assets/images/crm-logo.png",
+      "resizeMode": "contain"
+    },
+    "userInterfaceStyle": "automatic",
+    "version": "1.0.0",
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/images/favicon.png",
+      "output": "static"
     },
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "d230bb32-2d67-492b-b42e-07bacc5cdcda"
+        "projectId": "0897d766-6852-426f-bee2-9d0036d81978"
       }
-    },
-    "owner": "uniquepatel01"
+    }
   }
 }

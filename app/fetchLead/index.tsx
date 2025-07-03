@@ -138,9 +138,7 @@ const handleAddRemark = async() => {
           {Company_name || ""}
         </Text>
 
-        <View style={styles.inputBox}>
-          <Text>{"forex" }</Text>
-        </View>
+        
         <View style={styles.inputBox}>
           <Text>{Company_name || ""}</Text>
         </View>
@@ -180,12 +178,12 @@ const handleAddRemark = async() => {
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
-          <Text style={styles.phoneText}>{ MobileNo[1]?.slice(2) || "N/A"}</Text>
+          <Text style={styles.phoneText}>{ MobileNo[1]?.length>10?MobileNo[1].slice(2):MobileNo[1] || "N/A"}</Text>
           <TouchableOpacity style={styles.callBtn}
          onPress={()=>{
                                if(MobileNo[1])
                                {
-                                 Linking.openURL(`tel:${MobileNo[1].length>10?MobileNo[1]?.slice(2):MobileNo[1]}`)
+                                 Linking.openURL(`tel:${MobileNo[1]?.length>10?MobileNo[1].slice(2):MobileNo[1]}`)
                                }
                              }}
           >
