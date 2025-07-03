@@ -5,12 +5,12 @@
         "buildType": "apk"
       }
     },
-    "release": {
+    "production": {
       "android": {
         "buildType": "apk"
       }
     },
-    "production": {
+    "release": {
       "android": {
         "buildType": "apk"
       }

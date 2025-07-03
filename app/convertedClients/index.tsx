@@ -1,9 +1,9 @@
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "../../ThemeContext";
 import { ConvertedClient, convertedClients } from "../../data/convertedClientsData";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function ConvertedClientsScreen() {
   const { darkMode } = useTheme();
