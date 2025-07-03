@@ -10,16 +10,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
-import { EmailClient, emailClients } from "../../data/emailClientsData";
 
 export default function EmailScreen() {
   const { darkMode } = useTheme();
+  const { emails } = useSelector(
+    (state: any) => state.leads.assignedGroupLeads
+  );
 
-  const handlePress = (client: EmailClient, idx: number) => {
+  const handlePress = (idx: string) => {
     router.push({
       pathname: "/email/[id]",
-      params: { id: idx.toString() },
+      params: { id: idx },
     });
   };
   return (
@@ -53,50 +56,71 @@ export default function EmailScreen() {
         EMAIL CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {emailClients.map((client, idx) => (
-          <TouchableOpacity
-            key={idx}
-            onPress={() => handlePress(client, idx)}
-            activeOpacity={0.85}
-          >
-            <View
-              style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
+        {emails.map((client: any, idx: number) => {
+          const {
+            Address = "",
+            "Business_vol Lakh / Year": BusinessVolLakhPerYear = "",
+            Company_name,
+            "E-mail id": EmailId = "",
+            "Landline no": LandlineNo = "",
+            "Mobile no": MobileNo = "",
+            Remarks,
+            State = "",
+            Status = "", // OR `status` if case-insensitive
+            _id = "",
+            assignedTo = "",
+            status = "", // Note: you have both `Status` and `status`
+            updatedAt = "",
+          } = client;
+          return (
+            <TouchableOpacity
+              key={idx}
+              onPress={() => handlePress(_id)}
+              activeOpacity={0.85}
             >
-              <Text style={[styles.company, darkMode && { color: "#818CF8" }]}>
-                {client.company}
-              </Text>
-              <View style={styles.row}>
-                <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                  {client.name}
-                </Text>
+              <View
+                style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
+              >
                 <Text
-                  style={[
-                    styles.value,
-                    { marginLeft: 16 },
-                    darkMode && { color: "#fff" },
-                  ]}
+                  style={[styles.company, darkMode && { color: "#818CF8" }]}
                 >
-                  {client.mobile}
-                  <Text>{/* /=faltu ka  changes */}</Text>
+                  {Company_name}
                 </Text>
-              </View>
-              <View style={styles.dateRow}>
-                <View
-                  style={[
-                    styles.dateBadge,
-                    darkMode
-                      ? { backgroundColor: "#FBCFE8" }
-                      : { backgroundColor: "#FBCFE8" },
-                  ]}
-                >
-                  <Text style={[styles.value, { color: "#000" }]}>
-                    {client.date}
+                <View style={styles.row}>
+                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
+                    {Remarks?.[Remarks.length - 1]?.comment || ""}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.value,
+                      { marginLeft: 16 },
+                      darkMode && { color: "#fff" },
+                    ]}
+                  >
+                    {MobileNo["1"] == "N/A"
+                      ? "Mobile number not found"
+                      : MobileNo["1"]}
+                    <Text>{/* /=Unnecessary  changes */}</Text>
                   </Text>
                 </View>
+                <View style={styles.dateRow}>
+                  <View
+                    style={[
+                      styles.dateBadge,
+                      darkMode
+                        ? { backgroundColor: "#FBCFE8" }
+                        : { backgroundColor: "#FBCFE8" },
+                    ]}
+                  >
+                    <Text style={[styles.value, { color: "#000" }]}>
+                      {client.updatedAt.slice(0, -14)}
+                    </Text>
+                  </View>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );

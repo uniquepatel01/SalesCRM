@@ -3,29 +3,39 @@ import RemarksSection from "@/components/ui/RemarkSelector";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Linking, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Linking,
+  Modal,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
 import { demoClients } from "../../data/demoClientsData";
 
 const actions = [
+  "converted",
 
-    "converted",
-      
-      "dnp",
-      "wrong number",
-      "call me later",
-      "busy",
-      "out of station",
-      "not interested",
-      "dormants",
-      "emails"
-  
-
+  "dnp",
+  "wrong number",
+  "call me later",
+  "busy",
+  "out of station",
+  "not interested",
+  "dormants",
+  "emails",
 ];
 const dummy = {
   Address: "",
-  "Business_vol Lakh / Year": { $numberDecimal: "" } as { $numberDecimal: string },
+  "Business_vol Lakh / Year": { $numberDecimal: "" } as {
+    $numberDecimal: string;
+  },
   Company_name: "",
   "E-mail id": "",
   "Landline no": "",
@@ -39,66 +49,68 @@ const dummy = {
   updatedAt: "",
 };
 
-
 export default function DemoClientDetails() {
- const { id } = useLocalSearchParams();
-  
+  const { id } = useLocalSearchParams();
+
   const client = demoClients[Number(id)];
   const { darkMode } = useTheme();
   const agentEmail = useSelector((state: any) => state.agent.assignedTo);
 
- const [selectedAction, setSelectedAction] = useState("");
+  const [selectedAction, setSelectedAction] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Add Remark State
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
-  const [lead,setLead]=useState()
+  const [lead, setLead] = useState();
 
   // For re-rendering after adding a remark
   const [, forceUpdate] = useState({});
 
+  useEffect(() => {
+    const fetchLead = async () => {
+      const res = await fetch(`http://192.168.29.123:3000/lead-by/${id}`);
+      const data = await res.json();
 
-
-  
-  useEffect(()=>{
-      const fetchLead=async()=>{
-        const res=await fetch(`http://192.168.29.123:3000/lead-by/${id}`)
-        const data=await res.json()
-       
-        setLead(data)
-      }
-      fetchLead()
-  },[])
+      setLead(data);
+    };
+    fetchLead();
+  }, []);
 
   const {
-  Address = "",
-  "Business_vol Lakh / Year": BusinessVolLakhPerYear = { $numberDecimal: "" } as { $numberDecimal: string },
-  Company_name = "",
-  "E-mail id": EmailId = "",
-  "Landline no": LandlineNo = "",
-  "Mobile no": MobileNo = "",
-  Remarks ,
-  State = "",
-  Status = "",
-  _id = "",
-  assignedTo = "",
-  status = "",
-  updatedAt = "",
-} = lead||dummy ;
+    Address = "",
+    "Business_vol Lakh / Year": BusinessVolLakhPerYear = {
+      $numberDecimal: "",
+    } as { $numberDecimal: string },
+    Company_name = "",
+    "E-mail id": EmailId = "",
+    "Landline no": LandlineNo = "",
+    "Mobile no": MobileNo = "",
+    Remarks,
+    State = "",
+    Status = "",
+    _id = "",
+    assignedTo = "",
+    status = "",
+    updatedAt = "",
+  } = lead || dummy;
 
- const handleSave= async()=>{
-      await fetch("http://192.168.29.123:3000/lead/update", {
-           method: "POST",
-           headers: {
-             "Content-Type": "application/json"
-           },
-           body: JSON.stringify({ userId: agentEmail,leadId:id,status:selectedAction.toLowerCase()}) 
-         });
-       
-        // to normalize if status is filled and assigned to is empty
-     router.push("/dashboard")
-     }
+  const handleSave = async () => {
+    await fetch("http://192.168.29.123:3000/lead/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: agentEmail,
+        leadId: id,
+        status: selectedAction.toLowerCase(),
+      }),
+    });
+
+    // to normalize if status is filled and assigned to is empty
+    router.push("/dashboard");
+  };
 
   // const handleAddRemark = () => {
   //   if (remarkInput.trim()) {
@@ -110,25 +122,27 @@ export default function DemoClientDetails() {
   //     forceUpdate({}); // force re-render
   //   }
   // };
-const handleAddRemark = async() => {
-       const res=await fetch('http://192.168.29.123:3000/lead/add-remark',{
-        
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ userId: agentEmail,leadId:id,commentText:remarkInput}) 
-       })
-       const data=await res.json()
-      setLead(data)
-       setRemarkInput("")
-       setAddRemarkVisible(false)
-    };
+  const handleAddRemark = async () => {
+    const res = await fetch("http://192.168.29.123:3000/lead/add-remark", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: agentEmail,
+        leadId: id,
+        commentText: remarkInput,
+      }),
+    });
+    const data = await res.json();
+    setLead(data);
+    setRemarkInput("");
+    setAddRemarkVisible(false);
+  };
   return (
-    <SafeAreaView style={[
-      styles.container,
-      darkMode && { backgroundColor: "#181A20" }
-    ]}>
+    <SafeAreaView
+      style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
+    >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Back Arrow Icon */}
         <Pressable
@@ -142,49 +156,68 @@ const handleAddRemark = async() => {
             padding: 4,
           }}
         >
-          <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#fff" : "#000"}
+          />
         </Pressable>
-        <Text style={[
-          styles.header,
-          darkMode && { color: "#fff" }
-        ]}>DEMO CLIENTS</Text>
+        <Text style={[styles.header, darkMode && { color: "#fff" }]}>
+          DEMO CLIENTS
+        </Text>
 
-        <Text style={[
-          styles.company,
-          darkMode && { color: "#7BB1FF" }
-        ]}>{Company_name}</Text>
+        <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
+          {Company_name}
+        </Text>
 
         {/* Details Table */}
-        <View style={[
-          styles.table,
-          darkMode && { backgroundColor: "#23262F" }
-        ]}>
+        <View
+          style={[styles.table, darkMode && { backgroundColor: "#23262F" }]}
+        >
           <Row label="Contact person" value={""} darkMode={darkMode} />
           <Row label="Source" value={""} darkMode={darkMode} />
           <Row label="Business Type" value={""} darkMode={darkMode} />
-          <Row label="Business Volume" value={BusinessVolLakhPerYear?.$numberDecimal ?? ""} darkMode={darkMode} />
+          <Row
+            label="Business Volume"
+            value={
+              BusinessVolLakhPerYear?.$numberDecimal
+                ? Number(BusinessVolLakhPerYear.$numberDecimal).toFixed(2)
+                : ""
+            }
+            darkMode={darkMode}
+          />
           <Row label="Email" value={EmailId} darkMode={darkMode} />
           <Row label="Mobile" value={MobileNo["1"]} darkMode={darkMode} />
-          <Row label="Alternate Mobile" value={LandlineNo["2"]} darkMode={darkMode} />
-          <Row label="Demo Taken" value={(() => {
-            const updated = new Date(updatedAt);
-            const now = new Date();
-            const diffDays = Math.floor((now.getTime() - updated.getTime()) / (1000 * 60 * 60 * 24));
-            return diffDays.toLocaleString();
-          })()} darkMode={darkMode} />
+          <Row
+            label="Alternate Mobile"
+            value={LandlineNo["2"]}
+            darkMode={darkMode}
+          />
+          <Row
+            label="Demo Taken"
+            value={(() => {
+              const updated = new Date(updatedAt);
+              const now = new Date();
+              const diffDays = Math.floor(
+                (now.getTime() - updated.getTime()) / (1000 * 60 * 60 * 24)
+              );
+              return diffDays.toLocaleString();
+            })()}
+            darkMode={darkMode}
+          />
           <Row label="Address" value={Address} darkMode={darkMode} multiline />
         </View>
 
         {/* Remarks Section */}
         <RemarksSection
-         remarks={Remarks}
+          remarks={Remarks}
           onAddPress={() => setAddRemarkVisible(true)}
           darkMode={darkMode}
         />
 
-       {/* Action Button */}
+        {/* Action Button */}
         <ActionSelector
-         selectedAction={selectedAction}
+          selectedAction={selectedAction}
           actions={actions}
           dropdownOpen={dropdownOpen}
           setDropdownOpen={setDropdownOpen}
@@ -199,11 +232,15 @@ const handleAddRemark = async() => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.callBtn}
-            onPress={()=>{ if(MobileNo[1])
-                                  {
-                                    Linking.openURL(`tel:${MobileNo[1].length>10?MobileNo[1].slice(2):MobileNo[1]}`)
-                                  }
-                                }}
+            onPress={() => {
+              if (MobileNo[1]) {
+                Linking.openURL(
+                  `tel:${
+                    MobileNo[1].length > 10 ? MobileNo[1].slice(2) : MobileNo[1]
+                  }`
+                );
+              }
+            }}
           >
             <Text style={styles.callBtnText}>CALL</Text>
           </TouchableOpacity>
@@ -218,18 +255,23 @@ const handleAddRemark = async() => {
         onRequestClose={() => setAddRemarkVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={[
-            styles.modalContent,
-            darkMode && { backgroundColor: "#23262F" }
-          ]}>
-            <Text style={[
-              styles.modalTitle,
-              darkMode && { color: "#fff" }
-            ]}>Add Remark</Text>
+          <View
+            style={[
+              styles.modalContent,
+              darkMode && { backgroundColor: "#23262F" },
+            ]}
+          >
+            <Text style={[styles.modalTitle, darkMode && { color: "#fff" }]}>
+              Add Remark
+            </Text>
             <TextInput
               style={[
                 styles.input,
-                darkMode && { backgroundColor: "#181A20", color: "#fff", borderColor: "#444" }
+                darkMode && {
+                  backgroundColor: "#181A20",
+                  color: "#fff",
+                  borderColor: "#444",
+                },
               ]}
               placeholder="Enter remark"
               placeholderTextColor={darkMode ? "#aaa" : "#888"}
@@ -270,26 +312,33 @@ type RowProps = {
 function Row({ label, value, darkMode, multiline }: RowProps) {
   return (
     <View style={styles.tableRow}>
-      <View style={[
-        styles.tableCell,
-        styles.tableCellLabel,
-        darkMode && { backgroundColor: "#23262F" }
-      ]}>
-        <Text style={[
-          styles.tableCellText,
-          darkMode && { color: "#fff" }
-        ]}>{label}</Text>
+      <View
+        style={[
+          styles.tableCell,
+          styles.tableCellLabel,
+          darkMode && { backgroundColor: "#23262F" },
+        ]}
+      >
+        <Text style={[styles.tableCellText, darkMode && { color: "#fff" }]}>
+          {label}
+        </Text>
       </View>
-      <View style={[
-        styles.tableCell,
-        styles.tableCellValue,
-        darkMode && { backgroundColor: "#23262F" }
-      ]}>
-        <Text style={[
-          styles.tableCellText,
-          darkMode && { color: "#fff" },
-          multiline && { fontSize: 13 }
-        ]}>{value}</Text>
+      <View
+        style={[
+          styles.tableCell,
+          styles.tableCellValue,
+          darkMode && { backgroundColor: "#23262F" },
+        ]}
+      >
+        <Text
+          style={[
+            styles.tableCellText,
+            darkMode && { color: "#fff" },
+            multiline && { fontSize: 13 },
+          ]}
+        >
+          {value}
+        </Text>
       </View>
     </View>
   );

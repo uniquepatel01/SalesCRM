@@ -1,23 +1,35 @@
 import { Ionicons } from "@expo/vector-icons";
+
 import { router } from "expo-router";
 import React from "react";
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
-import { ConvertedClient, convertedClients } from "../../data/convertedClientsData";
 
-export default function ConvertedClientsScreen() {
+export default function ConvertedScreen() {
   const { darkMode } = useTheme();
+  const converted = useSelector(
+    (state: any) => state.leads.assignedGroupLeads["converted"]
+  );
 
-  const handlePress = (client: ConvertedClient, idx: number) => {
-    router.push(`/convertedClients/${idx}`);
+  const handlePress = (idx: string) => {
+    router.push({
+      pathname: "/convertedClients/[id]",
+      params: { id: idx },
+    });
   };
-
   return (
-    <SafeAreaView style={[
-      styles.container,
-      darkMode && { backgroundColor: "#181A20" }
-    ]}>
-
+    <SafeAreaView
+      style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
+    >
       {/* Back Arrow Icon */}
       <Pressable
         onPress={() => router.back()}
@@ -30,67 +42,86 @@ export default function ConvertedClientsScreen() {
           padding: 4,
         }}
       >
-        <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+        <Ionicons
+          name="arrow-back"
+          size={28}
+          color={darkMode ? "#fff" : "#000"}
+        />
       </Pressable>
-
-      <Text style={[
-        styles.sectionTitle,
-        darkMode && { color: "#fff", backgroundColor: "#181A20" }
-      ]}>
-        Converted Clients
+      <Text
+        style={[
+          styles.sectionTitle,
+          darkMode && { color: "#fff", backgroundColor: "#181A20" },
+        ]}
+      >
+        CONVERTED CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {convertedClients.map((client, idx) => (
-          <TouchableOpacity
-            key={idx}
-            onPress={() => handlePress(client, idx)}
-            activeOpacity={0.85}
-          >
-            <View style={[
-              styles.box,
-              darkMode && { backgroundColor: "#23262F" }
-            ]}>
-              <Text style={[
-                styles.company,
-                darkMode && { color: "#7BB1FF" }
-              ]}>
-                {client.company}
-              </Text>
-              <View style={styles.row}>
-                <Text style={[
-                  styles.label,
-                  darkMode && { color: "#fff" }
-                ]}>
-                  <Text style={[
-                    styles.value,
-                    darkMode && { color: "#fff" }
-                  ]}>{client.name}</Text>
+        {converted.map((client: any, idx: number) => {
+          const {
+            Address = "",
+            "Business_vol Lakh / Year": BusinessVolLakhPerYear = "",
+            Company_name,
+            "E-mail id": EmailId = "",
+            "Landline no": LandlineNo = "",
+            "Mobile no": MobileNo = "",
+            Remarks,
+            State = "",
+            Status = "", // OR `status` if case-insensitive
+            _id = "",
+            assignedTo = "",
+            status = "", // Note: you have both `Status` and `status`
+            updatedAt = "",
+          } = client;
+          return (
+            <TouchableOpacity
+              key={idx}
+              onPress={() => handlePress(_id)}
+              activeOpacity={0.85}
+            >
+              <View
+                style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
+              >
+                <Text
+                  style={[styles.company, darkMode && { color: "#818CF8" }]}
+                >
+                  {Company_name}
                 </Text>
-                <Text style={[
-                  styles.label,
-                  { marginLeft: 16 },
-                  darkMode && { color: "#fff" }
-                ]}>
-                  <Text style={[
-                    styles.value,
-                    darkMode && { color: "#fff" }
-                  ]}>{client.mobile}</Text>
-                </Text>
-              </View>
-              <View style={styles.dateRow}>
-                <View style={[
-                  styles.dateBadge,
-                  darkMode && { backgroundColor: "#1ED760" }
-                ]}>
-                  <Text style={[
-                    styles.value,
-                    { color: "white" }
-                  ]}>{client.convertedDate || "-"}</Text>
+                <View style={styles.row}>
+                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
+                    {Remarks?.[Remarks.length - 1]?.comment || ""}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.value,
+                      { marginLeft: 16 },
+                      darkMode && { color: "#fff" },
+                    ]}
+                  >
+                    {MobileNo["1"] == "N/A"
+                      ? "Mobile number not found"
+                      : MobileNo["1"]}
+                    <Text>{/* /=unnecessary  changes */}</Text>
+                  </Text>
+                </View>
+                <View style={styles.dateRow}>
+                  <View
+                    style={[
+                      styles.dateBadge,
+                      darkMode
+                        ? { backgroundColor: "#FBCFE8" }
+                        : { backgroundColor: "#FBCFE8" },
+                    ]}
+                  >
+                    <Text style={[styles.value, { color: "#000" }]}>
+                      {client.updatedAt.slice(0, -14)}
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );
@@ -99,67 +130,67 @@ export default function ConvertedClientsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F9FC',
-    marginTop: 40
+    backgroundColor: "#F7F9FC",
+    marginTop: 40,
   },
   content: {
     padding: 16,
   },
   sectionTitle: {
     fontSize: 20,
-    fontFamily: 'Inter-SemiBold',
-    color: '#333',
+    fontFamily: "Inter-SemiBold",
+    color: "#333",
     margin: 5,
-    textAlign: 'center',
-    backgroundColor: '#F7F9FC',
+    textAlign: "center",
+    backgroundColor: "#F7F9FC",
     paddingVertical: 12,
     zIndex: 1,
   },
   box: {
-    backgroundColor: '#E6F0FF',
+    backgroundColor: "#E6F0FF",
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-    alignItems: 'center',
+    alignItems: "center",
   },
   company: {
     fontSize: 18,
-    fontFamily: 'Inter-Bold',
-    color: '#0062FF',
+    fontFamily: "Inter-Bold",
+    color: "#0062FF",
     marginBottom: 8,
   },
   label: {
     fontSize: 16,
-    fontFamily: 'Inter-SemiBold',
-    color: '#333',
+    fontFamily: "Inter-SemiBold",
+    color: "#333",
     marginBottom: 2,
-    textAlign: 'center',
+    textAlign: "center",
   },
   value: {
-    fontFamily: 'Inter-Regular',
-    color: '#222',
-    textAlign: 'center',
+    fontFamily: "Inter-Regular",
+    color: "#222",
+    textAlign: "center",
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 6,
     gap: 16,
   },
   dateRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 4,
   },
   dateBadge: {
-    backgroundColor: "#1ED760",
+    backgroundColor: "#FFD6D6", // default soft red
     borderRadius: 50,
     paddingHorizontal: 12,
     paddingVertical: 4,

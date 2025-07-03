@@ -37,6 +37,7 @@ export const busyClients: BusyClient[] = [
     statuses: [
       "DNP",
       "Demo",
+      "Busy",
       "Future Client",
       "Call Me Later",
       "Not interested",
@@ -61,6 +62,7 @@ export const busyClients: BusyClient[] = [
     statuses: [
       "DNP",
       "Demo",
+      "Busy",
       "Future Client",
       "Call Me Later",
       "Not interested",
@@ -85,6 +87,7 @@ export const busyClients: BusyClient[] = [
     statuses: [
       "DNP",
       "Demo",
+      "Busy",
       "Future Client",
       "Call Me Later",
       "Not interested",
@@ -109,6 +112,7 @@ export const busyClients: BusyClient[] = [
     statuses: [
       "DNP",
       "Demo",
+      "Busy",
       "Future Client",
       "Call Me Later",
       "Not interested",
@@ -133,6 +137,7 @@ export const busyClients: BusyClient[] = [
     statuses: [
       "DNP",
       "Demo",
+      "Busy",
       "Future Client",
       "Call Me Later",
       "Not interested",
@@ -157,6 +162,7 @@ export const busyClients: BusyClient[] = [
     statuses: [
       "DNP",
       "Demo",
+      "Busy",
       "Future Client",
       "Call Me Later",
       "Not interested",
@@ -181,6 +187,7 @@ export const busyClients: BusyClient[] = [
     statuses: [
       "DNP",
       "Demo",
+      "Busy",
       "Future Client",
       "Call Me Later",
       "Not interested",

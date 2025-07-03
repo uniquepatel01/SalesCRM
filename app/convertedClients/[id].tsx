@@ -1,49 +1,143 @@
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
-import { Linking, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { useTheme } from "../../ThemeContext";
-import { convertedClients } from "../../data/convertedClientsData";
-import { Ionicons } from "@expo/vector-icons";
+import ActionSelector from "@/components/ui/ActionSelector";
 import RemarksSection from "@/components/ui/RemarkSelector";
 
-export default function ConvertedClientDetails() {
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+  Linking,
+  Modal,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { useTheme } from "../../ThemeContext";
+
+const actions = [
+  "demo",
+  "call me later",
+  "dnp",
+  "wrong number",
+  "busy",
+  "out of station",
+  "not interested",
+  "dormants",
+  "emails",
+];
+const dummy = {
+  Address: "",
+  "Business_vol Lakh / Year": { $numberDecimal: "" } as {
+    $numberDecimal: string;
+  },
+  Company_name: "",
+  "E-mail id": "",
+  "Landline no": "",
+  "Mobile no": "",
+  Remarks: [],
+  State: "",
+  Status: "",
+  _id: "",
+  assignedTo: "",
+  status: "",
+  updatedAt: "",
+};
+
+export default function ConvertedDetails() {
   const { id } = useLocalSearchParams();
-  const client = convertedClients[Number(id)];
+
+  const dispatch = useDispatch();
   const { darkMode } = useTheme();
+  const agentEmail = useSelector((state: any) => state.agent.assignedTo);
 
-  const [selectedAction, setSelectedAction] = useState<string>(client.action || "");
+  const [selectedAction, setSelectedAction] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  // Add Remark State
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
-
-  // For re-rendering after adding a remark
   const [, forceUpdate] = useState({});
+  const [lead, setLead] = useState();
 
-  const actions = client.statuses;
+  useEffect(() => {
+    const fetchLead = async () => {
+      const res = await fetch(`http://192.168.29.123:3000/lead-by/${id}`);
+      const data = await res.json();
 
-  const handleSave = () => {
-    client.action = selectedAction;
-    alert(`Saved action: ${selectedAction || "None"}`);
+      setLead(data);
+    };
+    fetchLead();
+  }, []);
+  const {
+    Address = "",
+    "Business_vol Lakh / Year": BusinessVolLakhPerYear = {
+      $numberDecimal: "",
+    } as { $numberDecimal: string },
+    Company_name = "",
+    "E-mail id": EmailId = "",
+    "Landline no": LandlineNo = "",
+    "Mobile no": MobileNo = "",
+    Remarks,
+    State = "",
+    Status = "",
+    _id = "",
+    assignedTo = "",
+    status = "",
+    updatedAt = "",
+  } = lead || dummy;
+
+  const handleSave = async () => {
+    await fetch("http://192.168.29.123:3000/lead/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: agentEmail,
+        leadId: id,
+        status: selectedAction.toLowerCase(),
+      }),
+    });
+
+    // to normalize if status is filled and assigned to is empty
+    router.push("/dashboard");
   };
 
-  const handleAddRemark = () => {
-    if (remarkInput.trim()) {
-      const today = new Date();
-      const dateStr = today.toLocaleDateString("en-GB").replace(/\//g, "/");
-      client.remarks.push({ date: dateStr, text: remarkInput });
-      setRemarkInput("");
-      setAddRemarkVisible(false);
-      forceUpdate({});
-    }
+  // const handleAddRemark = () => {
+  //   if (remarkInput.trim()) {
+  //     const today = new Date();
+  //     const dateStr = today.toLocaleDateString("en-GB").replace(/\//g, "/");
+  //     [].push();
+  //     setRemarkInput("");
+  //     setAddRemarkVisible(false);
+  //     forceUpdate({});
+  //   }
+  // };
+  const handleAddRemark = async () => {
+    const res = await fetch("http://192.168.29.123:3000/lead/add-remark", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: agentEmail,
+        leadId: id,
+        commentText: remarkInput,
+      }),
+    });
+    const data = await res.json();
+    setLead(data);
+    setRemarkInput("");
+    setAddRemarkVisible(false);
   };
 
   return (
-    <SafeAreaView style={[
-      styles.container,
-      darkMode && { backgroundColor: "#181A20" }
-    ]}>
+    <SafeAreaView
+      style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
+    >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Back Arrow Icon */}
         <Pressable
@@ -57,54 +151,73 @@ export default function ConvertedClientDetails() {
             padding: 4,
           }}
         >
-          <Ionicons name="arrow-back" size={28} color={darkMode ? "#fff" : "#000"} />
+          <Ionicons
+            name="arrow-back"
+            size={28}
+            color={darkMode ? "#fff" : "#000"}
+          />
         </Pressable>
-        <Text style={[
-          styles.header,
-          darkMode && { color: "#fff" }
-        ]}>CONVERTED CLIENT</Text>
+        <Text style={[styles.header, darkMode && { color: "#fff" }]}>
+          CONVERTED CLIENTS
+        </Text>
 
-        <Text style={[
-          styles.company,
-          darkMode && { color: "#7BB1FF" }
-        ]}>{client.company}</Text>
+        <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
+          {Company_name}
+        </Text>
 
         {/* Details Table */}
-        <View style={[
-          styles.table,
-          darkMode && { backgroundColor: "#23262F" }
-        ]}>
-          <Row label="Contact person" value={client.contactPerson} darkMode={darkMode} />
-          <Row label="Source" value={client.source} darkMode={darkMode} />
-          <Row label="Business Type" value={client.businessType} darkMode={darkMode} />
-          <Row label="Business Volume" value={client.businessVolume} darkMode={darkMode} />
-          <Row label="Email" value={client.email} darkMode={darkMode} />
-          <Row label="Mobile" value={client.mobile} darkMode={darkMode} />
-          <Row label="Alternate Mobile" value={client.altMobile} darkMode={darkMode} />
-          <Row label="Demo Taken" value={client.demoTaken} darkMode={darkMode} />
-          <Row label="Address" value={client.address} darkMode={darkMode} multiline />
-          <View style={styles.tableRow}>
-            <View style={[styles.tableCell, styles.tableCellLabel, darkMode && { backgroundColor: "#23262F" }]}>
-              <Text style={[styles.tableCellText, darkMode && { color: "#fff" }]}>Converted Date</Text>
-            </View>
-            <View style={[styles.tableCell, styles.tableCellValue, darkMode && { backgroundColor: "#181A20" }]}>
-              <View style={styles.convertedDateBadge}>
-                <Text style={styles.convertedDateText}>
-                  {client.convertedDate || "-"}
-                </Text>
-              </View>
-            </View>
-          </View>
+        <View
+          style={[styles.table, darkMode && { backgroundColor: "#23262F" }]}
+        >
+          <Row
+            label="Contact person"
+            value={"contactperson"}
+            darkMode={darkMode}
+          />
+          <Row label="Source" value={"source"} darkMode={darkMode} />
+          <Row
+            label="Business Type"
+            value={"business type"}
+            darkMode={darkMode}
+          />
+          <Row
+            label="Business Volume"
+            value={
+              BusinessVolLakhPerYear?.$numberDecimal
+                ? Number(BusinessVolLakhPerYear.$numberDecimal).toFixed(2)
+                : ""
+            }
+            darkMode={darkMode}
+          />
+          <Row label="Email" value={EmailId} darkMode={darkMode} />
+          <Row label="Mobile" value={MobileNo["1"]} darkMode={darkMode} />
+          <Row
+            label="Alternate Mobile"
+            value={LandlineNo["2"]}
+            darkMode={darkMode}
+          />
+
+          <Row label="Address" value={Address} darkMode={darkMode} multiline />
         </View>
 
         {/* Remarks Section */}
+
         <RemarksSection
-          remarks={client.remarks}
+          remarks={Remarks}
           onAddPress={() => setAddRemarkVisible(true)}
           darkMode={darkMode}
         />
 
+        {/* Action Button */}
 
+        <ActionSelector
+          selectedAction={selectedAction}
+          actions={actions}
+          dropdownOpen={dropdownOpen}
+          setDropdownOpen={setDropdownOpen}
+          setSelectedAction={setSelectedAction}
+          darkMode={darkMode}
+        />
 
         {/* Buttons */}
         <View style={styles.buttonRow}>
@@ -114,8 +227,12 @@ export default function ConvertedClientDetails() {
           <TouchableOpacity
             style={styles.callBtn}
             onPress={() => {
-              if (client.mobile) {
-                Linking.openURL(`tel:${client.mobile.replace(/\s+/g, "")}`);
+              if (MobileNo[1]) {
+                Linking.openURL(
+                  `tel:${
+                    MobileNo[1].length > 10 ? MobileNo[1].slice(2) : MobileNo[1]
+                  }`
+                );
               }
             }}
           >
@@ -132,18 +249,23 @@ export default function ConvertedClientDetails() {
         onRequestClose={() => setAddRemarkVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={[
-            styles.modalContent,
-            darkMode && { backgroundColor: "#23262F" }
-          ]}>
-            <Text style={[
-              styles.modalTitle,
-              darkMode && { color: "#fff" }
-            ]}>Add Remark</Text>
+          <View
+            style={[
+              styles.modalContent,
+              darkMode && { backgroundColor: "#23262F" },
+            ]}
+          >
+            <Text style={[styles.modalTitle, darkMode && { color: "#fff" }]}>
+              Add Remark
+            </Text>
             <TextInput
               style={[
                 styles.input,
-                darkMode && { backgroundColor: "#181A20", color: "#fff", borderColor: "#444" }
+                darkMode && {
+                  backgroundColor: "#181A20",
+                  color: "#fff",
+                  borderColor: "#444",
+                },
               ]}
               placeholder="Enter remark"
               placeholderTextColor={darkMode ? "#aaa" : "#888"}
@@ -160,10 +282,13 @@ export default function ConvertedClientDetails() {
                 <Text style={styles.saveBtnText}>ADD</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.callBtn, { flex: 1, marginLeft: 8 }]}
+                style={[
+                  styles.callBtn,
+                  { flex: 1, marginLeft: 8, backgroundColor: "red" },
+                ]}
                 onPress={() => setAddRemarkVisible(false)}
               >
-                <Text style={styles.callBtnText}>CANCEL</Text>
+                <Text style={[styles.callBtnText]}>CANCEL</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -173,8 +298,7 @@ export default function ConvertedClientDetails() {
   );
 }
 
-// You can reuse the Row component and styles from demoClients/[id].tsx
-
+// Table row component
 type RowProps = {
   label: string;
   value: string;
@@ -182,23 +306,40 @@ type RowProps = {
   multiline?: boolean;
 };
 
-const Row: React.FC<RowProps> = ({ label, value, darkMode, multiline }) => (
-  <View style={styles.tableRow}>
-    <View style={[styles.tableCell, styles.tableCellLabel, darkMode && { backgroundColor: "#23262F" }]}>
-      <Text style={[styles.tableCellText, darkMode && { color: "#fff" }]}>{label}</Text>
-    </View>
-    <View style={[styles.tableCell, styles.tableCellValue, darkMode && { backgroundColor: "#181A20" }]}>
-      <Text
-        style={[styles.tableCellText, darkMode && { color: "#fff" }]}
-        numberOfLines={multiline ? 0 : 1}
+function Row({ label, value, darkMode, multiline }: RowProps) {
+  return (
+    <View style={styles.tableRow}>
+      <View
+        style={[
+          styles.tableCell,
+          styles.tableCellLabel,
+          darkMode && { backgroundColor: "#23262F" },
+        ]}
       >
-        {value}
-      </Text>
+        <Text style={[styles.tableCellText, darkMode && { color: "#fff" }]}>
+          {label}
+        </Text>
+      </View>
+      <View
+        style={[
+          styles.tableCell,
+          styles.tableCellValue,
+          darkMode && { backgroundColor: "#23262F" },
+        ]}
+      >
+        <Text
+          style={[
+            styles.tableCellText,
+            darkMode && { color: "#fff" },
+            multiline && { fontSize: 13 },
+          ]}
+        >
+          {value}
+        </Text>
+      </View>
     </View>
-  </View>
-);
-
-
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -416,18 +557,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "#f7f7f7",
     color: "#222",
-  },
-  convertedDateBadge: {
-    backgroundColor: "#1ED760",
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    alignSelf: "flex-start",
-  },
-  convertedDateText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 15,
-    letterSpacing: 1,
   },
 });
