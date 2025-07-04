@@ -48,7 +48,7 @@ export default function DashboardHeader() {
  //----------------------handle click on fetch Lead Button------------------------------------------
   const handleFetchLead = async () => {
   const response = await fetch("http://192.168.29.123:3000/forex-leads/assign", {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },

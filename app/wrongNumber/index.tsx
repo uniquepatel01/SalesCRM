@@ -19,12 +19,7 @@ export default function WrongNumberScreen() {
     (state: any) => state.leads.assignedGroupLeads["wrong number"]
   );
 
-  const handlePress = (idx: string) => {
-    router.push({
-      pathname: "/wrongNumber/[id]",
-      params: { id: idx },
-    });
-  };
+
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
@@ -66,8 +61,7 @@ export default function WrongNumberScreen() {
           return (
             <TouchableOpacity
               key={idx}
-              onPress={() => handlePress(_id)}
-              activeOpacity={0.85}
+             
             >
               <View
                 style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}

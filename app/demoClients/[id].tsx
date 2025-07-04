@@ -97,7 +97,7 @@ export default function DemoClientDetails() {
 
   const handleSave = async () => {
     await fetch("http://192.168.29.123:3000/lead/update", {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -124,7 +124,7 @@ export default function DemoClientDetails() {
   // };
   const handleAddRemark = async () => {
     const res = await fetch("http://192.168.29.123:3000/lead/add-remark", {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
