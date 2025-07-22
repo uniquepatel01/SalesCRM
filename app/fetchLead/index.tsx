@@ -1,12 +1,12 @@
 import ActionSelector from "@/components/ui/ActionSelector";
 import RemarksSection from "@/components/ui/RemarkSelector";
 
-
-import { setAssignLeads, setChangedStatus, setCurrentFetchedLead, unsetCurrentLead } from "@/store/assignedLeadSlice";
+import { setChangedStatus, setCurrentFetchedLead, unsetCurrentLead } from "@/store/assignedLeadSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  Alert,
   Linking,
   Modal,
   Pressable,
@@ -20,7 +20,7 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
-
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 
 
@@ -58,27 +58,33 @@ useEffect(()=>{
 dispatch(setChangedStatus(changeStatus))
 },[changeStatus])
 const handleSave= async()=>{
- const response = await fetch("http://192.168.29.123:3000/lead/update", {
+  await fetch(`${apiUrl}/lead/update`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ userId: agentId,leadId:leadId,status:changeStatus.toLowerCase()}) 
     });
-   const data = await response.json();
-   // to normalize if status is filled and assigned to is empty
-   
 
-   dispatch(setAssignLeads(data))
-  
-dispatch(unsetCurrentLead())
-
+  dispatch(unsetCurrentLead()) //set the current assigned lead to empty {}
 router.push("/dashboard")
 }
+const handleEmail = (recipientEmail: string) => {
+if(!recipientEmail || recipientEmail.trim() === ""|| recipientEmail === "N/A") {
+    Alert.alert("No email provided", "This lead does not have an email address.");
+    return;
+  }
+  const emailUrl = `mailto:${recipientEmail}`;
+  Linking.openURL(emailUrl).catch((err) =>
+    console.error("Failed to open email client:", err)
+  );
+};
+
 
 const handleAddRemark = async() => {
-     const res=await fetch('http://192.168.29.123:3000/lead/add-remark',{
-      
+  if(!remarkInput.trim()) return;
+     const res=await fetch(`${apiUrl}/lead/add-remark`,{
+
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -92,19 +98,22 @@ const handleAddRemark = async() => {
   };
 
   const {
-  Address="",
-  "Business_vol Lakh / Year": BusinessVolLakhPerYear="",
   Company_name,
-  "E-mail id": EmailId="",
-  "Landline no": LandlineNo="",
-  "Mobile no": MobileNo="",
-  Remarks,
-  State="",
-  Status="",        // OR `status` if case-insensitive
-  _id="",
-  assignedTo="",
-  status="",        // Note: you have both `Status` and `status`
-  updatedAt="",
+      Business_vol_Lakh_Per_Year,
+      Address,
+      City,
+      Mobile_no,
+      Landline_no,
+      E_mail_id,
+      Remarks,
+      status,
+      assignedTo,
+      business_type,
+      city,
+      contact_person,
+      source,
+      State
+  
 } = useSelector((state:any)=>state.leads.currentFetchedLead)
 
   return (
@@ -140,16 +149,16 @@ const handleAddRemark = async() => {
 
         
         <View style={styles.inputBox}>
-          <Text>{Company_name || ""}</Text>
+          <Text>{contact_person || "contact person not found"}</Text>
         </View>
         <View style={styles.inputBox}>
-          <Text>{parseFloat(BusinessVolLakhPerYear?.$numberDecimal || "0").toFixed(3)}</Text>
+          <Text>{Business_vol_Lakh_Per_Year+ " lakhs per year"}</Text>
         </View>
         <View style={styles.inputBox}>
           <Text>{Address || ""}</Text>
         </View>
         <View style={styles.inputBox}>
-          <Text>{State || ""}</Text>
+          <Text>{State || "State not found"}</Text>
         </View>
 
         {/* Remarks Section */}
@@ -172,18 +181,21 @@ const handleAddRemark = async() => {
 
         {/* Email and Call Buttons */}
         <View style={styles.row}>
-          <Text style={styles.emailText}>{EmailId || "N/A"}</Text>
-          <TouchableOpacity style={styles.emailBtn}>
-            <Text style={{ color: "#fff" }}>E-mail</Text>
-          </TouchableOpacity>
+          <Text style={styles.emailText}>{E_mail_id || "N/A"}</Text>
+         <TouchableOpacity
+  style={styles.emailBtn}
+  onPress={() => handleEmail(E_mail_id)} // assuming `email` is your variable
+>
+  <Text style={{ color: "#fff" }}>E-mail</Text>
+</TouchableOpacity>
         </View>
         <View style={styles.row}>
-          <Text style={styles.phoneText}>{ MobileNo[1]?.length>10?MobileNo[1].slice(2):MobileNo[1] || "N/A"}</Text>
+          <Text style={styles.phoneText}>{ Mobile_no?.length>10?Mobile_no.slice(2):Mobile_no || "N/A"}</Text>
           <TouchableOpacity style={styles.callBtn}
          onPress={()=>{
-                               if(MobileNo[1])
+                               if(Mobile_no)
                                {
-                                 Linking.openURL(`tel:${MobileNo[1]?.length>10?MobileNo[1].slice(2):MobileNo[1]}`)
+                                 Linking.openURL(`tel:${Mobile_no?.length>10?Mobile_no.slice(2):Mobile_no}`)
                                }
                              }}
           >
@@ -191,7 +203,7 @@ const handleAddRemark = async() => {
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
-          <Text style={styles.phoneText}>{LandlineNo[2] || "N/A"}</Text>
+          <Text style={styles.phoneText}>{Landline_no || "N/A"}</Text>
           <TouchableOpacity style={styles.callBtn}>
             <Text style={{ color: "#fff" }}>Call</Text>
           </TouchableOpacity>
@@ -221,6 +233,7 @@ const handleAddRemark = async() => {
               Add Remark
             </Text>
             <TextInput
+            maxLength={200}
               style={[
                 styles.input,
                 darkMode && {
@@ -286,7 +299,7 @@ disabledSaveBtn: {
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 12,
-    color: "#222",
+    color: "#f82929ff",
   },
   backBtn: {
     position: "absolute",

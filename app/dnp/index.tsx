@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -55,25 +54,27 @@ export default function DidNotPickScreen() {
         DID NOT PICK CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {dnp.map((client:any, idx: number) => {
+        {dnp?.map((client:any, idx: number) => {
            const {
-  Address="",
-  "Business_vol Lakh / Year": BusinessVolLakhPerYear="",
+   _id,
   Company_name,
-  "E-mail id": EmailId="",
-  "Landline no": LandlineNo="",
-  "Mobile no": MobileNo="",
-  Remarks,
-  State="",
-  Status="",        // OR `status` if case-insensitive
-  _id="",
-  assignedTo="",
-  status="",        // Note: you have both `Status` and `status`
-  updatedAt="",
-  
+      Business_vol_Lakh_Per_Year,
+      Address,
+      City,
+      Mobile_no,
+      Landline_no,
+      E_mail_id,
+      Remarks,
+      status,
+      assignedTo,
+      business_type,
+      city,
+      contact_person,
+      source,
+      updatedAt,
 }=client
          return <TouchableOpacity
-            key={idx}
+            key={_id || idx}
             onPress={() => handlePress( _id)}
             activeOpacity={0.85}
           >
@@ -81,21 +82,11 @@ export default function DidNotPickScreen() {
               style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
             >
               <Text style={[styles.company, darkMode && { color: "#818CF8" }]}>
-                {Company_name}
+                {Company_name || "no company name found"}
               </Text>
               <View style={styles.row}>
-                <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                  {Remarks?.[Remarks.length-1]?.comment || ""}
-                </Text>
-                <Text
-                  style={[
-                    styles.value,
-                    { marginLeft: 16 },
-                    darkMode && { color: "#fff" },
-                  ]}
-                >
-                  {MobileNo["1"]=="N/A"?"Mobile number not found":MobileNo["1"]}
-                  <Text>{/* /=faltu ka  changes */}</Text>
+                <Text>
+                   {Mobile_no || Landline_no || "No contact number"}
                 </Text>
               </View>
               <View style={styles.dateRow}>
@@ -106,8 +97,7 @@ export default function DidNotPickScreen() {
                       ? { backgroundColor: "#FBCFE8" }
                       : { backgroundColor: "#FBCFE8" },
                   ]}
-                >
-                  <Text style={[styles.value, { color: "#000" }]}>
+                ><Text style={[styles.value, { color: "#000" }]}>
                     {client.updatedAt.slice(0,-14)}
                   </Text>
                 </View>

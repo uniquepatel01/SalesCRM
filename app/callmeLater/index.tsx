@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -21,7 +20,7 @@ export default function CallMeLaterScreen() {
 
   const handlePress = (idx: string) => {
     router.push({
-      pathname: "/callmeLater/[id]",
+      pathname: "/callmelater/[id]",
       params: { id: idx },
     });
   };
@@ -56,22 +55,26 @@ export default function CallMeLaterScreen() {
         CALL ME LATER CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {callmelater.map((client: any, idx: number) => {
+        {callmelater?.map((client: any, idx: number) => {
           const {
-            Address = "",
-            "Business_vol Lakh / Year": BusinessVolLakhPerYear = "",
-            Company_name,
-            "E-mail id": EmailId = "",
-            "Landline no": LandlineNo = "",
-            "Mobile no": MobileNo = "",
-            Remarks,
-            State = "",
-            Status = "", // OR `status` if case-insensitive
-            _id = "",
-            assignedTo = "",
-            status = "", // Note: you have both `Status` and `status`
-            updatedAt = "",
-          } = client;
+            _id,
+  Company_name,
+      Business_vol_Lakh_Per_Year,
+      Address,
+      City,
+      Mobile_no,
+      Landline_no,
+      E_mail_id,
+      Remarks,
+      status,
+      assignedTo,
+      business_type,
+      city,
+      contact_person,
+      source,
+      updatedAt,
+  } = client;
+
           return (
             <TouchableOpacity
               key={idx}
@@ -97,10 +100,7 @@ export default function CallMeLaterScreen() {
                       darkMode && { color: "#fff" },
                     ]}
                   >
-                    {MobileNo["1"] == "N/A"
-                      ? "Mobile number not found"
-                      : MobileNo["1"]}
-                    <Text>{/* /=unnecessary  changes */}</Text>
+                   {Mobile_no || Landline_no || "No contact number"}
                   </Text>
                 </View>
                 <View style={styles.dateRow}>

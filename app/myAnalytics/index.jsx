@@ -1,9 +1,44 @@
 import { Ionicons } from "@expo/vector-icons";
+
 import { router } from "expo-router";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useTheme } from "../../ThemeContext"; // Adjust path if needed
+import { useSelector } from "react-redux";
+import { useState } from "react";
+import { useEffect } from "react";
+import Loading from "../../components/ui/Loading";
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 export default function Analytics() {
   const { darkMode } = useTheme();
+  const agentEmail = useSelector((state) => state.agent.assignedTo);
+  const [analytics, setAnalytics] = useState(null);
+  const[loading,setLoading]=useState(false)
+
+  useEffect(() => { 
+  if (!agentEmail) return;
+
+  const fetchAnalytics = async () => {
+  
+    try {
+      setLoading(true);
+      // Add a 500ms delay before the fetch
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const res = await fetch(`${apiUrl}/api/analytics/${agentEmail}`);
+      if (!res.ok) throw new Error("Network response was not ok");
+
+      const data = await res.json();
+      setAnalytics(data);
+    } catch (err) {
+      console.error("Failed to fetch analytics", err);
+    }
+    finally {
+      setLoading(false);
+    }
+  };
+
+  fetchAnalytics();
+}, [agentEmail]);
 
   return (
     <SafeAreaView style={[
@@ -32,10 +67,14 @@ export default function Analytics() {
         ]}>My Analytics</Text>
       </View>
 
-      <ScrollView>
-        {["Today's", "Weekly", "Monthly"].map((period, i) => (
+     {loading?<Loading/>: <ScrollView>
+        {[
+          { label: "Today's", key: "daily" },
+          { label: "Weekly", key: "weekly" },
+          { label: "Monthly", key: "monthly" }
+        ].map((period, i) => (
           <View
-            key={period}
+            key={period.key}
             style={[
               styles.boxContainer,
               darkMode && { backgroundColor: "#23262F" }
@@ -44,28 +83,27 @@ export default function Analytics() {
             <Text style={[
               styles.boxTitle,
               darkMode && { color: "#fff" }
-            ]}>{period}</Text>
+            ]}>{period.label}</Text>
             <View style={styles.boxContent}>
-              <View style={[styles.infobox, { backgroundColor: "#D8D367" }]}>
-                <Text style={{ fontWeight: "bold", color: "#222" }}>Calls</Text>
-                <Text style={{ fontWeight: "bold", color: "#222" }}>40</Text>
-              </View>
+             
               <View style={[styles.infobox, { backgroundColor: "#AF65CA" }]}>
                 <Text style={{ fontWeight: "bold", color: "#fff" }}>Demos</Text>
-                <Text style={{ fontWeight: "bold", color: "#fff" }}>40</Text>
+                <Text style={{ fontWeight: "bold", color: "#fff" }}>
+                  {analytics && analytics[period.key] ? analytics[period.key].demo : "0"}
+                </Text>
               </View>
               <View style={[styles.infobox, { backgroundColor: "#7553D5" }]}>
                 <Text style={{ fontWeight: "bold", color: "#fff" }}>Others</Text>
-                <Text style={{ fontWeight: "bold", color: "#fff" }}>40</Text>
+                <Text style={{ fontWeight: "bold", color: "#fff" }}> {analytics && analytics[period.key] ? analytics[period.key].others : "0"}</Text>
               </View>
               <View style={[styles.infobox, { backgroundColor: "#3ED778" }]}>
                 <Text style={{ fontWeight: "bold", color: "#222" }}>Converted</Text>
-                <Text style={{ fontWeight: "bold", color: "#222" }}>40</Text>
+                <Text style={{ fontWeight: "bold", color: "#222" }}>{analytics && analytics[period.key] ? analytics[period.key].converted : "0"}</Text>
               </View>
             </View>
           </View>
         ))}
-      </ScrollView>
+      </ScrollView>}
     </SafeAreaView>
   );
 }

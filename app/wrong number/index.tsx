@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import React from "react";
+import { router, usePathname } from "expo-router";
 import {
   Pressable,
   SafeAreaView,
@@ -19,7 +18,12 @@ export default function WrongNumberScreen() {
     (state: any) => state.leads.assignedGroupLeads["wrong number"]
   );
 
-
+const handlePress = (idx: string) => {
+    router.push({
+      pathname: "/wrong number/[id]",
+      params: { id: idx },
+    });
+  };
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
@@ -51,17 +55,30 @@ export default function WrongNumberScreen() {
         WRONG NUMBER CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {wrongnumber.map((client: any, idx: number) => {
+        {wrongnumber?.map((client: any, idx: number) => {
           const {
-            Company_name,
-            "Mobile no": MobileNo = "",
-            updatedAt = "",
-            _id = "",
+           _id,
+  Company_name,
+      Business_vol_Lakh_Per_Year,
+      Address,
+      City,
+      Mobile_no,
+      Landline_no,
+      E_mail_id,
+      Remarks,
+      status,
+      assignedTo,
+      business_type,
+      city,
+      contact_person,
+      source,
+      updatedAt,
+     
           } = client;
           return (
             <TouchableOpacity
               key={idx}
-             
+              onPress={() => handlePress(_id)}
             >
               <View
                 style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
@@ -73,7 +90,7 @@ export default function WrongNumberScreen() {
                 </Text>
                 <Text style={[styles.value, darkMode && { color: "#fff" }]}>
                   Mobile:{" "}
-                  {MobileNo["1"] === "N/A" ? "Not found" : MobileNo["1"]}
+                  {Mobile_no || Landline_no || "No contact number"}
                 </Text>
                 <View style={styles.dateRow}>
                   <View

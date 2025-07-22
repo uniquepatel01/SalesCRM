@@ -2,10 +2,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AgentState {
   assignedTo: string;
+  agentName:string
 }
 
 const initialState: AgentState = {
-  assignedTo:""
+  assignedTo:"",
+  agentName:""
 };
 
 const agentSlice = createSlice({
@@ -15,9 +17,12 @@ const agentSlice = createSlice({
     setAgentEmail:(state, action: PayloadAction<string>) => {
       state.assignedTo = action.payload;  
     },
+    setAgentName:(state, action: PayloadAction<string>) => {
+      state.agentName = action.payload;  
+    },
     
   }
 });
 
-export const { setAgentEmail } = agentSlice.actions;
+export const { setAgentEmail , setAgentName } = agentSlice.actions;
 export default agentSlice.reducer;

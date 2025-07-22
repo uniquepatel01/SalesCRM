@@ -18,20 +18,17 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
-import RemarksError from "@/components/ui/remarksError";
-
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-
 const actions = [
   "converted",
   "demo",
-  "dnp",
-  "wrong number",
+  "did not pick",
   "out of station",
+  "call me later",
+  "busy",
   "not interested",
   "dormants",
   "emails",
-  "call me later",
 ];
 const dummy = {
   Company_name: "Dummy Company",
@@ -51,9 +48,9 @@ const dummy = {
   updatedAt: new Date().toISOString(),
 };
 
-export default function BusyDetails() {
+export default function OutOfStationClientDetails() {
   const { id } = useLocalSearchParams();
-
+const [remarkError, setRemarkError] = useState(false);
   const dispatch = useDispatch();
   const { darkMode } = useTheme();
   const agentEmail = useSelector((state: any) => state.agent.assignedTo);
@@ -64,7 +61,7 @@ export default function BusyDetails() {
   const [remarkInput, setRemarkInput] = useState("");
   const [, forceUpdate] = useState({});
   const [lead, setLead] = useState();
-  const[remarkError,setRemarkError]=useState(true)
+
   useEffect(() => {
     const fetchLead = async () => {
       const res = await fetch(`${apiUrl}/lead-by/${id}`);
@@ -92,8 +89,8 @@ export default function BusyDetails() {
       updatedAt,
   } = lead || dummy;
 
-
   const handleSave = async () => {
+ 
     await fetch(`${apiUrl}/lead/update`, {
       method: "PUT",
       headers: {
@@ -121,10 +118,11 @@ export default function BusyDetails() {
   //   }
   // };
   const handleAddRemark = async () => {
-    if(!remarkInput.trim()) {
-      setRemarkError(true)
-      return
-    };
+       if (!remarkInput.trim()) {
+    setRemarkError(true);
+    return;
+  }
+  setRemarkError(false);
     const res = await fetch(`${apiUrl}/lead/add-remark`, {
       method: "PUT",
       headers: {
@@ -166,10 +164,10 @@ export default function BusyDetails() {
           />
         </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
-          BUSY CLIENTS
+         WRONG NUMBER CLIENTS
         </Text>
 
-        <Text style={[styles.company, darkMode && { color: "#f82929ff" }]}>
+        <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
           {Company_name}
         </Text>
 
@@ -191,7 +189,7 @@ export default function BusyDetails() {
           <Row
             label="Business Volume"
             value={
-              Business_vol_Lakh_Per_Year.toString() || "0"
+              Business_vol_Lakh_Per_Year + " Lakh/Year"
             }
             darkMode={darkMode}
           />
@@ -215,8 +213,7 @@ export default function BusyDetails() {
         />
 
         {/* Action Button */}
-
-        <ActionSelector
+<ActionSelector
           selectedAction={selectedAction}
           actions={actions}
           dropdownOpen={dropdownOpen}
@@ -224,7 +221,7 @@ export default function BusyDetails() {
           setSelectedAction={setSelectedAction}
           darkMode={darkMode}
         />
-
+      
         {/* Buttons */}
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
@@ -233,11 +230,9 @@ export default function BusyDetails() {
           <TouchableOpacity
             style={styles.callBtn}
             onPress={() => {
-              if (Mobile_no!="N/A")  {
+              if (Mobile_no) {
                 Linking.openURL(
-                  `tel:${
-                    Mobile_no.length > 10 ? Mobile_no.slice(2) : Mobile_no
-                  }`
+                  `tel:${Mobile_no.length > 10 ? Mobile_no.slice(2) : Mobile_no}`
                 );
               }
             }}
@@ -277,14 +272,19 @@ export default function BusyDetails() {
               placeholder="Enter remark"
               placeholderTextColor={darkMode ? "#aaa" : "#888"}
               value={remarkInput}
-              onChangeText={(text) => {
+             onChangeText={(text) => {
     setRemarkInput(text);
     if (text.trim()) setRemarkError(false); // Clear error on typing
   }}
               multiline
               autoFocus
             />
-            <RemarksError remarkError={remarkError}/>
+            
+{remarkError && (
+  <Text style={{ color: "red", marginTop: 4, marginBottom: -10 }}>
+    Please enter a remark before submitting.
+  </Text>
+)}
             <View style={{ flexDirection: "row", marginTop: 16 }}>
               <TouchableOpacity
                 style={[styles.saveBtn, { flex: 1, marginRight: 8 }]}
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: "#222",
   },
-  company: {
+   company: {
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",

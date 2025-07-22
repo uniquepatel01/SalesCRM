@@ -1,7 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-
 import { router } from "expo-router";
-import React from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -14,15 +12,15 @@ import {
 import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
 
-export default function ConvertedScreen() {
+export default function DormantsScreen() {
   const { darkMode } = useTheme();
-  const converted = useSelector(
-    (state: any) => state.leads.assignedGroupLeads["converted"]
+  const dormants = useSelector(
+    (state: any) => state.leads.assignedGroupLeads["dormants"]
   );
 
   const handlePress = (idx: string) => {
     router.push({
-      pathname: "/convertedClients/[id]",
+      pathname: "/dormants/[id]",
       params: { id: idx },
     });
   };
@@ -54,24 +52,28 @@ export default function ConvertedScreen() {
           darkMode && { color: "#fff", backgroundColor: "#181A20" },
         ]}
       >
-        CONVERTED CLIENTS
+        DORMANTS CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {converted.map((client: any, idx: number) => {
+        {dormants?.map((client: any, idx: number) => {
           const {
-            Address = "",
-            "Business_vol Lakh / Year": BusinessVolLakhPerYear = "",
-            Company_name,
-            "E-mail id": EmailId = "",
-            "Landline no": LandlineNo = "",
-            "Mobile no": MobileNo = "",
-            Remarks,
-            State = "",
-            Status = "", // OR `status` if case-insensitive
-            _id = "",
-            assignedTo = "",
-            status = "", // Note: you have both `Status` and `status`
-            updatedAt = "",
+           _id,
+  Company_name,
+      Business_vol_Lakh_Per_Year,
+      Address,
+      City,
+      Mobile_no,
+      Landline_no,
+      E_mail_id,
+      Remarks,
+      status,
+      assignedTo,
+      business_type,
+      city,
+      contact_person,
+      source,
+      updatedAt,
+     
           } = client;
           return (
             <TouchableOpacity
@@ -88,9 +90,6 @@ export default function ConvertedScreen() {
                   {Company_name}
                 </Text>
                 <View style={styles.row}>
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {Remarks?.[Remarks.length - 1]?.comment || ""}
-                  </Text>
                   <Text
                     style={[
                       styles.value,
@@ -98,10 +97,7 @@ export default function ConvertedScreen() {
                       darkMode && { color: "#fff" },
                     ]}
                   >
-                    {MobileNo["1"] == "N/A"
-                      ? "Mobile number not found"
-                      : MobileNo["1"]}
-                    <Text>{/* /=unnecessary  changes */}</Text>
+                    {Mobile_no || Landline_no || "No contact number"}
                   </Text>
                 </View>
                 <View style={styles.dateRow}>

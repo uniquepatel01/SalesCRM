@@ -1,14 +1,15 @@
+
 import { router } from "expo-router";
 import { Moon, Plus, Search, Sun, User } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 
-
-import { setCurrentFetchedLead, unsetCurrentLead, } from "@/store/assignedLeadSlice";
+import { setCurrentFetchedLead } from "@/store/assignedLeadSlice";
 import {
   Alert,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -19,6 +20,14 @@ import {
 import { useTheme } from "../../ThemeContext"; // adjust path as needed
 
 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+function debounce(func: (...args: any[]) => void, delay: number) {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return (...args: any[]) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+}
 
 
 export default function DashboardHeader() {
@@ -28,35 +37,83 @@ export default function DashboardHeader() {
   const [search, setSearch] = useState("");
   const colorScheme = useColorScheme();
   const[CRMName,setCRM]=useState("");
-  const [prev,setPrev]=useState({});
+
+  const [suggestions, setSuggestions] = useState([]);
+const [showSuggestions, setShowSuggestions] = useState(false);
+const [agentName, setAgentName] = useState("");
  const agentEmail = useSelector((state: any) => state.agent.assignedTo);
  const dispatch=useDispatch();
   const greeting = () => {
-    return `welcome ${agentEmail || "Agent"}`;
+    return `Welcome ${agentName || "Agent"}`;
   };
-  useEffect(()=>{
-    const crmName=async()=>{
-     const res= await fetch('http://192.168.29.123:3000/crm-name')
-     const data=await res.json()
-    setCRM(data)
+  const fetchProfile = async () => {
+    try {
+      const res = await fetch(`${apiUrl}/agentProfile/fetch?email=${agentEmail}`, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      setAgentName(data.name);
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Error", "Failed to load profile");
     }
-    crmName()
-    dispatch(unsetCurrentLead())
-  },[agentEmail])
+  };
+ 
+  useEffect(() => {
+  const crmName = async () => {
+    try {
+      const res = await fetch(`${apiUrl}/crm-name`);
+      const data = await res.json();
+      setCRM(data);
+    } catch (err) {
+      console.error("Error fetching CRM name:", err);
+    }
+  };
+
+  const normalizeLeads = async () => {
+    try {
+      const res = await fetch(`${apiUrl}/agents/normalize`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const result = await res.json();
+    } catch (err) {
+      console.error("❌ Error normalizing leads:", err);
+    }
+  };
+
+  crmName();
+  fetchProfile();
+  normalizeLeads();
+}, []);
+
+  useEffect(() => {
+  if (search.trim()) {
+    debouncedSearch(search);
+  } else {
+    setSuggestions([]);
+    setShowSuggestions(false);
+  }
+}, [search]);
+
   
  
  //----------------------handle click on fetch Lead Button------------------------------------------
   const handleFetchLead = async () => {
-  const response = await fetch("http://192.168.29.123:3000/forex-leads/assign", {
+  const response = await fetch(`${apiUrl}/forex-leads/assign`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({ userId: agentEmail}) // 👈 your user ID here
     });
-    
    const data = await response.json();
-  
     dispatch(setCurrentFetchedLead(data.assignedLead))
   };
 
@@ -79,9 +136,37 @@ export default function DashboardHeader() {
   const handleAnalytics = () => {
     router.push("/myAnalytics");
   };
-  const handleSearch = () => {
-    Alert.alert("Search", `You searched for: ${search}`);
-  };
+  //handle search functionality
+  const handleSearch = async (query: string) => {
+  if (!query.trim()) {
+    setSuggestions([]);
+    setShowSuggestions(false);
+    return;
+  }
+
+  try {
+    const res = await fetch(`${apiUrl}/search-companies?q=${query}&agentId=${agentEmail}`);
+    const data = await res.json();
+    setSuggestions(data); // Array of { _id, Company_name, status }
+    setShowSuggestions(true);
+  } catch (err) {
+    console.error("Search error:", err);
+    Alert.alert("Error", "Failed to fetch suggestions");
+  }
+};
+const debouncedSearch = debounce(handleSearch, 300);
+
+//handle suggestion click
+const handleSelectCompany = (item:any) => {
+  setSearch('');
+  setShowSuggestions(false);
+
+  router.push({
+    pathname: `${item.status === "out of station" ? "outofstation" : item.status=="call me later"?"callmelater":item.status}/[id]`,
+    params: { id: item._id },
+  });
+};
+
 
   // Example: apply dark mode styles conditionally
   const containerStyle = [
@@ -92,16 +177,13 @@ export default function DashboardHeader() {
   const greetingStyle = [styles.greeting, darkMode && { color: "#ccc" }];
 
   return (
-    <View style={containerStyle}>
-      <View style={styles.header}>
-        <View style={styles.leftSection}>
+    <View style={[containerStyle,]}>
+      <View style={[styles.header,]}>
           <View style={styles.titleContainer}>
-            <Text style={textStyle}>{CRMName.slice(0,-2).toUpperCase()} CRM</Text>
-            <Text style={greetingStyle}>{greeting()}</Text>
-          </View>
+            <Text style={textStyle} numberOfLines={1}
+  ellipsizeMode="tail">{CRMName.slice(0,-2).toUpperCase()} CRM</Text>
         </View>
-
-        <View style={styles.rightSection}>
+          <View style={[styles.rightSection,]}>
           <View>
             <TouchableOpacity
               onPress={() => setDropdownVisible(!dropdownVisible)}
@@ -188,10 +270,12 @@ export default function DashboardHeader() {
           </TouchableOpacity>
         </View>
       </View>
+      <Text style={greetingStyle}>{greeting()}</Text>
 
       <View style={styles.buttonContainer}>
 
         {/* fetch lead btn */}
+        
         <TouchableOpacity
           style={[
             styles.customButton,
@@ -215,8 +299,6 @@ export default function DashboardHeader() {
           </Text>
           
         </TouchableOpacity>
-
-
       </View>
       <View>
         <View
@@ -231,7 +313,7 @@ export default function DashboardHeader() {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              backgroundColor: darkMode ? "#888" : "#f0f0f0",
+              backgroundColor: darkMode ? "#444" : "#f0f0f0",
               borderRadius: 24,
               paddingHorizontal: 14,
               paddingVertical: 6,
@@ -244,20 +326,65 @@ export default function DashboardHeader() {
             <TextInput
               style={{
                 flex: 1,
-                color: darkMode ? "#fff" : "#222",
+                color: darkMode ? "#fff" : "#000",
                 fontSize: 20,
                 opacity: 0.8,
                 padding: 8,
                 marginBottom: 0,
               }}
               placeholder="Search..."
-              placeholderTextColor={darkMode ? "#aaa" : "#888"}
+              placeholderTextColor={darkMode ? "#fff" : "#888"}
               value={search}
-              onChangeText={setSearch}
+             onChangeText={(text) => {
+  setSearch(text);
+  debouncedSearch(text);
+}}
             />
-            <TouchableOpacity onPress={handleSearch}>
+            <TouchableOpacity disabled>
               <Search size={22} color={darkMode ? "#fff" : "#222"} />
             </TouchableOpacity>
+            {showSuggestions && suggestions.length > 0 && (
+  <ScrollView
+    style={{
+      position: "absolute",
+      top: 54,
+      left: 0,
+      right: 60,
+      zIndex: 10,
+      backgroundColor: darkMode ? "#444" : "#f2f2efff",
+      borderColor: "#ccc",
+      borderWidth: 1,
+      borderRadius: 8,
+      maxHeight: 500,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 2,
+      padding: 10,
+      marginTop: 5,
+      maxWidth: 350,
+
+    }}
+  >
+    {suggestions.map((item:any, index) => (
+      <TouchableOpacity
+        key={item._id}
+        onPress={() => handleSelectCompany(item)}
+        style={{
+          padding: 10,
+          borderBottomColor: "#eee",
+          borderBottomWidth: index === suggestions.length - 1 ? 0 : 1,
+        }}
+      >
+        <Text style={{ color: darkMode ? "#fff" : "#222" }}>
+          {item.Company_name}
+        </Text>
+      </TouchableOpacity>
+    ))}
+  </ScrollView>
+)}
+
           </View>
           <TouchableOpacity
             style={styles.addLeadCircle}
@@ -275,10 +402,11 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#f7f5fb",
     paddingVertical: 0,
-    paddingHorizontal: 18,
+    paddingHorizontal: 12,
     maxHeight: "70%",
     borderBottomWidth: 1,
     borderBottomColor: "#F0F0F0",
+    maxWidth: "100%",
   },
   leadBtn: {
     backgroundColor: "#3790a1",
@@ -303,29 +431,25 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-  },
-  leftSection: {
-    flexDirection: "row",
-    alignItems: "center",
+    marginVertical: 10,
+ 
   },
   rightSection: {
     flexDirection: "row",
-    gap: 18,
+    gap:16,
   },
   disabledSaveBtn: {
     opacity: 0.4, // visually indicate disabled
   },
 
   buttonContainer: {
-    marginTop: 0,
+    marginVertical: 10,
     gap: 12,
     display: "flex",
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
     marginHorizontal: 10,
-    minHeight: 120,
     position: "relative",
   },
 
@@ -345,22 +469,26 @@ const styles = StyleSheet.create({
   },
 
   titleContainer: {
-    marginLeft: 12,
+    flex: 3,               // take 3 parts of space
+  justifyContent: "center",
+  marginRight: 8,
+
   },
   greeting: {
     fontFamily: "Inter-Regular",
-    fontSize: 16,
+    fontSize: 18,
     color: "#666",
     letterSpacing: 0.7,
+    maxWidth:300,
   },
   name: {
-    fontFamily: "Inter-SemiBold",
-    fontSize: 38,
-    letterSpacing: 0.8,
-    fontWeight: "semibold",
-    color: "#000000",
-
-    textDecorationLine: "underline",
+     fontFamily: "Inter-SemiBold",
+  fontSize: 28,
+  fontWeight: "600",
+  color: "#000000",
+  textDecorationLine: "underline",
+  flexShrink: 1,
+  
   },
   // Add dropdown styles
   dropdownWrapper: {

@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
+
 import { router } from "expo-router";
-import React from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -13,15 +13,15 @@ import {
 import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
 
-export default function EmailScreen() {
+export default function ConvertedScreen() {
   const { darkMode } = useTheme();
-  const { emails } = useSelector(
-    (state: any) => state.leads.assignedGroupLeads
+  const converted = useSelector(
+    (state: any) => state.leads.assignedGroupLeads["converted"]
   );
 
   const handlePress = (idx: string) => {
     router.push({
-      pathname: "/email/[id]",
+      pathname: "/converted/[id]",
       params: { id: idx },
     });
   };
@@ -53,25 +53,28 @@ export default function EmailScreen() {
           darkMode && { color: "#fff", backgroundColor: "#181A20" },
         ]}
       >
-        EMAIL CLIENTS
+        CONVERTED CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {emails.map((client: any, idx: number) => {
+        {converted?.map((client: any, idx: number) => {
           const {
-            Address = "",
-            "Business_vol Lakh / Year": BusinessVolLakhPerYear = "",
-            Company_name,
-            "E-mail id": EmailId = "",
-            "Landline no": LandlineNo = "",
-            "Mobile no": MobileNo = "",
-            Remarks,
-            State = "",
-            Status = "", // OR `status` if case-insensitive
-            _id = "",
-            assignedTo = "",
-            status = "", // Note: you have both `Status` and `status`
-            updatedAt = "",
-          } = client;
+            _id,
+  Company_name,
+      Business_vol_Lakh_Per_Year,
+      Address,
+      City,
+      Mobile_no,
+      Landline_no,
+      E_mail_id,
+      Remarks,
+      status,
+      assignedTo,
+      business_type,
+      city,
+      contact_person,
+      source,
+      updatedAt,
+  } = client;
           return (
             <TouchableOpacity
               key={idx}
@@ -87,9 +90,7 @@ export default function EmailScreen() {
                   {Company_name}
                 </Text>
                 <View style={styles.row}>
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {Remarks?.[Remarks.length - 1]?.comment || ""}
-                  </Text>
+                 
                   <Text
                     style={[
                       styles.value,
@@ -97,10 +98,7 @@ export default function EmailScreen() {
                       darkMode && { color: "#fff" },
                     ]}
                   >
-                    {MobileNo["1"] == "N/A"
-                      ? "Mobile number not found"
-                      : MobileNo["1"]}
-                    <Text>{/* /=Unnecessary  changes */}</Text>
+                    {Mobile_no || Landline_no || "No contact number"}
                   </Text>
                 </View>
                 <View style={styles.dateRow}>
@@ -111,8 +109,7 @@ export default function EmailScreen() {
                         ? { backgroundColor: "#FBCFE8" }
                         : { backgroundColor: "#FBCFE8" },
                     ]}
-                  >
-                    <Text style={[styles.value, { color: "#000" }]}>
+                  ><Text style={[styles.value, { color: "#000" }]}>
                       {client.updatedAt.slice(0, -14)}
                     </Text>
                   </View>

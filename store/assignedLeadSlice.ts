@@ -4,7 +4,6 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AssignedLeadState {
   assignedGroupLeads: object;
-
   currentFetchedLead: object;
   status:String
   
@@ -13,11 +12,8 @@ interface AssignedLeadState {
 
 const initialState: AssignedLeadState = {
   assignedGroupLeads: {},
-  
   currentFetchedLead: {},
   status:"",
- 
-  
 };
 
 const assignedLeadSlice = createSlice({
