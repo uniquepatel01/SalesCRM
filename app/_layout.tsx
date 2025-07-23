@@ -1,19 +1,16 @@
 // app/_layout.tsx
 import { store } from "@/store";
-import { Stack } from "expo-router";
+import { ThemeProvider } from "@/ThemeContext";
+import { Slot } from "expo-router";
 import { Provider } from "react-redux";
-import { ThemeProvider } from "../ThemeContext";
-export default function Layout({children}: { children: React.ReactNode }) {
+
+export default function RootLayout() {
   return (
     <ThemeProvider>
-     <Provider store={store}>
-      <Stack screenOptions={{headerShown:false}}>
-       
-         {children}
-
-       </Stack>
-</Provider>
-
+      <Provider store={store}>
+        {/* Slot will render whichever screen matches the route */}
+        <Slot />
+      </Provider>
     </ThemeProvider>
   );
 }

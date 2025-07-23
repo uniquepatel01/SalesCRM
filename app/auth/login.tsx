@@ -43,6 +43,18 @@ export default function Login() {
 
   };
 
+const [emailError, setEmailError] = useState("");
+
+// Regex for basic email validation
+const validateEmail = (text:any) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(text)) {
+    setEmailError("Invalid email format");
+  } else {
+    setEmailError("");
+  }
+  setEmail(text);
+};
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -64,14 +76,17 @@ export default function Login() {
             style={styles.input}
             placeholder="Email"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={validateEmail}
             keyboardType="email-address"
             autoCapitalize="none"
             placeholderTextColor="#9e9e9e"
           />
         </View>
+        {emailError !== "" && (
+  <Text style={{ color: "red", marginLeft: 10 }}>{emailError}</Text>
+)}
 
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer]}>
           <Lock color="#757575" size={22} style={styles.inputIcon} />
           <TextInput
             style={styles.input}
@@ -81,6 +96,8 @@ export default function Login() {
             secureTextEntry={!showPassword}
             autoCapitalize="none"
             placeholderTextColor="#9e9e9e"
+            editable={false} 
+            
           />
           <Pressable onPress={togglePasswordVisibility} style={styles.eyeIcon}>
             {showPassword ? (
@@ -91,7 +108,7 @@ export default function Login() {
           </Pressable>
         </View>
 
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={emailError!==""}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
       </View>

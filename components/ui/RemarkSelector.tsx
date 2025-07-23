@@ -1,6 +1,7 @@
 // components/RemarksSection.tsx
 import React from "react";
 import {
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -15,20 +16,19 @@ type Remark = {
 };
 
 type Props = {
-  remarks: any[]
+  remarks: any[];
   onAddPress: () => void;
   darkMode: boolean;
+  showError?: boolean; // optional boolean to control error
 };
-
 export default function RemarksSection({
   remarks,
   onAddPress,
-  darkMode,
+  darkMode,showError
 }: Props) {
-
-  const {Remarks}=useSelector((state:any)=>state.leads.currentFetchedLead)
+  
   return (
-    <>
+   <>
       <View style={styles.remarksHeaderRow}>
         <Text style={[styles.remarksHeader, darkMode && { color: "#fff" }]}>
           Remarks
@@ -37,23 +37,43 @@ export default function RemarksSection({
           <Text style={styles.addBtnText}>ADD</Text>
         </TouchableOpacity>
       </View>
-      <View
+    <View style={{ maxHeight: 150 }}>
+      <ScrollView
         style={[
           styles.remarksTable,
           darkMode && { backgroundColor: "#23262F" },
+       
         ]}
+    
+  showsVerticalScrollIndicator={true}
       >
         {remarks?.map((remark:Remark) => (
           <View key={remark._id} style={styles.remarksRow}>
+         <View style={[{flexDirection:"column",gap:3, alignItems:"center"}]}>
             <Text
-              style={[
-                styles.remarksDate,
-                darkMode && { backgroundColor: "#444", color: "#fff" },
-              ]}
-            >
-              {new Date(remark.date).toLocaleDateString("en-GB").replace(/\//g,"/")}
-            </Text>
-            <Text
+  style={[
+    styles.remarksDate,
+    darkMode && { backgroundColor: "#444", color: "#fff" },
+  ]}
+>
+  {new Date(remark.date)
+  .toLocaleDateString("en-GB")
+  .split("/")
+  .map((part, index) => index === 2 ? part.slice(-2) : part)
+  .join("/")}
+ 
+</Text>
+<Text  style={[
+    styles.remarksDate,
+    darkMode && { backgroundColor: "#444", color: "#fff" },
+  ]}> {new Date(remark.date).toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12:true, // change to true for AM/PM
+  })}</Text>
+         </View>
+          
+             <Text
               style={[
                 styles.remarksText,
                 darkMode && { color: "#fff" },
@@ -61,10 +81,13 @@ export default function RemarksSection({
             >
               {remark.comment}
             </Text>
+           
           </View>
         ))}
+      </ScrollView>
       </View>
-    </>
+      </>
+    
   );
 }
 
@@ -99,6 +122,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
     overflow: "hidden",
+    maxHeight: 200,
   },
   remarksRow: {
     flexDirection: "row",
@@ -107,15 +131,17 @@ const styles = StyleSheet.create({
     borderBottomColor: "#e0e0e0",
     paddingVertical: 2,
     paddingHorizontal: 4,
-    minHeight: 50,
+    minHeight: 40,
   },
   remarksDate: {
-    backgroundColor: "#B6F7A7",
+    backgroundColor: "#3ac11cff",
     borderRadius: 4,
     paddingHorizontal: 6,
+    paddingVertical:1,
     marginRight: 8,
     fontSize: 13,
-    color: "#222",
+    fontWeight:600,
+    color: "#fff",
     minWidth: 60,
     textAlign: "center",
   },

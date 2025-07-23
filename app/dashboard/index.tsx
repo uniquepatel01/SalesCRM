@@ -1,11 +1,12 @@
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
 import { setAssignLeads } from "@/store/assignedLeadSlice";
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 // import * as Notifications from 'expo-notifications';
 // import * as Device from 'expo-device';
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -16,49 +17,44 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext"; // adjust path if needed
+import Loading from "@/components/ui/Loading";
 
 export default function DashboardScreen() {
   const { darkMode, toggleTheme } = useTheme();
-  const [data, setData] = useState();
   const agentEmail = useSelector((state: any) => state.agent.assignedTo);
   const dispatch = useDispatch();
+  const [loading,setLoading]=useState(false)
 
   useEffect(() => {
-    const allTypes = async () => {
-      const res = await fetch("http://192.168.29.123:3000/leads", {
+  const allTypes = async () => {
+    try {
+      setLoading(true);
+      // Optional delay (e.g., simulate spinner time or wait for UI to settle)
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const res = await fetch(`${apiUrl}/leads`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ userId: agentEmail }),
       });
+
+      if (!res.ok) throw new Error("Failed to fetch leads");
+
       const data = await res.json();
       dispatch(setAssignLeads(data));
-    };
-    // const scheduleNotification = async () => {
-    //     if (Device.isDevice) {
-    //       const { status } = await Notifications.requestPermissionsAsync();
-    //       if (status !== 'granted') {
-    //         alert('Permission for notifications not granted!');
-    //         return;
-    //       }
+    } catch (error) {
+      console.error("Error loading leads:", error);
+      // Optionally show a toast or set an error state
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    //       await Notifications.scheduleNotificationAsync({
-    //         content: {
-    //           title: 'Hello User 👋',
-    //           body: 'Welcome to the app!',
-    //         },
-    //         trigger: null, // Show immediately
-    //       });
-    //     } else {
-    //       alert('Must use physical device for notifications');
-    //     }
-    //   };
+  allTypes();
+}, [agentEmail]);
 
-    //   scheduleNotification();
-
-    allTypes();
-  }, [agentEmail]);
 
   const {
     busy,
@@ -88,7 +84,7 @@ export default function DashboardScreen() {
       color: "#F59E0B", // Amber
       bgColor: "#FFEFC7", // Warm Yellow
       status: "demo",
-      route: "/demoClients",
+      route: "/demo",
     },
     {
       title: "Call me Later",
@@ -96,7 +92,7 @@ export default function DashboardScreen() {
       color: "#10B981", // Emerald Green
       bgColor: "#D1FADF", // Bright Mint
       status: "call me later",
-      route: "/callmeLater",
+      route: "/callmelater",
     },
     {
       title: "Wrong Number",
@@ -104,7 +100,7 @@ export default function DashboardScreen() {
       color: "#DC2626", // Soft Red
       bgColor: "#FFD6D6", // Prominent Pink-Red
       status: "Wrong Number",
-      route: "/wrongNumber",
+      route: "/wrong number",
     },
     {
       title: "Converted",
@@ -112,7 +108,7 @@ export default function DashboardScreen() {
       color: "#9333EA", // Deep Purple
       bgColor: "#E9D5FF", // Lilac
       status: "Converted",
-      route: "/convertedClients",
+      route: "/converted",
     },
     {
       title: "Busy",
@@ -128,7 +124,7 @@ export default function DashboardScreen() {
       color: "#0D9488", // Teal Green (distinct from violet)
       bgColor: "#CCFBF1", // Soft Aqua-Mint
       status: "email",
-      route: "/email",
+      route: "/emails",
     },
     {
       title: "Out of station",
@@ -136,7 +132,7 @@ export default function DashboardScreen() {
       color: "#D97706", // Warm Amber (Orange-Brown)
       bgColor: "#FFF3D9", // Light Tan/Peach
       status: "out of station",
-      route: "/outOfStation",
+      route: "/outofstation",
     },
     {
       title: "Not Interested",
@@ -144,7 +140,7 @@ export default function DashboardScreen() {
       color: "#6B7280", // Cool Gray
       bgColor: "#E5E7EB", // Light Gray
       status: "not interested",
-      route: "/notInterested",
+      route: "/not interested",
     },
     {
       title: "Dormants",
@@ -152,16 +148,19 @@ export default function DashboardScreen() {
       color: "#EC4899", // Pink
       bgColor: "#FFD6EC", // Light Pink
       status: "later",
-      route: "/dormant",
+      route: "/dormants",
     },
   ];
 
-  const handleStatusPress = (box: (typeof statusBoxes)[0]) => {
-    router.push({
-      pathname: (box.route || "/dashboard") as "/dashboard",
-      params: { filter: box.status },
-    });
-  };
+const handleStatusPress = (box: any) => {
+  if (!box?.route || !box?.status) return;
+
+  router.push({
+    pathname: box.route,
+     // Ensure consistent status
+  });
+};
+
 
   return (
     <SafeAreaView
@@ -169,7 +168,7 @@ export default function DashboardScreen() {
       edges={["top"]}
     >
       <DashboardHeader />
-      <ScrollView style={styles.content}>
+      {loading?<Loading/>:<ScrollView style={styles.content}>
         <Text style={[styles.sectionTitle, darkMode && { color: "#fff" }]}>
           Lead Status Overview
         </Text>
@@ -196,7 +195,7 @@ export default function DashboardScreen() {
             </TouchableOpacity>
           ))}
         </View>
-      </ScrollView>
+      </ScrollView>}
     </SafeAreaView>
   );
 }

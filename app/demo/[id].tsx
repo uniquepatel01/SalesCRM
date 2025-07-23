@@ -1,6 +1,5 @@
 import ActionSelector from "@/components/ui/ActionSelector";
 import RemarksSection from "@/components/ui/RemarkSelector";
-
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -16,22 +15,23 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
+import { demoClients } from "../../data/demoClientsData";
 import RemarksError from "@/components/ui/remarksError";
-
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 const actions = [
   "converted",
-  "demo",
+
   "dnp",
   "wrong number",
+  "call me later",
+  "busy",
   "out of station",
   "not interested",
   "dormants",
   "emails",
-  "call me later",
 ];
 const dummy = {
   Company_name: "Dummy Company",
@@ -51,20 +51,25 @@ const dummy = {
   updatedAt: new Date().toISOString(),
 };
 
-export default function BusyDetails() {
+export default function DemoClientDetails() {
   const { id } = useLocalSearchParams();
 
-  const dispatch = useDispatch();
+  const client = demoClients[Number(id)];
   const { darkMode } = useTheme();
   const agentEmail = useSelector((state: any) => state.agent.assignedTo);
 
   const [selectedAction, setSelectedAction] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // Add Remark State
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
-  const [, forceUpdate] = useState({});
   const [lead, setLead] = useState();
   const[remarkError,setRemarkError]=useState(true)
+
+  // For re-rendering after adding a remark
+  const [, forceUpdate] = useState({});
+
   useEffect(() => {
     const fetchLead = async () => {
       const res = await fetch(`${apiUrl}/lead-by/${id}`);
@@ -74,6 +79,7 @@ export default function BusyDetails() {
     };
     fetchLead();
   }, []);
+
   const {
     Company_name,
       Business_vol_Lakh_Per_Year,
@@ -92,7 +98,6 @@ export default function BusyDetails() {
       updatedAt,
   } = lead || dummy;
 
-
   const handleSave = async () => {
     await fetch(`${apiUrl}/lead/update`, {
       method: "PUT",
@@ -103,6 +108,7 @@ export default function BusyDetails() {
         userId: agentEmail,
         leadId: id,
         status: selectedAction.toLowerCase(),
+        
       }),
     });
 
@@ -114,10 +120,10 @@ export default function BusyDetails() {
   //   if (remarkInput.trim()) {
   //     const today = new Date();
   //     const dateStr = today.toLocaleDateString("en-GB").replace(/\//g, "/");
-  //     [].push();
+  //     client.remarks.push({ date: dateStr, text: remarkInput });
   //     setRemarkInput("");
   //     setAddRemarkVisible(false);
-  //     forceUpdate({});
+  //     forceUpdate({}); // force re-render
   //   }
   // };
   const handleAddRemark = async () => {
@@ -134,6 +140,7 @@ export default function BusyDetails() {
         userId: agentEmail,
         leadId: id,
         commentText: remarkInput,
+        
       }),
     });
     const data = await res.json();
@@ -141,7 +148,6 @@ export default function BusyDetails() {
     setRemarkInput("");
     setAddRemarkVisible(false);
   };
-
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
@@ -166,10 +172,10 @@ export default function BusyDetails() {
           />
         </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
-          BUSY CLIENTS
+          DEMO CLIENTS
         </Text>
 
-        <Text style={[styles.company, darkMode && { color: "#f82929ff" }]}>
+        <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
           {Company_name}
         </Text>
 
@@ -177,37 +183,51 @@ export default function BusyDetails() {
         <View
           style={[styles.table, darkMode && { backgroundColor: "#23262F" }]}
         >
-          <Row
-            label="Contact person"
-            value={contact_person || "N/A"}
-            darkMode={darkMode}
-          />
+          <Row label="Contact person" value={contact_person|| "N/A"} darkMode={darkMode} />
           <Row label="Source" value={source || "N/A"} darkMode={darkMode} />
-          <Row
-            label="Business Type"
-            value={business_type || "N/A"}
-            darkMode={darkMode}
-          />
+          <Row label="Business Type" value={business_type || "N/A"} darkMode={darkMode} />
           <Row
             label="Business Volume"
             value={
-              Business_vol_Lakh_Per_Year.toString() || "0"
+              Business_vol_Lakh_Per_Year?.toString() + " Lakh/Year"
             }
             darkMode={darkMode}
           />
           <Row label="Email" value={E_mail_id} darkMode={darkMode} />
           <Row label="Mobile" value={Mobile_no} darkMode={darkMode} />
           <Row
-            label="Alternate Mobile"
+            label="Landline"
             value={Landline_no}
             darkMode={darkMode}
           />
+          <Row
+            label="Demo Taken"
+            value={`${(() => {
+  const updated = new Date(updatedAt);
+  const now = new Date();
 
+  // Convert both dates to UTC midnight to eliminate partial day effects
+  const utcUpdated = Date.UTC(
+    updated.getFullYear(),
+    updated.getMonth(),
+    updated.getDate()
+  );
+
+  const utcNow = Date.UTC(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
+
+  const diffDays = Math.floor((utcNow - utcUpdated) / (1000 * 60 * 60 * 24));
+  return diffDays<=1?`${diffDays} day`:`${diffDays} days`;
+})()} `}
+            darkMode={darkMode}
+          />
           <Row label="Address" value={Address} darkMode={darkMode} multiline />
         </View>
 
         {/* Remarks Section */}
-
         <RemarksSection
           remarks={Remarks}
           onAddPress={() => setAddRemarkVisible(true)}
@@ -215,7 +235,6 @@ export default function BusyDetails() {
         />
 
         {/* Action Button */}
-
         <ActionSelector
           selectedAction={selectedAction}
           actions={actions}
@@ -277,7 +296,7 @@ export default function BusyDetails() {
               placeholder="Enter remark"
               placeholderTextColor={darkMode ? "#aaa" : "#888"}
               value={remarkInput}
-              onChangeText={(text) => {
+             onChangeText={(text) => {
     setRemarkInput(text);
     if (text.trim()) setRemarkError(false); // Clear error on typing
   }}
@@ -293,13 +312,10 @@ export default function BusyDetails() {
                 <Text style={styles.saveBtnText}>ADD</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  styles.callBtn,
-                  { flex: 1, marginLeft: 8, backgroundColor: "red" },
-                ]}
+                style={[styles.callBtn, { flex: 1, marginLeft: 8, backgroundColor: "red" }]}
                 onPress={() => setAddRemarkVisible(false)}
               >
-                <Text style={[styles.callBtnText]}>CANCEL</Text>
+                <Text style={styles.callBtnText}>CANCEL</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -370,7 +386,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: "#222",
   },
-  company: {
+   company: {
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",

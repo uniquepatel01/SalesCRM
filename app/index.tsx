@@ -1,16 +1,17 @@
+// app/index.tsx
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Image, StyleSheet, View } from "react-native";
 
-export default function SplashScreen() {
+export default function Splash() {
   const router = useRouter();
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      router.replace("/auth/login"); // Use absolute path for Expo Router
+    const timer = setTimeout(() => {
+      // Navigate to the login page
+      router.push("/auth/login");
     }, 2000);
-
-    return () => clearTimeout(timeout);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -23,6 +24,7 @@ export default function SplashScreen() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

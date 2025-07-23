@@ -3,7 +3,7 @@ import RemarksSection from "@/components/ui/RemarkSelector";
 
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Linking,
   Modal,
@@ -18,7 +18,7 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
-
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 const actions = [
   "converted",
   "demo",
@@ -31,21 +31,21 @@ const actions = [
   "emails",
 ];
 const dummy = {
-  Address: "",
-  "Business_vol Lakh / Year": { $numberDecimal: "" } as {
-    $numberDecimal: string;
-  },
-  Company_name: "",
-  "E-mail id": "",
-  "Landline no": "",
-  "Mobile no": "",
+  Company_name: "Dummy Company",
+  Business_vol_Lakh_Per_Year: "889.92",
+  Address: "Dummy Address",
+  City: "Dummy City",
+  Mobile_no: "0000000000",
+  Landline_no: "0000000000",
+  E_mail_id: "dummy@example.com",
   Remarks: [],
-  State: "",
-  Status: "",
-  _id: "",
-  assignedTo: "",
-  status: "",
-  updatedAt: "",
+  status: "demo",
+  assignedTo: "agent@example.com",
+  business_type: "B2B",
+  city: "Dummy City",
+  contact_person: "Dummy Contact",
+  source: "Dummy Source",
+  updatedAt: new Date().toISOString(),
 };
 
 export default function OutOfStationClientDetails() {
@@ -54,6 +54,7 @@ export default function OutOfStationClientDetails() {
   const dispatch = useDispatch();
   const { darkMode } = useTheme();
   const agentEmail = useSelector((state: any) => state.agent.assignedTo);
+  const [remarkError, setRemarkError] = useState(true);
 
   const [selectedAction, setSelectedAction] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -64,7 +65,7 @@ export default function OutOfStationClientDetails() {
 
   useEffect(() => {
     const fetchLead = async () => {
-      const res = await fetch(`http://192.168.29.123:3000/lead-by/${id}`);
+      const res = await fetch(`${apiUrl}/lead-by/${id}`);
       const data = await res.json();
 
       setLead(data);
@@ -72,25 +73,25 @@ export default function OutOfStationClientDetails() {
     fetchLead();
   }, []);
   const {
-    Address = "",
-    "Business_vol Lakh / Year": BusinessVolLakhPerYear = {
-      $numberDecimal: "",
-    } as { $numberDecimal: string },
-    Company_name = "",
-    "E-mail id": EmailId = "",
-    "Landline no": LandlineNo = "",
-    "Mobile no": MobileNo = "",
-    Remarks,
-    State = "",
-    Status = "",
-    _id = "",
-    assignedTo = "",
-    status = "",
-    updatedAt = "",
+    Company_name,
+      Business_vol_Lakh_Per_Year,
+      Address,
+      City,
+      Mobile_no,
+      Landline_no,
+      E_mail_id,
+      Remarks,
+      status,
+      assignedTo,
+      business_type,
+      city,
+      contact_person,
+      source,
+      updatedAt,
   } = lead || dummy;
 
   const handleSave = async () => {
-    await fetch("http://192.168.29.123:3000/lead/update", {
+    await fetch(`${apiUrl}/lead/update`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -117,7 +118,12 @@ export default function OutOfStationClientDetails() {
   //   }
   // };
   const handleAddRemark = async () => {
-    const res = await fetch("http://192.168.29.123:3000/lead/add-remark", {
+ if (!remarkInput.trim()) {
+    setRemarkError(true);
+    return;
+  }
+  setRemarkError(false);
+    const res = await fetch(`${apiUrl}/lead/add-remark`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -171,29 +177,27 @@ export default function OutOfStationClientDetails() {
         >
           <Row
             label="Contact person"
-            value={"contactperson"}
+            value={contact_person || "N/A"}
             darkMode={darkMode}
           />
-          <Row label="Source" value={"source"} darkMode={darkMode} />
+          <Row label="Source" value={source || "N/A"} darkMode={darkMode} />
           <Row
             label="Business Type"
-            value={"business type"}
+            value={business_type || "N/A"}
             darkMode={darkMode}
           />
           <Row
             label="Business Volume"
             value={
-              BusinessVolLakhPerYear?.$numberDecimal
-                ? Number(BusinessVolLakhPerYear.$numberDecimal).toFixed(2)
-                : ""
+              Business_vol_Lakh_Per_Year + " Lakh/Year"
             }
             darkMode={darkMode}
           />
-          <Row label="Email" value={EmailId} darkMode={darkMode} />
-          <Row label="Mobile" value={MobileNo["1"]} darkMode={darkMode} />
+          <Row label="Email" value={E_mail_id} darkMode={darkMode} />
+          <Row label="Mobile" value={Mobile_no} darkMode={darkMode} />
           <Row
             label="Alternate Mobile"
-            value={LandlineNo["2"]}
+            value={Landline_no}
             darkMode={darkMode}
           />
 
@@ -227,11 +231,9 @@ export default function OutOfStationClientDetails() {
           <TouchableOpacity
             style={styles.callBtn}
             onPress={() => {
-              if (MobileNo[1]) {
+               if (Mobile_no!="N/A")  {
                 Linking.openURL(
-                  `tel:${
-                    MobileNo[1].length > 10 ? MobileNo[1].slice(2) : MobileNo[1]
-                  }`
+                  `tel:${Mobile_no.length > 10 ? Mobile_no.slice(2) : Mobile_no}`
                 );
               }
             }}
@@ -259,6 +261,7 @@ export default function OutOfStationClientDetails() {
               Add Remark
             </Text>
             <TextInput
+            maxLength={100}
               style={[
                 styles.input,
                 darkMode && {
@@ -270,10 +273,18 @@ export default function OutOfStationClientDetails() {
               placeholder="Enter remark"
               placeholderTextColor={darkMode ? "#aaa" : "#888"}
               value={remarkInput}
-              onChangeText={setRemarkInput}
+             onChangeText={(text) => {
+    setRemarkInput(text);
+    if (text.trim()) setRemarkError(false); // Clear error on typing
+  }}
               multiline
               autoFocus
             />
+            {remarkError && (
+  <Text style={{ color: "red", marginTop: 4, marginBottom: -10 }}>
+    Please enter a remark before submitting.
+  </Text>
+)}
             <View style={{ flexDirection: "row", marginTop: 16 }}>
               <TouchableOpacity
                 style={[styles.saveBtn, { flex: 1, marginRight: 8 }]}
@@ -359,12 +370,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: "#222",
   },
-  company: {
+   company: {
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 12,
-    color: "#222",
+    color: "#f82929ff",
   },
   table: {
     backgroundColor: "#F5F5F5",

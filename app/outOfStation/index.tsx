@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import React from "react";
+import { router, usePathname } from "expo-router";
 import {
   Pressable,
   SafeAreaView,
@@ -21,10 +20,11 @@ export default function OutOfStationScreen() {
 
   const handlePress = (idx: string) => {
     router.push({
-      pathname: "/outOfStation/[id]",
+      pathname: "/outofstation/[id]",
       params: { id: idx },
     });
   };
+ 
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
@@ -56,21 +56,25 @@ export default function OutOfStationScreen() {
         OUT OF STATION CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {outOfStation.map((client: any, idx: number) => {
+        {outOfStation?.map((client: any, idx: number) => {
           const {
-            Address = "",
-            "Business_vol Lakh / Year": BusinessVolLakhPerYear = "",
-            Company_name,
-            "E-mail id": EmailId = "",
-            "Landline no": LandlineNo = "",
-            "Mobile no": MobileNo = "",
-            Remarks,
-            State = "",
-            Status = "", // OR `status` if case-insensitive
-            _id = "",
-            assignedTo = "",
-            status = "", // Note: you have both `Status` and `status`
-            updatedAt = "",
+           _id,
+  Company_name,
+      Business_vol_Lakh_Per_Year,
+      Address,
+      City,
+      Mobile_no,
+      Landline_no,
+      E_mail_id,
+      Remarks,
+      status,
+      assignedTo,
+      business_type,
+      city,
+      contact_person,
+      source,
+      updatedAt,
+     
           } = client;
           return (
             <TouchableOpacity
@@ -87,9 +91,6 @@ export default function OutOfStationScreen() {
                   {Company_name}
                 </Text>
                 <View style={styles.row}>
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {Remarks?.[Remarks.length - 1]?.comment || ""}
-                  </Text>
                   <Text
                     style={[
                       styles.value,
@@ -97,10 +98,7 @@ export default function OutOfStationScreen() {
                       darkMode && { color: "#fff" },
                     ]}
                   >
-                    {MobileNo["1"] == "N/A"
-                      ? "Mobile number not found"
-                      : MobileNo["1"]}
-                    <Text>{/* /=faltu ka  changes */}</Text>
+                    {(Mobile_no ?? Landline_no) || "No contact number"}
                   </Text>
                 </View>
                 <View style={styles.dateRow}>

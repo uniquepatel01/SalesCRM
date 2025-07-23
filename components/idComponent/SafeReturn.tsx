@@ -1,22 +1,22 @@
 import ActionSelector from "@/components/ui/ActionSelector";
 import RemarksSection from "@/components/ui/RemarkSelector";
+import { useTheme } from "@/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import {
-  Linking,
-  Modal,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Linking,
+    Modal,
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from "react-native";
-import { useSelector } from "react-redux";
-import { useTheme } from "../../ThemeContext";
+import { useDispatch } from "react-redux";
 
 const actions = [
   "converted",
@@ -26,117 +26,74 @@ const actions = [
   "call me later",
   "busy",
   "out of station",
-  "dormants",
+  "not interested",
   "emails",
 ];
-const dummy = {
-  Address: "",
-  "Business_vol Lakh / Year": { $numberDecimal: "" } as {
-    $numberDecimal: string;
-  },
-  Company_name: "",
-  "E-mail id": "",
-  "Landline no": "",
-  "Mobile no": "",
-  Remarks: [],
-  State: "",
-  Status: "",
-  _id: "",
-  assignedTo: "",
-  status: "",
-  updatedAt: "",
+
+type ClientType = {
+  Company_name: string;
+  Business_vol_Lakh_Per_Year: { $numberDecimal: number };
+  Address: string;
+  City: string;
+  Mobile_no: string;
+  Landline_no: string;
+  E_mail_id: string;
+  Remarks: any[];
+  status: string;
+  assignedTo: string;
+  business_type: string;
+  city: string;
+  contact_person: string;
+  source: string;
+  updatedAt: string;
 };
 
-export default function NotInterestedDetails() {
+;
+
+type SafeReturnProps = {
+  client: ClientType;
+  handleSave: () => void;
+  handleAddRemark: (remarkInput: string) => void;
+  addRemarkVisible: boolean;
+  handleModal: (visible: boolean) => void;
+};
+
+
+const SafeReturn = ({
+  client,
+  handleSave,
+  handleAddRemark,
+  addRemarkVisible,
+  handleModal
+}: SafeReturnProps) => {
+  const {
+    Company_name,
+    Business_vol_Lakh_Per_Year,
+    Address,
+    City,
+    Mobile_no,
+    Landline_no,
+    E_mail_id,
+    Remarks,
+    status,
+    assignedTo,
+    business_type,
+    city,
+    contact_person,
+    source,
+    updatedAt,
+  } = client;
+
+  const { darkMode } = useTheme();
   const { id } = useLocalSearchParams();
 
-  // Removed invalid usage of NotInterestedClient as a value
-  const { darkMode } = useTheme();
-  const agentEmail = useSelector((state: any) => state.agent.assignedTo);
+  const dispatch = useDispatch();
 
   const [selectedAction, setSelectedAction] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Add Remark State
-  const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
-  const [lead, setLead] = useState();
 
-  // For re-rendering after adding a remark
-  const [, forceUpdate] = useState({});
-
-  useEffect(() => {
-    const fetchLead = async () => {
-      const res = await fetch(`http://192.168.29.123:3000/lead-by/${id}`);
-      const data = await res.json();
-
-      setLead(data);
-    };
-    fetchLead();
-  }, []);
-
-  const {
-    Address = "",
-    "Business_vol Lakh / Year": BusinessVolLakhPerYear = {
-      $numberDecimal: "",
-    } as { $numberDecimal: string },
-    Company_name = "",
-    "E-mail id": EmailId = "",
-    "Landline no": LandlineNo = "",
-    "Mobile no": MobileNo = "",
-    Remarks,
-    State = "",
-    Status = "",
-    _id = "",
-    assignedTo = "",
-    status = "",
-    updatedAt = "",
-  } = lead || dummy;
-
-  const handleSave = async () => {
-    await fetch("http://192.168.29.123:3000/lead/update", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: agentEmail,
-        leadId: id,
-        status: selectedAction.toLowerCase(),
-      }),
-    });
-
-    // to normalize if status is filled and assigned to is empty
-    router.push("/dashboard");
-  };
-
-  // const handleAddRemark = () => {
-  //   if (remarkInput.trim()) {
-  //     const today = new Date();
-  //     const dateStr = today.toLocaleDateString("en-GB").replace(/\//g, "/");
-  //     client.remarks.push({ date: dateStr, text: remarkInput });
-  //     setRemarkInput("");
-  //     setAddRemarkVisible(false);
-  //     forceUpdate({}); // force re-render
-  //   }
-  // };
-  const handleAddRemark = async () => {
-    const res = await fetch("http://192.168.29.123:3000/lead/add-remark", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: agentEmail,
-        leadId: id,
-        commentText: remarkInput,
-      }),
-    });
-    const data = await res.json();
-    setLead(data);
-    setRemarkInput("");
-    setAddRemarkVisible(false);
-  };
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
@@ -161,7 +118,7 @@ export default function NotInterestedDetails() {
           />
         </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
-          NOT INTERESTED CLIENTS
+          DORMANT CLIENTS
         </Text>
 
         <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
@@ -172,48 +129,45 @@ export default function NotInterestedDetails() {
         <View
           style={[styles.table, darkMode && { backgroundColor: "#23262F" }]}
         >
-          <Row label="Contact person" value={""} darkMode={darkMode} />
-          <Row label="Source" value={""} darkMode={darkMode} />
-          <Row label="Business Type" value={""} darkMode={darkMode} />
+          <Row
+            label="Contact person"
+            value={"contactperson"}
+            darkMode={darkMode}
+          />
+          <Row label="Source" value={"source"} darkMode={darkMode} />
+          <Row
+            label="Business Type"
+            value={"business type"}
+            darkMode={darkMode}
+          />
           <Row
             label="Business Volume"
             value={
-              BusinessVolLakhPerYear?.$numberDecimal
-                ? Number(BusinessVolLakhPerYear.$numberDecimal).toFixed(2)
-                : ""
+              Business_vol_Lakh_Per_Year?.toString() || "not found"
             }
             darkMode={darkMode}
           />
-          <Row label="Email" value={EmailId} darkMode={darkMode} />
-          <Row label="Mobile" value={MobileNo["1"]} darkMode={darkMode} />
+          <Row label="Email" value={E_mail_id || "not found"} darkMode={darkMode} />
+          <Row label="Mobile" value={Mobile_no?.toString()|| "not found"} darkMode={darkMode} />
           <Row
             label="Alternate Mobile"
-            value={LandlineNo["2"]}
+            value={Landline_no?.toString() || "not found"}
             darkMode={darkMode}
           />
-          <Row
-            label="Demo Taken"
-            value={(() => {
-              const updated = new Date(updatedAt);
-              const now = new Date();
-              const diffDays = Math.floor(
-                (now.getTime() - updated.getTime()) / (1000 * 60 * 60 * 24)
-              );
-              return diffDays.toLocaleString();
-            })()}
-            darkMode={darkMode}
-          />
+
           <Row label="Address" value={Address} darkMode={darkMode} multiline />
         </View>
 
         {/* Remarks Section */}
+
         <RemarksSection
           remarks={Remarks}
-          onAddPress={() => setAddRemarkVisible(true)}
+          onAddPress={() => handleModal(true)}
           darkMode={darkMode}
         />
 
         {/* Action Button */}
+
         <ActionSelector
           selectedAction={selectedAction}
           actions={actions}
@@ -231,10 +185,10 @@ export default function NotInterestedDetails() {
           <TouchableOpacity
             style={styles.callBtn}
             onPress={() => {
-              if (MobileNo[1]) {
+              if (Mobile_no) {
                 Linking.openURL(
                   `tel:${
-                    MobileNo[1].length > 10 ? MobileNo[1].slice(2) : MobileNo[1]
+                    Mobile_no.length > 10 ? Mobile_no.slice(2) : Mobile_no
                   }`
                 );
               }
@@ -250,7 +204,7 @@ export default function NotInterestedDetails() {
         visible={addRemarkVisible}
         transparent
         animationType="fade"
-        onRequestClose={() => setAddRemarkVisible(false)}
+        onRequestClose={() => handleModal(false)}
       >
         <View style={styles.modalOverlay}>
           <View
@@ -281,23 +235,26 @@ export default function NotInterestedDetails() {
             <View style={{ flexDirection: "row", marginTop: 16 }}>
               <TouchableOpacity
                 style={[styles.saveBtn, { flex: 1, marginRight: 8 }]}
-                onPress={handleAddRemark}
+                onPress={() => handleAddRemark(remarkInput)}
               >
                 <Text style={styles.saveBtnText}>ADD</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.callBtn, { flex: 1, marginLeft: 8 }]}
-                onPress={() => setAddRemarkVisible(false)}
+                style={[
+                  styles.callBtn,
+                  { flex: 1, marginLeft: 8, backgroundColor: "red" },
+                ]}
+                onPress={() => handleModal(false)}
               >
-                <Text style={styles.callBtnText}>CANCEL</Text>
+                <Text style={[styles.callBtnText]}>CANCEL</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
     </SafeAreaView>
-  );
-}
+  )
+            }
 
 // Table row component
 type RowProps = {
@@ -560,3 +517,7 @@ const styles = StyleSheet.create({
     color: "#222",
   },
 });
+
+
+
+export default SafeReturn

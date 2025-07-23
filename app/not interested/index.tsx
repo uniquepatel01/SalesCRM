@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router"; // Import router
-import React from "react";
+import { router, usePathname } from "expo-router"; // Import router
 import {
   Pressable,
   SafeAreaView,
@@ -22,7 +21,7 @@ export default function NotInterestedScreen() {
 
   const handlePress = (idx: string) => {
     router.push({
-      pathname: "/notInterested/[id]",
+      pathname: "/not interested/[id]",
       params: { id: idx },
     });
   };
@@ -34,14 +33,14 @@ export default function NotInterestedScreen() {
       <View style={styles.headerRow}>
         {/* Back Arrow Icon */}
         <Pressable
-          onPress={() => router.back()}
-          style={{
-            position: "absolute",
-            top: 10,
-            left: 10,
-            zIndex: 100,
-            backgroundColor: "transparent",
-            padding: 4,
+        onPress={() => router.back()}
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 10,
+          zIndex: 100,
+          backgroundColor: "transparent",
+          padding: 4,
           }}
         >
           <Ionicons
@@ -50,27 +49,33 @@ export default function NotInterestedScreen() {
             color={darkMode ? "#fff" : "#000"}
           />
         </Pressable>
-        <Text style={[styles.header, darkMode && { color: "#fff" }]}>
+       <View style={[{flexDirection:"row", position:"relative", left:50}]}>
+         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
           NOT INTERESTED CLIENTS
         </Text>
-        <View style={{ width: 28 }} />
+       </View>
+     
       </View>
       <ScrollView contentContainerStyle={styles.content}>
         {notInterested?.map((client: any, idx: number) => {
           const {
-            Address = "",
-            "Business_vol Lakh / Year": BusinessVolLakhPerYear = "",
-            Company_name,
-            "E-mail id": EmailId = "",
-            "Landline no": LandlineNo = "",
-            "Mobile no": MobileNo = "",
-            Remarks,
-            State = "",
-            Status = "", // OR `status` if case-insensitive
-            _id = "",
-            assignedTo = "",
-            status = "", // Note: you have both `Status` and `status`
-            updatedAt = "",
+           _id,
+  Company_name,
+      Business_vol_Lakh_Per_Year,
+      Address,
+      City,
+      Mobile_no,
+      Landline_no,
+      E_mail_id,
+      Remarks,
+      status,
+      assignedTo,
+      business_type,
+      city,
+      contact_person,
+      source,
+      updatedAt,
+     
           } = client;
 
           return (
@@ -95,11 +100,9 @@ export default function NotInterestedScreen() {
                   ]}
                 >
                   <Text style={[styles.name, darkMode && { color: "#fff" }]}>
-                    Name : {client.name}
+                    Contact : {Mobile_no || Landline_no || "No contact number"}
                   </Text>
-                  <Text style={[styles.days, darkMode && { color: "#bbb" }]}>
-                    Demo Started : {new Date(updatedAt).toLocaleDateString()}
-                  </Text>
+                  
                 </View>
               </View>
             </TouchableOpacity>
@@ -118,16 +121,17 @@ const styles = StyleSheet.create({
   },
   headerRow: {
     flexDirection: "row",
-    alignItems: "center",
+    gap:6,
     justifyContent: "space-between",
     padding: 16,
   },
   header: {
-    fontSize: 24,
+   fontSize: 20,
+   gap:10,
     fontWeight: "bold",
     letterSpacing: 1,
     textAlign: "center",
-    flex: 1,
+    marginBottom: 8,
     color: "#222",
   },
   content: {

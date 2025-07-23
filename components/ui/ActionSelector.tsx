@@ -32,7 +32,7 @@ export default function ActionSelector({
           <Text
             style={[
               styles.actionLabel,
-              darkMode && { color: "#fff" },
+              darkMode && { color: "#f00" },
             ]}
           >
             {selectedAction || "ACTION"}
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     letterSpacing: 1,
-    color: "#222",
+    color: "#f82929ff",
     marginRight: 8,
   },
   actionArrow: {

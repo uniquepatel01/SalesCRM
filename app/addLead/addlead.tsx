@@ -1,10 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -15,10 +16,24 @@ import {
   View,
 } from "react-native";
 import { useTheme } from "../../ThemeContext";
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 // CustomDropdown component
+import ActionSelector from "@/components/ui/ActionSelector";
 import { FlatList, Modal } from "react-native";
-
+import { useSelector } from "react-redux";
+const actions = [
+  "converted",
+  "demo",
+  "dnp",
+  "wrong number",
+  "call me later",
+  "busy",
+  "out of station",
+  "not interested",
+  "dormants",
+  "emails",
+];
 type CustomDropdownProps = {
   title: string;
   visible: boolean;
@@ -170,11 +185,56 @@ export default function AddLead() {
   const [countrySearch, setCountrySearch] = useState("");
   const [stateSearch, setStateSearch] = useState("");
   const [citySearch, setCitySearch] = useState("");
-
+  const [selectedAction, setSelectedAction] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const agentEmail = useSelector((state: any) => state.agent.assignedTo);
   // Dummy handlers
-  const handleSave = () => Alert.alert("Saved", "Lead information saved!");
-  const handleCall = (number: string) => Alert.alert("Calling", number);
-  const handleEmail = () => Alert.alert("Email", `Email sent to ${email}`);
+  const handleSave =  async() => {
+   
+if (!companyName.trim() || !fullName.trim() || !country || !state || !city || !address.trim() || !selectedAction || !mobile.trim()) {
+    Alert.alert("Error", "Please fill all required fields.");
+    return;
+  }
+
+    const payload = {
+      Company_name: companyName,
+      Business_vol_Lakh_Per_Year: businessVolume,
+      Address: address,
+      Mobile_no: mobile,
+      Landline_no: alternate,
+      E_mail_id: email,
+      status: selectedAction.toLowerCase(),
+      assignedTo: agentEmail,
+      business_type: businessType,
+      Country: country,
+      State: state,
+      City: city,
+      contact_person: fullName,
+      source: source,
+    };
+
+    try {
+    
+      const response = await fetch(`${apiUrl}/lead/add-new`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.status !== 201) {
+        throw new Error("Failed to save lead");
+      }
+
+      Alert.alert("Success", "Lead saved successfully");
+      router.back();
+    } catch (error) {
+      console.error("Error saving lead:", error);
+      Alert.alert("Error", "Failed to save lead. Please try again.");
+    }
+  };
+  
 
   // Fetch countries on mount
   useEffect(() => {
@@ -254,6 +314,16 @@ export default function AddLead() {
   const filteredCities = cities.filter((c) =>
     c.toLowerCase().includes(citySearch.toLowerCase())
   );
+const handleEmail = (recipientEmail: string) => {
+if(!recipientEmail || recipientEmail.trim() === ""|| recipientEmail === "N/A") {
+    Alert.alert("No email provided", "This lead does not have an email address.");
+    return;
+  }
+  const emailUrl = `mailto:${recipientEmail}`;
+  Linking.openURL(emailUrl).catch((err) =>
+    console.error("Failed to open email client:", err)
+  );
+};
 
   return (
     <KeyboardAvoidingView
@@ -262,7 +332,7 @@ export default function AddLead() {
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 24} // adjust if you have a header
     >
       <ScrollView
-        contentContainerStyle={styles.container}
+        contentContainerStyle={[styles.container,darkMode && { backgroundColor: "#181A20" }]}
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
@@ -285,7 +355,7 @@ export default function AddLead() {
               color={darkMode ? "#fff" : "#000"}
             />
           </Pressable>
-          <Text style={styles.headerTitle}>New Lead Entry</Text>
+          <Text style={[styles.headerTitle,darkMode && { color: "#ffffffff" }]}>New Lead Entry</Text>
           <View style={{ width: 28 }} />
         </View>
 
@@ -297,8 +367,9 @@ export default function AddLead() {
               onValueChange={setSource}
               style={styles.picker}
               dropdownIconColor="#222"
+             
             >
-              <Picker.Item label="Source" value="" />
+              <Picker.Item label="Source" value=""  color="#888" />
               <Picker.Item label="Referral" value="referral" />
               <Picker.Item label="SMS" value="sms" />
               <Picker.Item label="Email" value="email" />
@@ -309,14 +380,14 @@ export default function AddLead() {
               />
             </Picker>
           </View>
-          <View style={styles.dropdownContainer}>
+          <View style={[styles.dropdownContainer]}>
             <Picker
               selectedValue={businessType}
               onValueChange={setBusinessType}
               style={styles.picker}
               dropdownIconColor="#222"
             >
-              <Picker.Item label="Business Type" value="" />
+              <Picker.Item label="Business Type" value=""  color="#888" />
               <Picker.Item label="Money Changer" value="moneychanger" />
               <Picker.Item label="Forex Trader" value="forex trader" />
               <Picker.Item label="NRI/ Individula" value="nri" />
@@ -335,69 +406,42 @@ export default function AddLead() {
               style={styles.picker}
               dropdownIconColor="#222"
             >
-              <Picker.Item label="Business Volume" value="" />
-              <Picker.Item label="Below $50k USD" value="low" />
-              <Picker.Item label="Above $1lakh USD" value="low" />
-              <Picker.Item label="$2lakh USD" value="low" />
-              <Picker.Item label="$4.5lakh USD" value="low" />
-              <Picker.Item label="$10lakh+ USD" value="low" />
+              <Picker.Item label="Business Volume" value=""  color="#888" />
+              <Picker.Item label="Below $50k USD" value="Below $50k USD" />
+              <Picker.Item label="Above $1lakh USD" value="Above $1lakh USD" />
+              <Picker.Item label="$2lakh USD" value="$2lakh USD" />
+              <Picker.Item label="$4.5lakh USD" value="$4.5lakh USD" />
+              <Picker.Item label="$10lakh+ USD" value="$10lakh+ USD" />
             </Picker>
           </View>
         </View>
 
         {/* Dropdown Row 3 */}
-        <View style={styles.row}>
-          <View style={styles.dropdownContainerFull}>
-            <Picker
-              selectedValue={feedback}
-              onValueChange={setFeedback}
-              style={styles.picker}
-              dropdownIconColor="#222"
-            >
-              <Picker.Item label="Feedback" value="" />
-              <Picker.Item label="Interested & Add me" value="positive" />
-              <Picker.Item label="Drop an Email" value="drop an email" />
-              <Picker.Item label="Not Interested" value="not interested" />
-              <Picker.Item label="Busy unreachable" value="busy" />
-              <Picker.Item
-                label="Wrong/Incorrect Number"
-                value="Wrong/Incorrect number"
-              />
-              <Picker.Item
-                label="Already taking from others"
-                value="already taking from others"
-              />
-              <Picker.Item label="Small Business" value="small business" />
-              <Picker.Item label="Leave a comment" value="leave a comment" />
-              <Picker.Item label="Did not pick" value="did not pick" />
-            </Picker>
-          </View>
-        </View>
+
 
         {/* Text Inputs */}
         <TextInput
-          style={styles.input}
-          placeholder="Enter Full Name"
-          placeholderTextColor="#888"
-          value={fullName}
-          onChangeText={setFullName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Company Name"
-          placeholderTextColor="#888"
-          value={companyName}
-          onChangeText={setCompanyName}
-        />
-
+  style={[styles.input]}
+  placeholder="Enter Name"
+  placeholderTextColor="#888"
+  value={fullName}
+  onChangeText={setFullName}
+/>
+       <TextInput
+  style={[styles.input,!companyName.trim() && { borderBottomColor: 'red', borderBottomWidth: 1 }]}
+  placeholder="Enter Company Name"
+  placeholderTextColor="#888"
+  value={companyName}
+  onChangeText={setCompanyName}
+/>
         {/* Country/State/City Row with Search */}
-        <View style={styles.row}>
-          <View style={styles.dropdownContainer}>
+        <View style={[{flexDirection:"column",gap:"6"},{marginBottom:6}]}>
+          <View style={[styles.dropdownContainer]}>
             <TouchableOpacity
-              style={styles.dropdownBtn}
+              style={[styles.dropdownBtn]}
               onPress={() => setCountryModal(true)}
             >
-              <Text style={{ color: country ? "#222" : "#888", fontSize: 16 }}>
+              <Text style={{ color: country ? "#222" : "#888", fontSize: 16,textAlign: "center" }}>
                 {country || "Country"}
               </Text>
               <Ionicons name="chevron-down" size={18} color="#888" />
@@ -459,38 +503,38 @@ export default function AddLead() {
         </View>
 
         <TextInput
-          style={styles.input}
-          placeholder="Enter Address"
-          placeholderTextColor="#888"
-          value={address}
-          onChangeText={setAddress}
-        />
+  style={[styles.input]}
+  placeholder="Enter Address"
+  placeholderTextColor="#888"
+  value={address}
+  onChangeText={setAddress}
+/>
 
         {/* Action Dropdown */}
-        <View style={styles.dropdownContainerFull}>
-          <Picker
-            selectedValue={action}
-            onValueChange={setAction}
-            style={styles.picker}
-            dropdownIconColor="#222"
-          >
-            <Picker.Item label="ACTION" value="" />
-            <Picker.Item label="Demo" value="demo" />
-            <Picker.Item label="Converted" value="converted" />
-            <Picker.Item label="Dormants" value="dormants" />
-          </Picker>
+        <View   style={[{marginBottom:8,marginTop:-4,borderRadius:8}, !selectedAction.trim() && {borderBottomColor: 'red', borderBottomWidth: 1 }]}>
+          <ActionSelector
+                  selectedAction={selectedAction}
+                  actions={actions}
+                  dropdownOpen={dropdownOpen}
+                  setDropdownOpen={setDropdownOpen}
+                  setSelectedAction={setSelectedAction}
+                  darkMode={darkMode}
+                />
         </View>
 
         {/* Email/Mobile/Alternate with Action Buttons */}
-        <View style={styles.row}>
+        <View style={[styles.row,]}>
           <TextInput
             style={[styles.input, { flex: 1, marginRight: 8 }]}
             placeholder="Enter Email Address"
             placeholderTextColor="#888"
             value={email}
+            keyboardType="email-address"  // ✅ Opens email-specific keyboard
+           autoCapitalize="none"         // ✅ Prevents automatic capitalization
+           autoCorrect={false}           // ✅ Avoids autocorrect on emails
             onChangeText={setEmail}
           />
-          <TouchableOpacity style={styles.actionBtn} onPress={handleEmail}>
+          <TouchableOpacity style={[styles.actionBtn]} onPress={() => handleEmail(email)}>
             <Text style={styles.actionBtnText}>E-mail</Text>
           </TouchableOpacity>
         </View>
@@ -500,12 +544,19 @@ export default function AddLead() {
             placeholder="Enter Mobile No."
             placeholderTextColor="#888"
             value={mobile}
+            maxLength={10}
             onChangeText={setMobile}
             keyboardType="phone-pad"
           />
           <TouchableOpacity
             style={styles.actionBtn}
-            onPress={() => handleCall(mobile)}
+            onPress={() => {
+                         if (mobile && mobile.length === 10) {
+                           Linking.openURL(
+                             `tel:${mobile.length > 10 ? mobile.slice(2) : mobile}`
+                           );
+                         }
+                       }}
           >
             <Text style={styles.actionBtnText}>Call</Text>
           </TouchableOpacity>
@@ -516,12 +567,19 @@ export default function AddLead() {
             placeholder="Enter Alternate No."
             placeholderTextColor="#888"
             value={alternate}
+            maxLength={10}
             onChangeText={setAlternate}
             keyboardType="phone-pad"
           />
           <TouchableOpacity
             style={styles.actionBtn}
-            onPress={() => handleCall(alternate)}
+            onPress={() => {
+                         if (alternate && alternate.length === 10) {
+                           Linking.openURL(
+                             `tel:${alternate.length > 10 ? alternate.slice(2) : alternate}`
+                           );
+                         }
+                       }}
           >
             <Text style={styles.actionBtnText}>Call</Text>
           </TouchableOpacity>
@@ -529,12 +587,18 @@ export default function AddLead() {
 
         {/* Save/Call Buttons */}
         <View style={styles.bottomRow}>
-          <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+          <TouchableOpacity style={[styles.saveBtn, selectedAction=="" && styles.disabledSaveBtn]} onPress={handleSave} disabled={selectedAction==""}>
             <Text style={styles.saveBtnText}>SAVE</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.callBtn}
-            onPress={() => handleCall(mobile)}
+            onPress={() => {
+                         if (mobile) {
+                           Linking.openURL(
+                             `tel:${mobile.length > 10 ? mobile.slice(2) : mobile}`
+                           );
+                         }
+                       }}
           >
             <Text style={styles.callBtnText}>CALL</Text>
           </TouchableOpacity>
@@ -567,25 +631,24 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 4,
+  },
+  disabledSaveBtn: {
+    opacity: 0.4, // visually indicate disabled
   },
   dropdownContainer: {
     flex: 1,
-    backgroundColor: "#f7f7f7",
     borderRadius: 8,
     marginRight: 8,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 1 },
+    marginBottom:1,
+    backgroundColor: "#f7f7f7",
     justifyContent: "center",
   },
   dropdownContainerFull: {
     flex: 1,
     backgroundColor: "#f7f7f7",
     borderRadius: 8,
-    marginBottom: 12,
+    marginBottom: 3,
     elevation: 2,
     shadowColor: "#000",
     shadowOpacity: 0.04,
@@ -616,11 +679,12 @@ const styles = StyleSheet.create({
   actionBtn: {
     backgroundColor: "#1da1f2",
     borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 18,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     alignItems: "center",
     justifyContent: "center",
     minWidth: 70,
+    marginTop:-6
   },
   actionBtnText: {
     color: "#fff",

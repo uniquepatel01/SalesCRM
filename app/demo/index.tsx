@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router"; // Import router
-import React from "react";
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext"; // Adjust path if needed
@@ -9,10 +8,10 @@ export default function DemoClientsScreen() {
   const { darkMode } = useTheme();
 
  const {demo}= useSelector((state:any)=>state.leads.assignedGroupLeads)
-
+ 
   const handlePress = ( idx: string) => {
       router.push({
-        pathname: "/demoClients/[id]",
+        pathname: "/demo/[id]",
         params: { id: idx },
       });
     };
@@ -52,25 +51,26 @@ export default function DemoClientsScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         {demo?.map((client:any, idx: number) => {
            const {
-  Address="",
-  "Business_vol Lakh / Year": BusinessVolLakhPerYear="",
+            _id,
   Company_name,
-  "E-mail id": EmailId="",
-  "Landline no": LandlineNo="",
-  "Mobile no": MobileNo="",
-  Remarks,
-  State="",
-  Status="",        // OR `status` if case-insensitive
-  _id="",
-  assignedTo="",
-  status="",        // Note: you have both `Status` and `status`
-  updatedAt="",
-  
-}=client
-
+      Business_vol_Lakh_Per_Year,
+      Address,
+      City,
+      Mobile_no,
+      Landline_no,
+      E_mail_id,
+      Remarks,
+      status,
+      assignedTo,
+      business_type,
+      city,
+      contact_person,
+      source,
+      updatedAt,
+  } = client;
 
           return <TouchableOpacity
-          key={idx}
+          key={_id}
             onPress={() => handlePress( _id)}
             activeOpacity={0.85}
           >
@@ -86,7 +86,7 @@ export default function DemoClientsScreen() {
                   darkMode && { color: "#fff" },
                 ]}
               >
-               {Company_name}
+               {Company_name || "no company name found"}
               </Text>
               <View
                 style={[
@@ -102,13 +102,39 @@ export default function DemoClientsScreen() {
                 >
                   Name : {client.name}
                 </Text>
-                <Text
+               
+                  <Text
                   style={[
-                    styles.days,
+                    
                     darkMode && { color: "#bbb" },
                   ]}
                 >
-                  Demo Started : {new Date(updatedAt).toLocaleDateString()}
+                  Demo Started :<Text style={{color:"#08af3aff", fontWeight:"500"}}> {new Date(updatedAt).toLocaleDateString()}</Text>
+                </Text>
+                <Text style={[styles.days, darkMode && { color: "#bbb" }]}>
+                   DemoTaken :<Text style={{color:"#ff2929ff", fontWeight:"500"}}>
+                     {`${(() => {
+  const updated = new Date(updatedAt);
+  const now = new Date();
+
+  // Convert both dates to UTC midnight to eliminate partial day effects
+  const utcUpdated = Date.UTC(
+    updated.getFullYear(),
+    updated.getMonth(),
+    updated.getDate()
+  );
+
+  const utcNow = Date.UTC(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
+
+  const diffDays = Math.floor((utcNow - utcUpdated) / (1000 * 60 * 60 * 24));
+  return diffDays<=1?`${diffDays} day`:`${diffDays} days`;
+})()} `}
+
+                   </Text>
                 </Text>
               </View>
             </View>
@@ -177,7 +203,7 @@ const styles = StyleSheet.create({
   },
   days: {
     fontSize: 14,
-    color: "#555",
+    color: "#323232ff",
     textAlign: "center",
   },
 });
