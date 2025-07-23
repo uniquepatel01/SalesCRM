@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+<<<<<<< HEAD:app/wrongNumber/index.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
@@ -14,18 +14,13 @@ import {
 import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
 
-export default function CallMeLaterScreen() {
+export default function WrongNumberScreen() {
   const { darkMode } = useTheme();
-  const callmelater = useSelector(
-    (state: any) => state.leads.assignedGroupLeads["call me later"]
+  const wrongnumber = useSelector(
+    (state: any) => state.leads.assignedGroupLeads["wrong number"]
   );
 
-  const handlePress = (idx: string) => {
-    router.push({
-      pathname: "/callmeLater/[id]",
-      params: { id: idx },
-    });
-  };
+
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
@@ -54,30 +49,20 @@ export default function CallMeLaterScreen() {
           darkMode && { color: "#fff", backgroundColor: "#181A20" },
         ]}
       >
-        CALL ME LATER CLIENTS
+        WRONG NUMBER CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {callmelater.map((client: any, idx: number) => {
+        {wrongnumber.map((client: any, idx: number) => {
           const {
-            Address = "",
-            "Business_vol Lakh / Year": BusinessVolLakhPerYear = "",
             Company_name,
-            "E-mail id": EmailId = "",
-            "Landline no": LandlineNo = "",
             "Mobile no": MobileNo = "",
-            Remarks,
-            State = "",
-            Status = "", // OR `status` if case-insensitive
-            _id = "",
-            assignedTo = "",
-            status = "", // Note: you have both `Status` and `status`
             updatedAt = "",
+            _id = "",
           } = client;
           return (
             <TouchableOpacity
               key={idx}
-              onPress={() => handlePress(_id)}
-              activeOpacity={0.85}
+             
             >
               <View
                 style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
@@ -87,23 +72,10 @@ export default function CallMeLaterScreen() {
                 >
                   {Company_name}
                 </Text>
-                <View style={styles.row}>
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {Remarks?.[Remarks.length - 1]?.comment || ""}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.value,
-                      { marginLeft: 16 },
-                      darkMode && { color: "#fff" },
-                    ]}
-                  >
-                    {MobileNo["1"] == "N/A"
-                      ? "Mobile number not found"
-                      : MobileNo["1"]}
-                    <Text>{/* /=unnecessary  changes */}</Text>
-                  </Text>
-                </View>
+                <Text style={[styles.value, darkMode && { color: "#fff" }]}>
+                  Mobile:{" "}
+                  {MobileNo["1"] === "N/A" ? "Not found" : MobileNo["1"]}
+                </Text>
                 <View style={styles.dateRow}>
                   <View
                     style={[
@@ -114,7 +86,7 @@ export default function CallMeLaterScreen() {
                     ]}
                   >
                     <Text style={[styles.value, { color: "#000" }]}>
-                      {client.updatedAt.slice(0, -14)}
+                      {updatedAt ? updatedAt.slice(0, 10) : ""}
                     </Text>
                   </View>
                 </View>
@@ -198,7 +170,7 @@ const styles = StyleSheet.create({
 });
 =======
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
 import {
   Pressable,
   SafeAreaView,
@@ -211,15 +183,15 @@ import {
 import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
 
-export default function CallMeLaterScreen() {
+export default function WrongNumberScreen() {
   const { darkMode } = useTheme();
-  const callmelater = useSelector(
-    (state: any) => state.leads.assignedGroupLeads["call me later"]
+  const wrongnumber = useSelector(
+    (state: any) => state.leads.assignedGroupLeads["wrong number"]
   );
 
-  const handlePress = (idx: string) => {
+const handlePress = (idx: string) => {
     router.push({
-      pathname: "/callmelater/[id]",
+      pathname: "/wrong number/[id]",
       params: { id: idx },
     });
   };
@@ -251,12 +223,12 @@ export default function CallMeLaterScreen() {
           darkMode && { color: "#fff", backgroundColor: "#181A20" },
         ]}
       >
-        CALL ME LATER CLIENTS
+        WRONG NUMBER CLIENTS
       </Text>
       <ScrollView contentContainerStyle={styles.content}>
-        {callmelater?.map((client: any, idx: number) => {
+        {wrongnumber?.map((client: any, idx: number) => {
           const {
-            _id,
+           _id,
   Company_name,
       Business_vol_Lakh_Per_Year,
       Address,
@@ -272,13 +244,12 @@ export default function CallMeLaterScreen() {
       contact_person,
       source,
       updatedAt,
-  } = client;
-
+     
+          } = client;
           return (
             <TouchableOpacity
               key={idx}
               onPress={() => handlePress(_id)}
-              activeOpacity={0.85}
             >
               <View
                 style={[styles.box, darkMode && { backgroundColor: "#23262F" }]}
@@ -288,20 +259,10 @@ export default function CallMeLaterScreen() {
                 >
                   {Company_name}
                 </Text>
-                <View style={styles.row}>
-                  <Text style={[styles.value, darkMode && { color: "#fff" }]}>
-                    {Remarks?.[Remarks.length - 1]?.comment || ""}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.value,
-                      { marginLeft: 16 },
-                      darkMode && { color: "#fff" },
-                    ]}
-                  >
-                   {Mobile_no || Landline_no || "No contact number"}
-                  </Text>
-                </View>
+                <Text style={[styles.value, darkMode && { color: "#fff" }]}>
+                  Mobile:{" "}
+                  {Mobile_no || Landline_no || "No contact number"}
+                </Text>
                 <View style={styles.dateRow}>
                   <View
                     style={[
@@ -312,7 +273,7 @@ export default function CallMeLaterScreen() {
                     ]}
                   >
                     <Text style={[styles.value, { color: "#000" }]}>
-                      {client.updatedAt.slice(0, -14)}
+                      {updatedAt ? updatedAt.slice(0, 10) : ""}
                     </Text>
                   </View>
                 </View>
@@ -394,4 +355,4 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
 });
->>>>>>> 80530c0e1ce2f0de6e9f15ab7869442ae1267f66
+>>>>>>> 80530c0e1ce2f0de6e9f15ab7869442ae1267f66:app/wrong number/index.tsx

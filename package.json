@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "salescrm",
   "main": "expo-router/entry",
@@ -63,3 +64,86 @@
   },
   "private": true
 }
+=======
+{
+  "name": "salescrm",
+  "main": "expo-router/entry",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "expo start --dev-client",
+    "reset-project": "node ./scripts/reset-project.js",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "lint": "expo lint"
+  },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "listUnknownPackages": false
+      }
+    }
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^14.1.0",
+    "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-picker/picker": "2.11.1",
+    "@react-navigation/bottom-tabs": "^7.3.10",
+    "@react-navigation/elements": "^2.3.8",
+    "@react-navigation/native": "^7.1.6",
+    "@reduxjs/toolkit": "^2.8.2",
+    "ajv": "^8.12.0",
+    "ajv-keywords": "^5.1.0",
+    "eas-cli": "^16.7.0",
+    "expo": "53.0.20",
+    "expo-blur": "~14.1.5",
+    "expo-build-properties": "^0.14.8",
+    "expo-constants": "~17.1.6",
+    "expo-crypto": "~14.1.5",
+    "expo-device": "~7.1.4",
+    "expo-doctor": "^1.13.5",
+    "expo-font": "~13.3.1",
+    "expo-haptics": "~14.1.4",
+    "expo-image": "~2.4.0",
+    "expo-image-picker": "~16.1.4",
+    "expo-linking": "~7.1.7",
+    "expo-notifications": "~0.31.4",
+    "expo-router": "~5.1.4",
+    "expo-splash-screen": "~0.30.10",
+    "expo-status-bar": "~2.2.3",
+    "expo-symbols": "~0.4.5",
+    "expo-system-ui": "~5.0.10",
+    "expo-web-browser": "~14.2.0",
+    "install": "^0.13.0",
+    "lucide-react-native": "^0.511.0",
+    "nativewind": "^4.1.23",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-native": "0.79.5",
+    "react-native-animatable": "^1.4.0",
+    "react-native-gesture-handler": "~2.24.0",
+    "react-native-reanimated": "~3.17.4",
+    "react-native-safe-area-context": "5.4.0",
+    "react-native-screens": "^4.11.1",
+    "react-native-svg": "15.11.2",
+    "react-native-web": "~0.20.0",
+    "react-native-webview": "13.13.5",
+    "react-redux": "^9.2.0",
+    "redux": "^5.0.1",
+    "redux-toolkit": "^1.1.2",
+    "expo-secure-store": "~14.2.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~19.0.10",
+    "eslint": "^9.25.0",
+    "eslint-config-expo": "~9.2.0",
+    "typescript": "~5.8.3"
+  },
+  "private": true,
+  "overrides": {
+    "@expo/config-plugins": "10.1.1",
+    "@expo/prebuild-config": "9.0.0"
+  }
+}
+>>>>>>> 80530c0e1ce2f0de6e9f15ab7869442ae1267f66

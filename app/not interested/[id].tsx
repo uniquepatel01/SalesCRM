@@ -1,7 +1,6 @@
-<<<<<<< HEAD
+<<<<<<< HEAD:app/notInterested/[id].tsx
 import ActionSelector from "@/components/ui/ActionSelector";
 import RemarksSection from "@/components/ui/RemarkSelector";
-
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -17,17 +16,17 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
 
 const actions = [
   "converted",
   "demo",
-  "did not pick",
+  "dnp",
   "wrong number",
   "call me later",
   "busy",
-  "not interested",
+  "out of station",
   "dormants",
   "emails",
 ];
@@ -49,19 +48,23 @@ const dummy = {
   updatedAt: "",
 };
 
-export default function OutOfStationClientDetails() {
+export default function NotInterestedDetails() {
   const { id } = useLocalSearchParams();
 
-  const dispatch = useDispatch();
+  // Removed invalid usage of NotInterestedClient as a value
   const { darkMode } = useTheme();
   const agentEmail = useSelector((state: any) => state.agent.assignedTo);
 
   const [selectedAction, setSelectedAction] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // Add Remark State
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
-  const [, forceUpdate] = useState({});
   const [lead, setLead] = useState();
+
+  // For re-rendering after adding a remark
+  const [, forceUpdate] = useState({});
 
   useEffect(() => {
     const fetchLead = async () => {
@@ -72,6 +75,7 @@ export default function OutOfStationClientDetails() {
     };
     fetchLead();
   }, []);
+
   const {
     Address = "",
     "Business_vol Lakh / Year": BusinessVolLakhPerYear = {
@@ -111,10 +115,10 @@ export default function OutOfStationClientDetails() {
   //   if (remarkInput.trim()) {
   //     const today = new Date();
   //     const dateStr = today.toLocaleDateString("en-GB").replace(/\//g, "/");
-  //     [].push();
+  //     client.remarks.push({ date: dateStr, text: remarkInput });
   //     setRemarkInput("");
   //     setAddRemarkVisible(false);
-  //     forceUpdate({});
+  //     forceUpdate({}); // force re-render
   //   }
   // };
   const handleAddRemark = async () => {
@@ -134,7 +138,6 @@ export default function OutOfStationClientDetails() {
     setRemarkInput("");
     setAddRemarkVisible(false);
   };
-
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
@@ -159,7 +162,7 @@ export default function OutOfStationClientDetails() {
           />
         </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
-          OUT OF STATION CLIENTS
+          NOT INTERESTED CLIENTS
         </Text>
 
         <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
@@ -170,17 +173,9 @@ export default function OutOfStationClientDetails() {
         <View
           style={[styles.table, darkMode && { backgroundColor: "#23262F" }]}
         >
-          <Row
-            label="Contact person"
-            value={"contactperson"}
-            darkMode={darkMode}
-          />
-          <Row label="Source" value={"source"} darkMode={darkMode} />
-          <Row
-            label="Business Type"
-            value={"business type"}
-            darkMode={darkMode}
-          />
+          <Row label="Contact person" value={""} darkMode={darkMode} />
+          <Row label="Source" value={""} darkMode={darkMode} />
+          <Row label="Business Type" value={""} darkMode={darkMode} />
           <Row
             label="Business Volume"
             value={
@@ -197,12 +192,22 @@ export default function OutOfStationClientDetails() {
             value={LandlineNo["2"]}
             darkMode={darkMode}
           />
-
+          <Row
+            label="Demo Taken"
+            value={(() => {
+              const updated = new Date(updatedAt);
+              const now = new Date();
+              const diffDays = Math.floor(
+                (now.getTime() - updated.getTime()) / (1000 * 60 * 60 * 24)
+              );
+              return diffDays.toLocaleString();
+            })()}
+            darkMode={darkMode}
+          />
           <Row label="Address" value={Address} darkMode={darkMode} multiline />
         </View>
 
         {/* Remarks Section */}
-
         <RemarksSection
           remarks={Remarks}
           onAddPress={() => setAddRemarkVisible(true)}
@@ -210,7 +215,6 @@ export default function OutOfStationClientDetails() {
         />
 
         {/* Action Button */}
-
         <ActionSelector
           selectedAction={selectedAction}
           actions={actions}
@@ -283,13 +287,10 @@ export default function OutOfStationClientDetails() {
                 <Text style={styles.saveBtnText}>ADD</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  styles.callBtn,
-                  { flex: 1, marginLeft: 8, backgroundColor: "red" },
-                ]}
+                style={[styles.callBtn, { flex: 1, marginLeft: 8 }]}
                 onPress={() => setAddRemarkVisible(false)}
               >
-                <Text style={[styles.callBtnText]}>CANCEL</Text>
+                <Text style={styles.callBtnText}>CANCEL</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -563,7 +564,6 @@ const styles = StyleSheet.create({
 =======
 import ActionSelector from "@/components/ui/ActionSelector";
 import RemarksSection from "@/components/ui/RemarkSelector";
-
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -579,17 +579,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
-const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+import RemarksError from "@/components/ui/remarksError";
+
 const actions = [
   "converted",
   "demo",
-  "did not pick",
+  "dnp",
   "wrong number",
   "call me later",
   "busy",
-  "not interested",
+  "out of station",
   "dormants",
   "emails",
 ];
@@ -610,21 +611,27 @@ const dummy = {
   source: "Dummy Source",
   updatedAt: new Date().toISOString(),
 };
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
-export default function OutOfStationClientDetails() {
+export default function NotInterestedDetails() {
   const { id } = useLocalSearchParams();
+  const[remarkError,setRemarkError]=useState(true)
 
-  const dispatch = useDispatch();
+  // Removed invalid usage of NotInterestedClient as a value
   const { darkMode } = useTheme();
   const agentEmail = useSelector((state: any) => state.agent.assignedTo);
-  const [remarkError, setRemarkError] = useState(true);
 
   const [selectedAction, setSelectedAction] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // Add Remark State
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
-  const [, forceUpdate] = useState({});
   const [lead, setLead] = useState();
+
+  // For re-rendering after adding a remark
+  const [, forceUpdate] = useState({});
+
 
   useEffect(() => {
     const fetchLead = async () => {
@@ -635,6 +642,7 @@ export default function OutOfStationClientDetails() {
     };
     fetchLead();
   }, []);
+
   const {
     Company_name,
       Business_vol_Lakh_Per_Year,
@@ -674,18 +682,18 @@ export default function OutOfStationClientDetails() {
   //   if (remarkInput.trim()) {
   //     const today = new Date();
   //     const dateStr = today.toLocaleDateString("en-GB").replace(/\//g, "/");
-  //     [].push();
+  //     client.remarks.push({ date: dateStr, text: remarkInput });
   //     setRemarkInput("");
   //     setAddRemarkVisible(false);
-  //     forceUpdate({});
+  //     forceUpdate({}); // force re-render
   //   }
   // };
   const handleAddRemark = async () => {
- if (!remarkInput.trim()) {
-    setRemarkError(true);
-    return;
-  }
-  setRemarkError(false);
+    if(!remarkInput.trim()) 
+      {
+        setRemarkError(true)
+        return;
+      };
     const res = await fetch(`${apiUrl}/lead/add-remark`, {
       method: "PUT",
       headers: {
@@ -702,7 +710,6 @@ export default function OutOfStationClientDetails() {
     setRemarkInput("");
     setAddRemarkVisible(false);
   };
-
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
@@ -718,6 +725,7 @@ export default function OutOfStationClientDetails() {
             zIndex: 100,
             backgroundColor: "transparent",
             padding: 4,
+            
           }}
         >
           <Ionicons
@@ -727,7 +735,7 @@ export default function OutOfStationClientDetails() {
           />
         </Pressable>
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
-          OUT OF STATION CLIENTS
+          NOT INTERESTED CLIENTS
         </Text>
 
         <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
@@ -738,21 +746,13 @@ export default function OutOfStationClientDetails() {
         <View
           style={[styles.table, darkMode && { backgroundColor: "#23262F" }]}
         >
-          <Row
-            label="Contact person"
-            value={contact_person || "N/A"}
-            darkMode={darkMode}
-          />
+          <Row label="Contact person" value={contact_person || "N/A"} darkMode={darkMode} />
           <Row label="Source" value={source || "N/A"} darkMode={darkMode} />
-          <Row
-            label="Business Type"
-            value={business_type || "N/A"}
-            darkMode={darkMode}
-          />
+          <Row label="Business Type" value={business_type || "N/A"} darkMode={darkMode} />
           <Row
             label="Business Volume"
             value={
-              Business_vol_Lakh_Per_Year + " Lakh/Year"
+              Business_vol_Lakh_Per_Year?.toString() + " Lakh/Year"
             }
             darkMode={darkMode}
           />
@@ -763,12 +763,34 @@ export default function OutOfStationClientDetails() {
             value={Landline_no}
             darkMode={darkMode}
           />
+          <Row
+            label="Demo Taken"
+            value={`${(() => {
+  const updated = new Date(updatedAt);
+  const now = new Date();
 
+  // Convert both dates to UTC midnight to eliminate partial day effects
+  const utcUpdated = Date.UTC(
+    updated.getFullYear(),
+    updated.getMonth(),
+    updated.getDate()
+  );
+
+  const utcNow = Date.UTC(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
+
+  const diffDays = Math.floor((utcNow - utcUpdated) / (1000 * 60 * 60 * 24));
+  return diffDays<=1?`${diffDays} day`:`${diffDays} days`;
+})()} `}
+            darkMode={darkMode}
+          />
           <Row label="Address" value={Address} darkMode={darkMode} multiline />
         </View>
 
         {/* Remarks Section */}
-
         <RemarksSection
           remarks={Remarks}
           onAddPress={() => setAddRemarkVisible(true)}
@@ -776,7 +798,6 @@ export default function OutOfStationClientDetails() {
         />
 
         {/* Action Button */}
-
         <ActionSelector
           selectedAction={selectedAction}
           actions={actions}
@@ -836,18 +857,14 @@ export default function OutOfStationClientDetails() {
               placeholder="Enter remark"
               placeholderTextColor={darkMode ? "#aaa" : "#888"}
               value={remarkInput}
-             onChangeText={(text) => {
+            onChangeText={(text) => {
     setRemarkInput(text);
     if (text.trim()) setRemarkError(false); // Clear error on typing
   }}
               multiline
               autoFocus
             />
-            {remarkError && (
-  <Text style={{ color: "red", marginTop: 4, marginBottom: -10 }}>
-    Please enter a remark before submitting.
-  </Text>
-)}
+            <RemarksError remarkError={remarkError}/>
             <View style={{ flexDirection: "row", marginTop: 16 }}>
               <TouchableOpacity
                 style={[styles.saveBtn, { flex: 1, marginRight: 8 }]}
@@ -856,13 +873,10 @@ export default function OutOfStationClientDetails() {
                 <Text style={styles.saveBtnText}>ADD</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  styles.callBtn,
-                  { flex: 1, marginLeft: 8, backgroundColor: "red" },
-                ]}
+                style={[styles.callBtn, { flex: 1, marginLeft: 8,backgroundColor:"red" }]}
                 onPress={() => setAddRemarkVisible(false)}
               >
-                <Text style={[styles.callBtnText]}>CANCEL</Text>
+                <Text style={styles.callBtnText}>CANCEL</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -926,14 +940,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   header: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
     letterSpacing: 1,
     textAlign: "center",
     marginBottom: 8,
     color: "#222",
   },
-   company: {
+  company: {
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
@@ -1133,4 +1147,4 @@ const styles = StyleSheet.create({
     color: "#222",
   },
 });
->>>>>>> 80530c0e1ce2f0de6e9f15ab7869442ae1267f66
+>>>>>>> 80530c0e1ce2f0de6e9f15ab7869442ae1267f66:app/not interested/[id].tsx
