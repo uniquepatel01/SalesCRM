@@ -1,60 +1,3 @@
-<<<<<<< HEAD
-{
-  "expo": {
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#ffffff",
-        "foregroundImage": "./assets/images/crm-logo.png"
-      },
-      "edgeToEdgeEnabled": true,
-      "package": "com.uniquepatel01.SalesCRM"
-    },
-    "experiments": {
-      "router": true
-    },
-    "icon": "./assets/images/icon.png",
-    "ios": {
-      "supportsTablet": true
-    },
-    "name": "SalesCRM",
-    "newArchEnabled": true,
-    "orientation": "portrait",
-    "owner": "akshatsingh047",
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#ffffff",
-          "image": "./assets/images/crm-logo.png",
-          "imageWidth": 200,
-          "resizeMode": "contain"
-        }
-      ]
-    ],
-    "scheme": "salescrm",
-    "slug": "SalesCRM-akshatsingh047",
-    "splash": {
-      "backgroundColor": "#ffffff",
-      "image": "./assets/images/crm-logo.png",
-      "resizeMode": "contain"
-    },
-    "userInterfaceStyle": "automatic",
-    "version": "1.0.0",
-    "web": {
-      "bundler": "metro",
-      "favicon": "./assets/images/favicon.png",
-      "output": "static"
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "0897d766-6852-426f-bee2-9d0036d81978"
-      }
-    }
-  }
-}
-=======
 {
   "expo": {
     "android": {
@@ -95,4 +38,3 @@
     }
   }
 }
->>>>>>> 80530c0e1ce2f0de6e9f15ab7869442ae1267f66
