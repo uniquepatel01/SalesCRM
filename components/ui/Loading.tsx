@@ -13,7 +13,7 @@ const Loading = () => {
           duration={300}
           easing="linear"
         >
-          <AntDesign name="loading1" size={40} color="#0f2ec6ff" />
+          <AntDesign name="loading" size={40} color="#0f2ec6ff" />
         </Animatable.View>
       </View>
     </View>

@@ -15,339 +15,155 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useTheme } from "../../ThemeContext";
-const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-
-// CustomDropdown component
-import ActionSelector from "@/components/ui/ActionSelector";
-import { FlatList, Modal } from "react-native";
 import { useSelector } from "react-redux";
-const actions = [
-  "converted",
-  "demo",
-  "dnp",
-  "wrong number",
-  "call me later",
-  "busy",
-  "out of station",
-  "not interested",
-  "dormants",
-  "emails",
-];
-type CustomDropdownProps = {
-  title: string;
-  visible: boolean;
-  onClose: () => void;
-  data: string[];
-  value: string;
-  onSelect: (val: string) => void;
-};
+import { useTheme } from "../../ThemeContext";
+import ActionSelector from "@/components/ui/ActionSelector";
 
-const CustomDropdown = ({
-  title,
-  visible,
-  onClose,
-  data,
-  value,
-  onSelect,
-}: CustomDropdownProps) => {
-  const [search, setSearch] = useState("");
-  const filtered = data.filter((item) =>
-    item.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <Modal visible={visible} transparent animationType="slide">
-      <View style={dropdownModalStyles.overlay}>
-        <View style={dropdownModalStyles.modal}>
-          <Text style={dropdownModalStyles.title}>{title}</Text>
-          <View style={dropdownModalStyles.searchRow}>
-            <TextInput
-              style={dropdownModalStyles.searchInput}
-              placeholder={`Search ${title}`}
-              value={search}
-              onChangeText={setSearch}
-              placeholderTextColor="#888"
-            />
-            <Ionicons
-              name="search"
-              size={20}
-              color="#222"
-              style={{ marginLeft: 8 }}
-            />
-          </View>
-          <FlatList
-            data={filtered}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={dropdownModalStyles.item}
-                onPress={() => {
-                  onSelect(item);
-                  setSearch("");
-                  onClose();
-                }}
-              >
-                <Text style={{ color: "#222", fontSize: 16 }}>{item}</Text>
-                {value === item && (
-                  <Ionicons name="checkmark" size={18} color="#1da1f2" />
-                )}
-              </TouchableOpacity>
-            )}
-            ListEmptyComponent={
-              <Text
-                style={{ color: "#888", textAlign: "center", marginTop: 20 }}
-              >
-                No results
-              </Text>
-            }
-            style={{ maxHeight: 250 }}
-          />
-          <TouchableOpacity
-            onPress={onClose}
-            style={dropdownModalStyles.closeBtn}
-          >
-            <Text
-              style={{ color: "#1da1f2", fontWeight: "bold", fontSize: 16 }}
-            >
-              Close
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
-  );
-};
-
-const dropdownModalStyles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.2)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modal: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 18,
-    width: "85%",
-  },
-  title: { fontSize: 18, fontWeight: "bold", marginBottom: 10, color: "#222" },
-  searchRow: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
-  searchInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#eee",
-    borderRadius: 6,
-    padding: 8,
-    fontSize: 15,
-    color: "#222",
-  },
-  item: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderColor: "#f0f0f0",
-    justifyContent: "space-between",
-  },
-  closeBtn: { alignSelf: "center", marginTop: 12 },
-});
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 export default function AddLead() {
   const { darkMode } = useTheme();
 
-  // Dropdown states
-  const [source, setSource] = useState("");
-  const [businessType, setBusinessType] = useState("");
-  const [businessVolume, setBusinessVolume] = useState("");
-  const [feedback, setFeedback] = useState("");
-  const [country, setCountry] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
-  const [countries, setCountries] = useState<string[]>([]);
-  const [states, setStates] = useState<string[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
-  const [loadingStates, setLoadingStates] = useState(false);
-  const [loadingCities, setLoadingCities] = useState(false);
-  const [countryModal, setCountryModal] = useState(false);
-  const [stateModal, setStateModal] = useState(false);
-  const [cityModal, setCityModal] = useState(false);
+  const [formData, setFormData] = useState({
+    businessType: "",
+    businessVolume: "",
+    fullName: "",
+    companyName: "",
+    address: "",
+    email: "",
+    mobile: "",
+    alternate: "",
+    selectedAction: "",
+    source: "",
+  });
 
-  // Input states
-  const [fullName, setFullName] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [address, setAddress] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [alternate, setAlternate] = useState("");
-  const [action, setAction] = useState("");
-  const [countrySearch, setCountrySearch] = useState("");
-  const [stateSearch, setStateSearch] = useState("");
-  const [citySearch, setCitySearch] = useState("");
-  const [selectedAction, setSelectedAction] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const agentEmail = useSelector((state: any) => state.agent.assignedTo);
-  // Dummy handlers
-  const handleSave =  async() => {
-   
-if (!companyName.trim() || !fullName.trim() || !country || !state || !city || !address.trim() || !selectedAction || !mobile.trim()) {
-    Alert.alert("Error", "Please fill all required fields.");
-    return;
-  }
+  const [actions, setActions] = useState<string[]>([]);
+  const [businessTypes, setBusinessTypes] = useState<any[]>([]);
+  const [businessVolumes, setBusinessVolumes] = useState<any[]>([]);
+
+  const agent = useSelector((state: any) => state.agent);
+  const token = agent.token;
+
+  const isAgent = !!agent.assignedTo;
+
+  // 🔹 Fetch dropdown data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 🔹 Buckets (Statuses)
+        const bucketRes = await fetch(`${apiUrl}/apk/buckets`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const bucketData = await bucketRes.json();
+        setActions(bucketData?.buckets || []);
+
+        // 🔹 Business Types
+        const typeRes = await fetch(
+          `${apiUrl}/api/crm/dropdown/business-types`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const typeData = await typeRes.json();
+        setBusinessTypes(typeData.businessTypes || []);
+
+        // 🔹 Business Volumes
+        const volRes = await fetch(
+          `${apiUrl}/api/crm/dropdown/business-volumes`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const volData = await volRes.json();
+        setBusinessVolumes(volData.businessVolumes || []);
+      } catch (err) {
+        console.error("❌ Error fetching dropdown data:", err);
+      }
+    };
+
+    fetchData();
+  }, [token]);
+
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // 🔹 Save lead
+  const handleSave = async () => {
+    const requiredFields = [
+      "companyName",
+      "fullName",
+      "address",
+      "mobile", // always required
+      ...(isAgent ? ["selectedAction"] : []),
+    ];
+    const missingFields = requiredFields.filter(
+      (field) => !formData[field as keyof typeof formData]?.trim()
+    );
+
+    if (missingFields.length > 0) {
+      Alert.alert("Error", "Please fill all required fields.");
+      return;
+    }
 
     const payload = {
-      Company_name: companyName,
-      Business_vol_Lakh_Per_Year: businessVolume,
-      Address: address,
-      Mobile_no: mobile,
-      Landline_no: alternate,
-      E_mail_id: email,
-      status: selectedAction.toLowerCase(),
-      assignedTo: agentEmail,
-      business_type: businessType,
-      Country: country,
-      State: state,
-      City: city,
-      contact_person: fullName,
-      source: source,
+      Company_name: formData.companyName,
+      Business_vol_Lakh_Per_Year: formData.businessVolume || "N/A",
+      Address: formData.address,
+      Mobile_no: formData.mobile,
+      Landline_no: formData.alternate || "N/A",
+      E_mail_id: formData.email || "N/A",
+      status: formData.selectedAction || "",
+      assignedTo: isAgent ? agent.assignedTo : null,
+      business_type: formData.businessType || "",
+      City: "",
+      State: "",
+      Country: "",
+      contact_person: formData.fullName,
+      source: formData.source || "",
+      Remarks: [],
     };
 
     try {
-    
-      const response = await fetch(`${apiUrl}/lead/add-new`, {
+      const res = await fetch(`${apiUrl}/api/crm/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
 
-      if (response.status !== 201) {
-        throw new Error("Failed to save lead");
-      }
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Failed to save lead");
 
       Alert.alert("Success", "Lead saved successfully");
       router.back();
-    } catch (error) {
-      console.error("Error saving lead:", error);
-      Alert.alert("Error", "Failed to save lead. Please try again.");
+    } catch (err: any) {
+      console.error("Error saving lead:", err);
+      Alert.alert("Error", err.message || "Failed to save lead");
     }
   };
-  
-
-  // Fetch countries on mount
-  useEffect(() => {
-    fetch("https://countriesnow.space/api/v0.1/countries/positions")
-      .then((res) => res.json())
-      .then((data) => {
-        setCountries(data.data.map((item: any) => item.name));
-      });
-  }, []);
-
-  // Fetch states when country changes
-  useEffect(() => {
-    if (!country) {
-      setStates([]);
-      setState("");
-      setCities([]);
-      setCity("");
-      return;
-    }
-    setLoadingStates(true);
-    fetch("https://countriesnow.space/api/v0.1/countries/states", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ country }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setStates(
-          data.data.states.map((item: any) => {
-            return item.name;
-          })
-        );
-        setState("");
-        setCities([]);
-        setCity("");
-      })
-      .finally(() => setLoadingStates(false));
-  }, [country]);
-
-  // Fetch cities when state changes
-  useEffect(() => {
-    if (!country || !state) {
-      setCities([]);
-      setCity("");
-      return;
-    }
-    setLoadingCities(true);
-    fetch("https://countriesnow.space/api/v0.1/countries/state/cities", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ country, state }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setCities(
-          Array.from(
-            new Set(
-              data.data.map((st: any) =>
-                st.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-              )
-            )
-          )
-        );
-
-        setCity("");
-      })
-      .finally(() => setLoadingCities(false));
-  }, [state]);
-
-  // Filtered lists
-  const filteredCountries = countries.filter((c) =>
-    c.toLowerCase().includes(countrySearch.toLowerCase())
-  );
-  const filteredStates = states.filter((s) =>
-    s.toLowerCase().includes(stateSearch.toLowerCase())
-  );
-  const filteredCities = cities.filter((c) =>
-    c.toLowerCase().includes(citySearch.toLowerCase())
-  );
-const handleEmail = (recipientEmail: string) => {
-if(!recipientEmail || recipientEmail.trim() === ""|| recipientEmail === "N/A") {
-    Alert.alert("No email provided", "This lead does not have an email address.");
-    return;
-  }
-  const emailUrl = `mailto:${recipientEmail}`;
-  Linking.openURL(emailUrl).catch((err) =>
-    console.error("Failed to open email client:", err)
-  );
-};
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 24} // adjust if you have a header
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 24}
     >
       <ScrollView
-        contentContainerStyle={[styles.container,darkMode && { backgroundColor: "#181A20" }]}
+        contentContainerStyle={[
+          styles.container,
+          darkMode && { backgroundColor: "#181A20" },
+        ]}
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
         <View style={styles.headerRow}>
-          {/* Back Arrow Icon */}
           <Pressable
             onPress={() => router.back()}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 10,
-              zIndex: 100,
-              backgroundColor: "transparent",
-              padding: 4,
-            }}
+            style={{ position: "absolute", top: 0, left: 10, zIndex: 100 }}
           >
             <Ionicons
               name="arrow-back"
@@ -355,250 +171,154 @@ if(!recipientEmail || recipientEmail.trim() === ""|| recipientEmail === "N/A") {
               color={darkMode ? "#fff" : "#000"}
             />
           </Pressable>
-          <Text style={[styles.headerTitle,darkMode && { color: "#ffffffff" }]}>New Lead Entry</Text>
+          <Text style={[styles.headerTitle, darkMode && { color: "#fff" }]}>
+            New Lead Entry
+          </Text>
           <View style={{ width: 28 }} />
         </View>
 
-        {/* Dropdown Row 1 */}
-        <View style={styles.row}>
-          <View style={styles.dropdownContainer}>
-            <Picker
-              selectedValue={source}
-              onValueChange={setSource}
-              style={styles.picker}
-              dropdownIconColor="#222"
-             
-            >
-              <Picker.Item label="Source" value=""  color="#888" />
-              <Picker.Item label="Referral" value="referral" />
-              <Picker.Item label="SMS" value="sms" />
-              <Picker.Item label="Email" value="email" />
-              <Picker.Item label="Social Media" value="socialmedia" />
+        {/* Source */}
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Source"
+          placeholderTextColor="#888"
+          value={formData.source}
+          onChangeText={(val) => handleChange("source", val)}
+        />
+
+        {/* Business Type */}
+        <View style={styles.dropdownContainerFull}>
+          <Picker
+            selectedValue={formData.businessType}
+            onValueChange={(val) => handleChange("businessType", val)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Select Business Type" value="" color="#888" />
+            {businessTypes.map((type) => (
               <Picker.Item
-                label="Digital Marketing"
-                value="digital marketing"
+                key={type._id}
+                label={type.businessTypeName}
+                value={type.businessTypeName}
               />
-            </Picker>
-          </View>
-          <View style={[styles.dropdownContainer]}>
-            <Picker
-              selectedValue={businessType}
-              onValueChange={setBusinessType}
-              style={styles.picker}
-              dropdownIconColor="#222"
-            >
-              <Picker.Item label="Business Type" value=""  color="#888" />
-              <Picker.Item label="Money Changer" value="moneychanger" />
-              <Picker.Item label="Forex Trader" value="forex trader" />
-              <Picker.Item label="NRI/ Individula" value="nri" />
-              <Picker.Item label="Other" value="other" />
-              <Picker.Item label="Not Available" value="not available" />
-            </Picker>
-          </View>
+            ))}
+          </Picker>
         </View>
 
-        {/* Dropdown Row 2 */}
-        <View style={styles.row}>
-          <View style={styles.dropdownContainerFull}>
-            <Picker
-              selectedValue={businessVolume}
-              onValueChange={setBusinessVolume}
-              style={styles.picker}
-              dropdownIconColor="#222"
-            >
-              <Picker.Item label="Business Volume" value=""  color="#888" />
-              <Picker.Item label="Below $50k USD" value="Below $50k USD" />
-              <Picker.Item label="Above $1lakh USD" value="Above $1lakh USD" />
-              <Picker.Item label="$2lakh USD" value="$2lakh USD" />
-              <Picker.Item label="$4.5lakh USD" value="$4.5lakh USD" />
-              <Picker.Item label="$10lakh+ USD" value="$10lakh+ USD" />
-            </Picker>
-          </View>
-        </View>
-
-        {/* Dropdown Row 3 */}
-
-
-        {/* Text Inputs */}
-        <TextInput
-  style={[styles.input]}
-  placeholder="Enter Name"
-  placeholderTextColor="#888"
-  value={fullName}
-  onChangeText={setFullName}
-/>
-       <TextInput
-  style={[styles.input,!companyName.trim() && { borderBottomColor: 'red', borderBottomWidth: 1 }]}
-  placeholder="Enter Company Name"
-  placeholderTextColor="#888"
-  value={companyName}
-  onChangeText={setCompanyName}
-/>
-        {/* Country/State/City Row with Search */}
-        <View style={[{flexDirection:"column",gap:"6"},{marginBottom:6}]}>
-          <View style={[styles.dropdownContainer]}>
-            <TouchableOpacity
-              style={[styles.dropdownBtn]}
-              onPress={() => setCountryModal(true)}
-            >
-              <Text style={{ color: country ? "#222" : "#888", fontSize: 16,textAlign: "center" }}>
-                {country || "Country"}
-              </Text>
-              <Ionicons name="chevron-down" size={18} color="#888" />
-            </TouchableOpacity>
-            <CustomDropdown
-              title="Country"
-              visible={countryModal}
-              onClose={() => setCountryModal(false)}
-              data={countries}
-              value={country}
-              onSelect={(val) => {
-                setCountry(val);
-              }}
-            />
-          </View>
-          <View style={styles.dropdownContainer}>
-            <TouchableOpacity
-              style={styles.dropdownBtn}
-              onPress={() => country && setStateModal(true)}
-              disabled={!country}
-            >
-              <Text style={{ color: state ? "#222" : "#888", fontSize: 16 }}>
-                {state || "State"}
-              </Text>
-              <Ionicons name="chevron-down" size={18} color="#888" />
-            </TouchableOpacity>
-            <CustomDropdown
-              title="State"
-              visible={stateModal}
-              onClose={() => setStateModal(false)}
-              data={states}
-              value={state}
-              onSelect={(val) => {
-                setState(val);
-                setCity("");
-              }}
-            />
-          </View>
-          <View style={styles.dropdownContainer}>
-            <TouchableOpacity
-              style={styles.dropdownBtn}
-              onPress={() => state && setCityModal(true)}
-              disabled={!state}
-            >
-              <Text style={{ color: city ? "#222" : "#888", fontSize: 16 }}>
-                {city || "City"}
-              </Text>
-              <Ionicons name="chevron-down" size={18} color="#888" />
-            </TouchableOpacity>
-            <CustomDropdown
-              title="City"
-              visible={cityModal}
-              onClose={() => setCityModal(false)}
-              data={cities}
-              value={city}
-              onSelect={setCity}
-            />
-          </View>
-        </View>
-
-        <TextInput
-  style={[styles.input]}
-  placeholder="Enter Address"
-  placeholderTextColor="#888"
-  value={address}
-  onChangeText={setAddress}
-/>
-
-        {/* Action Dropdown */}
-        <View   style={[{marginBottom:8,marginTop:-4,borderRadius:8}, !selectedAction.trim() && {borderBottomColor: 'red', borderBottomWidth: 1 }]}>
-          <ActionSelector
-                  selectedAction={selectedAction}
-                  actions={actions}
-                  dropdownOpen={dropdownOpen}
-                  setDropdownOpen={setDropdownOpen}
-                  setSelectedAction={setSelectedAction}
-                  darkMode={darkMode}
-                />
-        </View>
-
-        {/* Email/Mobile/Alternate with Action Buttons */}
-        <View style={[styles.row,]}>
-          <TextInput
-            style={[styles.input, { flex: 1, marginRight: 8 }]}
-            placeholder="Enter Email Address"
-            placeholderTextColor="#888"
-            value={email}
-            keyboardType="email-address"  // ✅ Opens email-specific keyboard
-           autoCapitalize="none"         // ✅ Prevents automatic capitalization
-           autoCorrect={false}           // ✅ Avoids autocorrect on emails
-            onChangeText={setEmail}
-          />
-          <TouchableOpacity style={[styles.actionBtn]} onPress={() => handleEmail(email)}>
-            <Text style={styles.actionBtnText}>E-mail</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.row}>
-          <TextInput
-            style={[styles.input, { flex: 1, marginRight: 8 }]}
-            placeholder="Enter Mobile No."
-            placeholderTextColor="#888"
-            value={mobile}
-            maxLength={10}
-            onChangeText={setMobile}
-            keyboardType="phone-pad"
-          />
-          <TouchableOpacity
-            style={styles.actionBtn}
-            onPress={() => {
-                         if (mobile && mobile.length === 10) {
-                           Linking.openURL(
-                             `tel:${mobile.length > 10 ? mobile.slice(2) : mobile}`
-                           );
-                         }
-                       }}
+        {/* Business Volume */}
+        <View style={styles.dropdownContainerFull}>
+          <Picker
+            selectedValue={formData.businessVolume}
+            onValueChange={(val) => handleChange("businessVolume", val)}
+            style={styles.picker}
           >
-            <Text style={styles.actionBtnText}>Call</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.row}>
-          <TextInput
-            style={[styles.input, { flex: 1, marginRight: 8 }]}
-            placeholder="Enter Alternate No."
-            placeholderTextColor="#888"
-            value={alternate}
-            maxLength={10}
-            onChangeText={setAlternate}
-            keyboardType="phone-pad"
-          />
-          <TouchableOpacity
-            style={styles.actionBtn}
-            onPress={() => {
-                         if (alternate && alternate.length === 10) {
-                           Linking.openURL(
-                             `tel:${alternate.length > 10 ? alternate.slice(2) : alternate}`
-                           );
-                         }
-                       }}
-          >
-            <Text style={styles.actionBtnText}>Call</Text>
-          </TouchableOpacity>
+            <Picker.Item label="Select Business Volume" value="" color="#888" />
+            {businessVolumes.map((vol) => (
+              <Picker.Item
+                key={vol._id}
+                label={vol.businessVolumeName}
+                value={vol.businessVolumeName}
+              />
+            ))}
+          </Picker>
         </View>
 
-        {/* Save/Call Buttons */}
+        {/* Name, Company, Address */}
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Name"
+          placeholderTextColor="#888"
+          value={formData.fullName}
+          onChangeText={(val) => handleChange("fullName", val)}
+        />
+        <TextInput
+          style={[
+            styles.input,
+            
+          ]}
+          placeholder="Enter Company Name"
+          placeholderTextColor="#888"
+          value={formData.companyName}
+          onChangeText={(val) => handleChange("companyName", val)}
+        />
+        <TextInput
+          style={[
+            styles.input,
+            styles.addressInput,
+            
+          ]}
+          placeholder="Enter Complete Address"
+          placeholderTextColor="#888"
+          value={formData.address}
+          onChangeText={(val) => handleChange("address", val)}
+          multiline
+        />
+
+        {/* Mobile (Required) */}
+        <TextInput
+          style={[
+            styles.input,
+            !formData.mobile && {
+              borderBottomColor: "red",
+              borderBottomWidth: 1,
+            },
+          ]}
+          placeholder="Enter Mobile Number"
+          placeholderTextColor="#888"
+          value={formData.mobile}
+          onChangeText={(val) => handleChange("mobile", val)}
+          keyboardType="phone-pad"
+        />
+
+        {/* Alternate */}
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Alternate Number"
+          placeholderTextColor="#888"
+          value={formData.alternate}
+          onChangeText={(val) => handleChange("alternate", val)}
+          keyboardType="phone-pad"
+        />
+
+        {/* Email */}
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Email"
+          placeholderTextColor="#888"
+          value={formData.email}
+          onChangeText={(val) => handleChange("email", val)}
+          keyboardType="email-address"
+        />
+
+        {/* Status (only for Agent) */}
+        {isAgent && (
+          <View style={{ marginBottom: 8 }}>
+            <ActionSelector
+              selectedAction={formData.selectedAction}
+              setSelectedAction={(val) => handleChange("selectedAction", val)}
+              darkMode={darkMode}
+              actions={actions}
+            />
+          </View>
+        )}
+
+        {/* Save / Call Buttons */}
         <View style={styles.bottomRow}>
-          <TouchableOpacity style={[styles.saveBtn, selectedAction=="" && styles.disabledSaveBtn]} onPress={handleSave} disabled={selectedAction==""}>
+          <TouchableOpacity
+            style={[
+              styles.saveBtn,
+              !formData.mobile && styles.disabledSaveBtn,
+              isAgent && !formData.selectedAction && styles.disabledSaveBtn,
+            ]}
+            onPress={handleSave}
+            disabled={!formData.mobile || (isAgent && !formData.selectedAction)}
+          >
             <Text style={styles.saveBtnText}>SAVE</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.callBtn}
-            onPress={() => {
-                         if (mobile) {
-                           Linking.openURL(
-                             `tel:${mobile.length > 10 ? mobile.slice(2) : mobile}`
-                           );
-                         }
-                       }}
+            onPress={() =>
+              formData.mobile && Linking.openURL(`tel:${formData.mobile}`)
+            }
           >
             <Text style={styles.callBtnText}>CALL</Text>
           </TouchableOpacity>
@@ -612,7 +332,12 @@ const styles = StyleSheet.create({
   container: {
     padding: 18,
     backgroundColor: "#fff",
-    flexGrow: 1,
+    // flexGrow: 1,
+  },
+  addressInput: {
+    height: 100,
+    textAlignVertical: "top",
+    paddingTop: 12,
   },
   headerRow: {
     flexDirection: "row",
@@ -628,27 +353,15 @@ const styles = StyleSheet.create({
     color: "#111",
     marginLeft: "30%",
   },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
-  },
   disabledSaveBtn: {
-    opacity: 0.4, // visually indicate disabled
-  },
-  dropdownContainer: {
-    flex: 1,
-    borderRadius: 8,
-    marginRight: 8,
-    marginBottom:1,
-    backgroundColor: "#f7f7f7",
-    justifyContent: "center",
+    opacity: 0.4,
   },
   dropdownContainerFull: {
     flex: 1,
+    height:50,
     backgroundColor: "#f7f7f7",
     borderRadius: 8,
-    marginBottom: 3,
+    marginBottom: 12,
     elevation: 2,
     shadowColor: "#000",
     shadowOpacity: 0.04,
@@ -675,21 +388,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.04,
     shadowRadius: 2,
     shadowOffset: { width: 0, height: 1 },
-  },
-  actionBtn: {
-    backgroundColor: "#1da1f2",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: 70,
-    marginTop:-6
-  },
-  actionBtnText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
   },
   bottomRow: {
     flexDirection: "row",
@@ -724,45 +422,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
     letterSpacing: 1,
-  },
-  dropdownSearch: {
-    backgroundColor: "#fff",
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    fontSize: 14,
-    color: "#222",
-    marginBottom: 2,
-    borderWidth: 1,
-    borderColor: "#eee",
-  },
-  searchRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  searchBtn: {
-    padding: 8,
-    borderRadius: 4,
-    backgroundColor: "#f0f0f0",
-    marginLeft: 4,
-    elevation: 1,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 1 },
-  },
-  dropdownBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#f7f7f7",
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 2,
-    borderWidth: 1,
-    borderColor: "#eee",
   },
 });

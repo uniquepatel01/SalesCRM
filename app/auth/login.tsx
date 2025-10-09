@@ -1,14 +1,18 @@
-import { setAgentEmail } from "@/store/agentSlice";
+import { setAgent } from "@/store/agentSlice";
+import { useAppDispatch } from "@/store/hook";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+// import { StatusBar } from "expo-status-bar";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
+  ScrollView,
   Platform,
+  StatusBar,
   Pressable,
   StyleSheet,
   Text,
@@ -16,12 +20,39 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { loginAgent, getToken, getSavedAgent } from "@/services/auth"
 
 export default function Login() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("Pass@123");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const [emailError, setEmailError] = useState("");
+
+
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  // Auto-redirect if already logged in
+  useEffect(() => {
+    (async () => {
+      const token = await getToken();
+      if (token) {
+        const saved = await getSavedAgent();
+        if (saved?.id) {
+          // ✅ now just dispatch setAgent
+          dispatch(
+            setAgent({
+              id: saved.id,
+              name: saved.name,
+              token: token,
+            })
+          );
+          router.replace("/dashboard");
+        }
+      }
+    })();
+  }, []);
 
   const togglePasswordVisibility = () => {
     if (Platform.OS !== "web") {
@@ -29,91 +60,121 @@ export default function Login() {
     }
     setShowPassword(!showPassword);
   };
-  const dispatch = useDispatch();
-  const handleLogin = () => {
-    // Navigate to dashboard after "login"
-   if(!email)
-    {
-      alert("Please enter your email");
-      return;
+
+  const handleLogin = async () => {
+    if (!email) return Alert.alert("Please enter your email");
+    if(emailError) return Alert.alert("Validation", emailError)
+
+    try {
+      setLoading(true);
+      const data = await loginAgent(email, password);
+
+      // ✅ update Redux with id, name, token
+      dispatch(
+        setAgent({
+          id: data.agent.id,
+          name: data.agent.name || "",
+          token: data.token,
+        })
+      );
+
+      router.replace("/dashboard");
+    } catch (err: any) {
+      console.error("Login error:", err);
+      Alert.alert("Login failed", err?.message || "Please try again");
+    } finally {
+      setLoading(false);
     }
-
-    dispatch(setAgentEmail(email));
-    router.push("/dashboard");
-
   };
 
-const [emailError, setEmailError] = useState("");
 
-// Regex for basic email validation
-const validateEmail = (text:any) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(text)) {
-    setEmailError("Invalid email format");
-  } else {
-    setEmailError("");
-  }
-  setEmail(text);
-};
-  return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
+
+  // Regex for basic email validation
+  const validateEmail = (text: any) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(text)) {
+      setEmailError("Invalid email format");
+    } else {
+      setEmailError("");
+    }
+    setEmail(text);
+  };
+return (
+  <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+  >
+    {/* Status bar fix */}
+    <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      keyboardShouldPersistTaps="handled"
     >
-      <StatusBar style="dark" />
-
-      <View style={styles.header}>
-        <View style={styles.iconContainer}>
-          <Image source={require("../auth/avtar.png")} style={styles.avatar} />
+      {/* Main container */}
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.iconContainer}>
+            <Image source={require("../auth/avtar.png")} style={styles.avatar} />
+          </View>
+          <Text style={styles.title}>Login to your account</Text>
         </View>
-        <Text style={styles.title}>Login to your account</Text>
+
+        {/* Form */}
+        <View style={styles.form}>
+          {/* Email Input */}
+          <View style={styles.inputContainer}>
+            <Mail color="#757575" size={22} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={email}
+              onChangeText={validateEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              placeholderTextColor="#9e9e9e"
+            />
+          </View>
+          {emailError !== "" && (
+            <Text style={{ color: "red", marginLeft: 10 }}>{emailError}</Text>
+          )}
+
+          {/* Password Input */}
+          <View style={styles.inputContainer}>
+            <Lock color="#757575" size={22} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              autoCapitalize="none"
+              placeholderTextColor="#9e9e9e"
+            />
+            <Pressable onPress={togglePasswordVisibility} style={styles.eyeIcon}>
+              {showPassword ? (
+                <Eye color="#757575" size={22} />
+              ) : (
+                <EyeOff color="#757575" size={22} />
+              )}
+            </Pressable>
+          </View>
+
+          {/* Login Button */}
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={handleLogin}
+            disabled={emailError !== ""}
+          >
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      <View style={styles.form}>
-        <View style={styles.inputContainer}>
-          <Mail color="#757575" size={22} style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={validateEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholderTextColor="#9e9e9e"
-          />
-        </View>
-        {emailError !== "" && (
-  <Text style={{ color: "red", marginLeft: 10 }}>{emailError}</Text>
-)}
-
-        <View style={[styles.inputContainer]}>
-          <Lock color="#757575" size={22} style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry={!showPassword}
-            autoCapitalize="none"
-            placeholderTextColor="#9e9e9e"
-            editable={false} 
-            
-          />
-          <Pressable onPress={togglePasswordVisibility} style={styles.eyeIcon}>
-            {showPassword ? (
-              <Eye color="#757575" size={22} />
-            ) : (
-              <EyeOff color="#757575" size={22} />
-            )}
-          </Pressable>
-        </View>
-
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={emailError!==""}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
-  );
+    </ScrollView>
+  </KeyboardAvoidingView>
+);
 }
 
 const styles = StyleSheet.create({

@@ -3,6 +3,8 @@ import { router } from "expo-router";
 import { Moon, Plus, Search, Sun, User } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
+import { logout as logoutAction } from "@/store/agentSlice";
+import { logoutAgent } from "@/services/auth";
 
 import { setCurrentFetchedLead } from "@/store/assignedLeadSlice";
 import {
@@ -21,6 +23,7 @@ import { useTheme } from "../../ThemeContext"; // adjust path as needed
 
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
 function debounce(func: (...args: any[]) => void, delay: number) {
   let timeoutId: ReturnType<typeof setTimeout>;
   return (...args: any[]) => {
@@ -31,141 +34,165 @@ function debounce(func: (...args: any[]) => void, delay: number) {
 
 
 export default function DashboardHeader() {
-   
-  const { darkMode, toggleTheme } = useTheme();
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [search, setSearch] = useState("");
-  const colorScheme = useColorScheme();
-  const[CRMName,setCRM]=useState("");
 
-  const [suggestions, setSuggestions] = useState([]);
-const [showSuggestions, setShowSuggestions] = useState(false);
-const [agentName, setAgentName] = useState("");
- const agentEmail = useSelector((state: any) => state.agent.assignedTo);
- const dispatch=useDispatch();
+  const { darkMode, toggleTheme } = useTheme();
+  const [dropdownVisible, setDropdownVisible] = useState(false)
+  const [search, setSearch] = useState("");
+  const [CRMName, setCRM] = useState("");
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // ✅ use Redux agent slice (id + name)
+  const agentId = useSelector((state: any) => state.agent.assignedTo);
+  const agentName = useSelector((state: any) => state.agent.agentName);
+  const token = useSelector((state: any) => state.agent.token);
+
+
+  const dispatch = useDispatch();
+
   const greeting = () => {
     return `Welcome ${agentName || "Agent"}`;
   };
-  const fetchProfile = async () => {
+
+useEffect(() => {
+  const crmName = async () => {
     try {
-      const res = await fetch(`${apiUrl}/agentProfile/fetch?email=${agentEmail}`, {
-        method: "GET",
-        headers: {
-          "Accept": "application/json",
+      const res = await fetch(`${apiUrl}/apk/crm-name`,{
+          method: "GET",
+          headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
       });
       const data = await res.json();
-      setAgentName(data.name);
-    } catch (err) {
-      console.error(err);
-      Alert.alert("Error", "Failed to load profile");
-    }
-  };
- 
-  useEffect(() => {
-  const crmName = async () => {
-    try {
-      const res = await fetch(`${apiUrl}/crm-name`);
-      const data = await res.json();
-      setCRM(data);
+      setCRM(data.crmKey); // store only the crmKey, e.g. "forex"
     } catch (err) {
       console.error("Error fetching CRM name:", err);
     }
   };
 
-  const normalizeLeads = async () => {
-    try {
-      const res = await fetch(`${apiUrl}/agents/normalize`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const result = await res.json();
-    } catch (err) {
-      console.error("❌ Error normalizing leads:", err);
-    }
-  };
-
   crmName();
-  fetchProfile();
-  normalizeLeads();
 }, []);
 
+
   useEffect(() => {
-  if (search.trim()) {
-    debouncedSearch(search);
-  } else {
-    setSuggestions([]);
-    setShowSuggestions(false);
-  }
-}, [search]);
-
-  
- 
- //----------------------handle click on fetch Lead Button------------------------------------------
-  const handleFetchLead = async () => {
-  const response = await fetch(`${apiUrl}/forex-leads/assign`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ userId: agentEmail}) // 👈 your user ID here
-    });
-   const data = await response.json();
-    dispatch(setCurrentFetchedLead(data.assignedLead))
-  };
-
-  
-  const Company_name= useSelector((state:any)=>state.leads.currentFetchedLead?.Company_name || "No Lead Assigned")
-
-
-
-  const handleLogout = () => {
-    if(Company_name!=="No Lead Assigned")
-    {
-        alert("Can't logout Lead Assigned")
-        return;
+    if (search.trim()) {
+      debouncedSearch(search);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
     }
-    router.push("/auth/login");
+  }, [search]);
+
+  // ---------------------- Fetch Lead --------------------------
+
+
+  const handleFetchLead = async () => {
+    try {
+
+      const response = await fetch(`${apiUrl}/apk/fetch-lead`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        
+      });
+      const data = await response.json();
+      if (response.ok) {
+        dispatch(setCurrentFetchedLead(data.assignedLead));
+      } else {
+        Alert.alert("Error", data.message || "Failed to fetch lead");
+      }
+    } catch (err) {
+      console.error("Fetch lead error:", err);
+      Alert.alert("Error", "Something went wrong");
+    }
   };
+
+  const Company_name = useSelector(
+    (state: any) => state.leads.currentFetchedLead?.Company_name || "No Lead Assigned"
+  );
+
+  // ---------------------- Logout --------------------------
+  const handleLogout = async() => {
+    if (Company_name !== "No Lead Assigned") {
+      alert("Can't logout Lead Assigned");
+      return;
+    }
+    try {
+      // 1. Clear SecureStore
+      await logoutAgent();
+
+      // 2. Clear Redux
+      dispatch(logoutAction());
+
+      // 3. Navigate to login
+      router.replace("/auth/login");
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+  };
+
+  // ---------------------- Navigation --------------------------
   const handleProfile = () => {
     router.push("/profile");
   };
+
   const handleAnalytics = () => {
     router.push("/myAnalytics");
   };
-  //handle search functionality
+
+  // ---------------------- Search --------------------------
   const handleSearch = async (query: string) => {
-  if (!query.trim()) {
-    setSuggestions([]);
-    setShowSuggestions(false);
-    return;
-  }
-
-  try {
-    const res = await fetch(`${apiUrl}/search-companies?q=${query}&agentId=${agentEmail}`);
-    const data = await res.json();
-    setSuggestions(data); // Array of { _id, Company_name, status }
-    setShowSuggestions(true);
-  } catch (err) {
-    console.error("Search error:", err);
-    Alert.alert("Error", "Failed to fetch suggestions");
-  }
-};
-const debouncedSearch = debounce(handleSearch, 300);
-
-//handle suggestion click
-const handleSelectCompany = (item:any) => {
-  setSearch('');
+    if (!query.trim()) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+  
+    try {
+      // Get token from Redux state
+  
+      const res = await fetch(`${apiUrl}/apk/search-lead?q=${query}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // send token in header
+        },
+      });
+  
+      const data = await res.json();
+      if (res.ok) {
+        setSuggestions(data); // Array of { _id, Company_name, status }
+        setShowSuggestions(true);
+      } else {
+        console.error("Search error:", data.message);
+        Alert.alert("Error", data.message || "Failed to fetch suggestions");
+      }
+    } catch (err) {
+      console.error("Search error:", err);
+      Alert.alert("Error", "Failed to fetch suggestions");
+    }
+  };
+  
+  // Debounced search
+  const debouncedSearch = debounce(handleSearch, 300);
+  
+  // Handle selecting a company from suggestions
+const handleSelectCompany = (item: any) => {
+  setSearch("");
   setShowSuggestions(false);
 
+  const bucketName = item.status?.toLowerCase().replace(/\s+/g, "-"); 
+  // converts "Call Me Later" → "call-me-later"
+
   router.push({
-    pathname: `${item.status === "out of station" ? "outofstation" : item.status=="call me later"?"callmelater":item.status}/[id]`,
-    params: { id: item._id },
+    pathname: `/buckets/[bucket]/[id]`,
+    params: { bucket: bucketName, id: item._id },
   });
 };
+
+  
 
 
   // Example: apply dark mode styles conditionally
@@ -179,11 +206,14 @@ const handleSelectCompany = (item:any) => {
   return (
     <View style={[containerStyle,]}>
       <View style={[styles.header,]}>
-          <View style={styles.titleContainer}>
-            <Text style={textStyle} numberOfLines={1}
-  ellipsizeMode="tail">{CRMName.slice(0,-2).toUpperCase()} CRM</Text>
-        </View>
-          <View style={[styles.rightSection,]}>
+<View style={styles.titleContainer}>
+  <Text style={textStyle} numberOfLines={1} ellipsizeMode="tail">
+    {CRMName ? `${CRMName.toUpperCase()} CRM` : "CRM"}
+  </Text>
+</View>
+
+
+        <View style={[styles.rightSection,]}>
           <View>
             <TouchableOpacity
               onPress={() => setDropdownVisible(!dropdownVisible)}
@@ -275,7 +305,7 @@ const handleSelectCompany = (item:any) => {
       <View style={styles.buttonContainer}>
 
         {/* fetch lead btn */}
-        
+
         <TouchableOpacity
           style={[
             styles.customButton,
@@ -284,20 +314,20 @@ const handleSelectCompany = (item:any) => {
               paddingHorizontal: 20,
               maxHeight: 50,
             },
-            Company_name!="No Lead Assigned"&&styles.disabledSaveBtn
+            Company_name != "No Lead Assigned" && styles.disabledSaveBtn
           ]}
-          onPress={handleFetchLead} 
-          disabled={Company_name!=="No Lead Assigned"}
+          onPress={handleFetchLead}
+          disabled={Company_name !== "No Lead Assigned"}
         >
           <Text style={styles.buttonText}>Fetch Lead</Text>
         </TouchableOpacity>
 
         {/* Company Name Box */}
-        <TouchableOpacity style={[styles.leadBtn,Company_name=="No Lead Assigned"&&styles.disabledSaveBtn]} onPress={() => router.push("./fetchLead")} disabled={Company_name=="No Lead Assigned"}>
+        <TouchableOpacity style={[styles.leadBtn, Company_name == "No Lead Assigned" && styles.disabledSaveBtn]} onPress={() => router.push("./fetchLead")} disabled={Company_name == "No Lead Assigned"}>
           <Text style={styles.leadCompanyName} >
-          {Company_name?.replace(/^->\s*/, "") || "No Lead Assigned" }
+            {Company_name?.replace(/^->\s*/, "") || "No Lead Assigned"}
           </Text>
-          
+
         </TouchableOpacity>
       </View>
       <View>
@@ -335,55 +365,55 @@ const handleSelectCompany = (item:any) => {
               placeholder="Search..."
               placeholderTextColor={darkMode ? "#fff" : "#888"}
               value={search}
-             onChangeText={(text) => {
-  setSearch(text);
-  debouncedSearch(text);
-}}
+              onChangeText={(text) => {
+                setSearch(text);
+                debouncedSearch(text);
+              }}
             />
             <TouchableOpacity disabled>
               <Search size={22} color={darkMode ? "#fff" : "#222"} />
             </TouchableOpacity>
             {showSuggestions && suggestions.length > 0 && (
-  <ScrollView
-    style={{
-      position: "absolute",
-      top: 54,
-      left: 0,
-      right: 60,
-      zIndex: 10,
-      backgroundColor: darkMode ? "#444" : "#f2f2efff",
-      borderColor: "#ccc",
-      borderWidth: 1,
-      borderRadius: 8,
-      maxHeight: 500,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 2,
-      padding: 10,
-      marginTop: 5,
-      maxWidth: 350,
+              <ScrollView
+                style={{
+                  position: "absolute",
+                  top: 54,
+                  left: 0,
+                  right: 60,
+                  zIndex: 10,
+                  backgroundColor: darkMode ? "#444" : "#f2f2efff",
+                  borderColor: "#ccc",
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  maxHeight: 500,
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 4,
+                  elevation: 2,
+                  padding: 10,
+                  marginTop: 5,
+                  maxWidth: 350,
 
-    }}
-  >
-    {suggestions.map((item:any, index) => (
-      <TouchableOpacity
-        key={item._id}
-        onPress={() => handleSelectCompany(item)}
-        style={{
-          padding: 10,
-          borderBottomColor: "#eee",
-          borderBottomWidth: index === suggestions.length - 1 ? 0 : 1,
-        }}
-      >
-        <Text style={{ color: darkMode ? "#fff" : "#222" }}>
-          {item.Company_name}
-        </Text>
-      </TouchableOpacity>
-    ))}
-  </ScrollView>
-)}
+                }}
+              >
+                {suggestions.map((item: any, index) => (
+                  <TouchableOpacity
+                    key={item._id}
+                    onPress={() => handleSelectCompany(item)}
+                    style={{
+                      padding: 10,
+                      borderBottomColor: "#eee",
+                      borderBottomWidth: index === suggestions.length - 1 ? 0 : 1,
+                    }}
+                  >
+                    <Text style={{ color: darkMode ? "#fff" : "#222" }}>
+                      {item.Company_name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
 
           </View>
           <TouchableOpacity
@@ -432,11 +462,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 10,
- 
+
   },
   rightSection: {
     flexDirection: "row",
-    gap:16,
+    gap: 16,
   },
   disabledSaveBtn: {
     opacity: 0.4, // visually indicate disabled
@@ -470,8 +500,8 @@ const styles = StyleSheet.create({
 
   titleContainer: {
     flex: 3,               // take 3 parts of space
-  justifyContent: "center",
-  marginRight: 8,
+    justifyContent: "center",
+    marginRight: 8,
 
   },
   greeting: {
@@ -479,16 +509,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#666",
     letterSpacing: 0.7,
-    maxWidth:300,
+    maxWidth: 300,
   },
   name: {
-     fontFamily: "Inter-SemiBold",
-  fontSize: 28,
-  fontWeight: "600",
-  color: "#000000",
-  textDecorationLine: "underline",
-  flexShrink: 1,
-  
+    fontFamily: "Inter-SemiBold",
+    fontSize: 28,
+    fontWeight: "600",
+    color: "#000000",
+    textDecorationLine: "underline",
+    flexShrink: 1,
+
   },
   // Add dropdown styles
   dropdownWrapper: {

@@ -6,19 +6,23 @@
         "foregroundImage": "./assets/images/crm-logo.png"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.akshatsingh047.salescrm"
+      "jsEngine": "hermes",
+      "enableProguardInReleaseBuilds": true,
+      "enableSeparateBuildPerCPUArchitecture": true,
+      "package": "com.archasingh11.SalesCRM__uniquepatel01"
     },
     "icon": "./assets/images/icon.png",
     "name": "SalesCRM",
     "newArchEnabled": true,
     "orientation": "portrait",
-    "owner": "akshatsingh047",
     "plugins": [
       [
         "expo-build-properties",
         {
           "android": {
-            "networkSecurityConfig": "./network-security-config.xml"
+            "networkSecurityConfig": "./network-security-config.xml",
+            "enableProguardInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
           }
         }
       ],
@@ -27,13 +31,13 @@
       "expo-secure-store"
     ],
     "scheme": "salescrm",
-    "slug": "SalesCRM__akshatsingh047",
+    "slug": "SalesCRM__uniquepatel01",
     "userInterfaceStyle": "automatic",
     "version": "1.0.0",
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "0bdc6afc-2bf9-4a4a-b34d-3eb8b80f36fe"
+        "projectId": "7ae66ab0-99ba-41a9-881b-eb0c31e99378"
       }
     }
   }

@@ -2,27 +2,35 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AgentState {
   assignedTo: string;
-  agentName:string
+  agentName:string;
+  token: string | null;
 }
 
 const initialState: AgentState = {
   assignedTo:"",
-  agentName:""
+  agentName:"",
+  token:null
 };
 
 const agentSlice = createSlice({
-  name: 'agent',
+  name: "agent",
   initialState,
   reducers: {
-    setAgentEmail:(state, action: PayloadAction<string>) => {
-      state.assignedTo = action.payload;  
+    setAgent: (
+      state,
+      action: PayloadAction<{ id: string; name: string; token: string }>
+    ) => {
+      state.assignedTo = action.payload.id;   // ✅ store agentId
+      state.agentName = action.payload.name;
+      state.token = action.payload.token;     // ✅ store token
     },
-    setAgentName:(state, action: PayloadAction<string>) => {
-      state.agentName = action.payload;  
+    logout: (state) => {
+      state.assignedTo = "";
+      state.agentName = "";
+      state.token = null;
     },
-    
-  }
+  },
 });
 
-export const { setAgentEmail , setAgentName } = agentSlice.actions;
+export const { setAgent, logout } = agentSlice.actions;
 export default agentSlice.reducer;

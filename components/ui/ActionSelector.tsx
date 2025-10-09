@@ -1,103 +1,96 @@
 // components/ActionSelector.tsx
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
   selectedAction: string;
-  actions: string[];
-  dropdownOpen: boolean;
-  setDropdownOpen: (open: boolean) => void;
   setSelectedAction: (action: string) => void;
   darkMode: boolean;
+  actions: string[]; // now received from parent
 };
 
 export default function ActionSelector({
   selectedAction,
-  actions,
-  dropdownOpen,
-  setDropdownOpen,
   setSelectedAction,
   darkMode,
+  actions,
 }: Props) {
-  
- 
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   return (
-    <>
-      <View style={styles.actionSection}>
-        <TouchableOpacity
-          style={{ flexDirection: "row", alignItems: "center" }}
-          onPress={() => setDropdownOpen(!dropdownOpen)}
-          activeOpacity={0.7}
-        >
-          <Text
-            style={[
-              styles.actionLabel,
-              darkMode && { color: "#f00" },
-            ]}
-          >
-            {selectedAction || "ACTION"}
-          </Text>
-          <Text
-            style={[
-              styles.actionArrow,
-              darkMode && { color: "#fff" },
-            ]}
-          >
-            {dropdownOpen ? "▲" : "▼"}
-          </Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.actionSection}>
+      <TouchableOpacity
+        style={{ flexDirection: "row", alignItems: "center" }}
+        onPress={() => setDropdownOpen(!dropdownOpen)}
+        activeOpacity={0.7}
+      >
+        <Text style={[styles.actionLabel, darkMode && { color: "#f00" }]}>
+          {selectedAction || "ACTION"}
+        </Text>
+        <Text style={[styles.actionArrow, darkMode && { color: "#fff" }]}>
+          {dropdownOpen ? "▲" : "▼"}
+        </Text>
+      </TouchableOpacity>
+
       {dropdownOpen && (
         <View
           style={[
             styles.dropdown,
-            darkMode && {
-              backgroundColor: "#23262F",
-              borderColor: "#444",
-            },
+            darkMode && { backgroundColor: "#23262F", borderColor: "#444" },
           ]}
         >
-          {actions.map((action) => (
-            <TouchableOpacity
-              key={action}
-              style={[
-                styles.dropdownItem,
-                selectedAction === action && styles.dropdownItemSelected,
-              ]}
-              onPress={() => {
-                setSelectedAction(action);
-                setDropdownOpen(false);
+          {actions.length > 0 ? (
+            actions.map((action) => (
+              <TouchableOpacity
+                key={action}
+                style={[
+                  styles.dropdownItem,
+                  selectedAction === action && styles.dropdownItemSelected,
+                ]}
+                onPress={() => {
+                  setSelectedAction(action);
+                  setDropdownOpen(false);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.dropdownItemText,
+                    darkMode && { color: "#fff" },
+                    selectedAction === action &&
+                      (darkMode
+                        ? { fontWeight: "bold", color: "#A5CCFF" }
+                        : styles.dropdownItemTextSelected),
+                  ]}
+                >
+                  {action}
+                </Text>
+              </TouchableOpacity>
+            ))
+          ) : (
+            <Text
+              style={{
+                textAlign: "center",
+                padding: 10,
+                color: darkMode ? "#bbb" : "#000",
               }}
             >
-              <Text
-                style={[
-                  styles.dropdownItemText,
-                  darkMode && { color: "#fff" },
-                  selectedAction === action &&
-                    (darkMode
-                      ? { fontWeight: "bold", color: "#A5CCFF" }
-                      : styles.dropdownItemTextSelected),
-                ]}
-              >
-                {action}
-              </Text>
-            </TouchableOpacity>
-          ))}
+              No buckets found
+            </Text>
+          )}
         </View>
       )}
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   actionSection: {
-    flexDirection: "row",
-    alignItems: "center",
+    alignItems: "center",   // center horizontally
     justifyContent: "center",
     marginBottom: 12,
     marginTop: 8,
   },
-  actionLabel: {
+    actionLabel: {
     fontSize: 16,
     fontWeight: "bold",
     letterSpacing: 1,
@@ -109,14 +102,14 @@ const styles = StyleSheet.create({
     color: "#222",
   },
   dropdown: {
+    marginTop: 8,           // spacing below the button
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    marginHorizontal: 40,
-    marginBottom: 12,
     backgroundColor: "#fff",
     zIndex: 10,
     elevation: 3,
+    minWidth: 150,          // adjust width
   },
   dropdownItem: {
     paddingVertical: 12,

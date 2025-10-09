@@ -1,7 +1,11 @@
 import ActionSelector from "@/components/ui/ActionSelector";
 import RemarksSection from "@/components/ui/RemarkSelector";
 
-import { setChangedStatus, setCurrentFetchedLead, unsetCurrentLead } from "@/store/assignedLeadSlice";
+import {
+  setChangedStatus,
+  setCurrentFetchedLead,
+  unsetCurrentLead,
+} from "@/store/assignedLeadSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -10,7 +14,6 @@ import {
   Linking,
   Modal,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -20,28 +23,9 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useTheme } from "../../ThemeContext";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-
-
-
-const actions = [
-
-    "converted",
-      "demo",
-      "dnp",
-      "wrong number",
-      "call me later",
-      "busy",
-      "out of station",
-      "not interested",
-      "dormants",
-      "emails"
-  
-
-];
-
-// Default lead for testing
-
 
 export default function FetchLead() {
   const { darkMode } = useTheme();
@@ -49,89 +33,136 @@ export default function FetchLead() {
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
   const [, forceUpdate] = useState({});
-const [changeStatus,setStatus]=useState("")
- const agentId=useSelector((state: any) => state.agent.assignedTo);
-  const { _id: leadId } = useSelector((state:any)=>state.leads.currentFetchedLead)
+  const [changeStatus, setStatus] = useState("");
+  const [actions, setActions] = useState<string[]>([]); // ✅ dynamic buckets
 
-const dispatch=useDispatch()
-useEffect(()=>{
-dispatch(setChangedStatus(changeStatus))
-},[changeStatus])
-const handleSave= async()=>{
-  await fetch(`${apiUrl}/lead/update`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ userId: agentId,leadId:leadId,status:changeStatus.toLowerCase()}) 
-    });
-
-  dispatch(unsetCurrentLead()) //set the current assigned lead to empty {}
-router.push("/dashboard")
-}
-const handleEmail = (recipientEmail: string) => {
-if(!recipientEmail || recipientEmail.trim() === ""|| recipientEmail === "N/A") {
-    Alert.alert("No email provided", "This lead does not have an email address.");
-    return;
-  }
-  const emailUrl = `mailto:${recipientEmail}`;
-  Linking.openURL(emailUrl).catch((err) =>
-    console.error("Failed to open email client:", err)
+  const { _id: leadId, status: currentStatus } = useSelector(
+    (state: any) => state.leads.currentFetchedLead
   );
-};
+  const token = useSelector((state: any) => state.agent.token);
 
+  const dispatch = useDispatch();
 
-const handleAddRemark = async() => {
-  if(!remarkInput.trim()) return;
-     const res=await fetch(`${apiUrl}/lead/add-remark`,{
+  // Update global state when status changes
+  useEffect(() => {
+    dispatch(setChangedStatus(changeStatus));
+  }, [changeStatus]);
 
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ userId: agentId,leadId:leadId,commentText:remarkInput}) 
-     })
-     const data=await res.json()
-     dispatch(setCurrentFetchedLead(data));
-     setRemarkInput("")
-     setAddRemarkVisible(false)
+  // ✅ Fetch dynamic buckets on mount
+  useEffect(() => {
+    const fetchBuckets = async () => {
+      try {
+        const res = await fetch(`${apiUrl}/apk/buckets`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data?.buckets && Array.isArray(data.buckets)) {
+          setActions(data.buckets);
+        } else {
+          setActions([]);
+        }
+      } catch (err) {
+        console.error("Error fetching buckets:", err);
+        setActions([]);
+      }
+    };
+    fetchBuckets();
+  }, []);
+
+  // ✅ Set default action as current lead status
+  useEffect(() => {
+    if (currentStatus) setStatus(currentStatus);
+  }, [currentStatus]);
+
+  const handleSave = async () => {
+    if (!changeStatus.trim()) return;
+    try {
+      const response = await fetch(`${apiUrl}/apk/update-status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          leadId,
+          bucketName: changeStatus.toLowerCase(),
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return Alert.alert("Error", data.message || "Failed to update status");
+      }
+      dispatch(unsetCurrentLead());
+      router.push("/dashboard");
+    } catch (err) {
+      console.error("Update status error:", err);
+      Alert.alert("Error", "Something went wrong");
+    }
+  };
+
+  const handleAddRemark = async () => {
+    if (!remarkInput.trim()) return;
+    try {
+      const response = await fetch(`${apiUrl}/apk/add-remarks`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ leadId, remark: remarkInput }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.updateLead) {
+        return Alert.alert("Error", data.message || "Failed to add remark");
+      }
+      dispatch(setCurrentFetchedLead(data.updateLead));
+      setRemarkInput("");
+      setAddRemarkVisible(false);
+    } catch (err) {
+      console.error("Add remark error:", err);
+      Alert.alert("Error", "Something went wrong");
+    }
   };
 
   const {
-  Company_name,
-      Business_vol_Lakh_Per_Year,
-      Address,
-      City,
-      Mobile_no,
-      Landline_no,
-      E_mail_id,
-      Remarks,
-      status,
-      assignedTo,
-      business_type,
-      city,
-      contact_person,
-      source,
-      State
-  
-} = useSelector((state:any)=>state.leads.currentFetchedLead)
+    Company_name,
+    Business_vol_Lakh_Per_Year,
+    Address,
+    State,
+    contact_person,
+    Remarks,
+    E_mail_id,
+    Mobile_no,
+    Landline_no,
+  } = useSelector((state: any) => state.leads.currentFetchedLead);
+
+  const handleEmail = (recipientEmail: string) => {
+    if (
+      !recipientEmail ||
+      recipientEmail.trim() === "" ||
+      recipientEmail === "N/A"
+    ) {
+      Alert.alert(
+        "No email provided",
+        "This lead does not have an email address."
+      );
+      return;
+    }
+    const emailUrl = `mailto:${recipientEmail}`;
+    Linking.openURL(emailUrl).catch((err) =>
+      console.error("Failed to open email client:", err)
+    );
+  };
 
   return (
     <SafeAreaView
       style={[styles.container, darkMode && { backgroundColor: "#181A20" }]}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Back Arrow Icon */}
+        {/* Back Button */}
         <Pressable
           onPress={() => router.back()}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 10,
-            zIndex: 100,
-            backgroundColor: "transparent",
-            padding: 4,
-          }}
+          style={{ position: "absolute", top: 0, left: 10, zIndex: 100 }}
         >
           <Ionicons
             name="arrow-back"
@@ -139,20 +170,19 @@ const handleAddRemark = async() => {
             color={darkMode ? "#fff" : "#000"}
           />
         </Pressable>
+
         <Text style={[styles.header, darkMode && { color: "#fff" }]}>
           Details
         </Text>
-
         <Text style={[styles.company, darkMode && { color: "#7BB1FF" }]}>
           {Company_name || ""}
         </Text>
 
-        
         <View style={styles.inputBox}>
           <Text>{contact_person || "contact person not found"}</Text>
         </View>
         <View style={styles.inputBox}>
-          <Text>{Business_vol_Lakh_Per_Year+ " lakhs per year"}</Text>
+          <Text>{Business_vol_Lakh_Per_Year || 0}</Text>
         </View>
         <View style={styles.inputBox}>
           <Text>{Address || ""}</Text>
@@ -162,60 +192,73 @@ const handleAddRemark = async() => {
         </View>
 
         {/* Remarks Section */}
-
         <RemarksSection
-        remarks={Remarks}
+          remarks={Remarks}
           onAddPress={() => setAddRemarkVisible(true)}
           darkMode={darkMode}
         />
 
-        {/* Action Dropdown */}
+        {/* ✅ Dynamic Action Dropdown */}
         <ActionSelector
           selectedAction={changeStatus}
           actions={actions}
-          dropdownOpen={dropdownOpen}
-          setDropdownOpen={setDropdownOpen}
           setSelectedAction={setStatus}
           darkMode={darkMode}
         />
 
-        {/* Email and Call Buttons */}
+        {/* Buttons */}
         <View style={styles.row}>
-          <Text style={styles.emailText}>{E_mail_id || "N/A"}</Text>
-         <TouchableOpacity
-  style={styles.emailBtn}
-  onPress={() => handleEmail(E_mail_id)} // assuming `email` is your variable
->
-  <Text style={{ color: "#fff" }}>E-mail</Text>
-</TouchableOpacity>
+          <Text style={[styles.emailText, darkMode && { color: "#fff" }]}>
+            {E_mail_id || "N/A"}
+          </Text>
+          <TouchableOpacity
+            style={styles.emailBtn}
+            onPress={() => handleEmail(E_mail_id)}
+          >
+            <Text selectable style={{ color: "#fff" }}>
+              E-mail
+            </Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.row}>
-          <Text style={styles.phoneText}>{ Mobile_no?.length>10?Mobile_no.slice(2):Mobile_no || "N/A"}</Text>
-          <TouchableOpacity style={styles.callBtn}
-         onPress={()=>{
-                               if(Mobile_no)
-                               {
-                                 Linking.openURL(`tel:${Mobile_no?.length>10?Mobile_no.slice(2):Mobile_no}`)
-                               }
-                             }}
+          <Text
+            selectable
+            style={[styles.phoneText, darkMode && { color: "#fff" }]}
+          >
+            {Mobile_no
+              ? Mobile_no.replace(/\s+/g, "").length > 10
+                ? Mobile_no.replace(/\s+/g, "").slice(2)
+                : Mobile_no.replace(/\s+/g, "")
+              : "N/A"}
+          </Text>
+          <TouchableOpacity
+            style={styles.callBtn}
+            onPress={() => {
+              if (Mobile_no) {
+                const cleanNumber = Mobile_no.replace(/\s+/g, ""); // remove all spaces
+                const formatted =
+                  cleanNumber.length > 10 ? cleanNumber.slice(2) : cleanNumber;
+                Linking.openURL(`tel:${formatted}`);
+              }
+            }}
           >
             <Text style={{ color: "#fff" }}>Call</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.row}>
-          <Text style={styles.phoneText}>{Landline_no || "N/A"}</Text>
-          <TouchableOpacity style={styles.callBtn}>
-            <Text style={{ color: "#fff" }}>Call</Text>
-          </TouchableOpacity>
-        </View>
 
-        {/* Save Button */}
-        <TouchableOpacity style={[styles.saveBtn,changeStatus.trim()===""&& styles.disabledSaveBtn]} onPress={handleSave} disabled={changeStatus.trim()===""}>
+        <TouchableOpacity
+          style={[
+            styles.saveBtn,
+            changeStatus.trim() === "" && styles.disabledSaveBtn,
+          ]}
+          onPress={handleSave}
+          disabled={changeStatus.trim() === ""}
+        >
           <Text style={{ color: "#fff", fontWeight: "bold" }}>SAVE</Text>
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Add Remark Popup */}
+      {/* Add Remark Modal */}
       <Modal
         visible={addRemarkVisible}
         transparent
@@ -233,7 +276,7 @@ const handleAddRemark = async() => {
               Add Remark
             </Text>
             <TextInput
-            maxLength={200}
+              maxLength={200}
               style={[
                 styles.input,
                 darkMode && {
@@ -277,13 +320,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 50,
   },
   scrollContent: {
     paddingBottom: 32,
     paddingHorizontal: 8,
   },
-disabledSaveBtn: {
+  disabledSaveBtn: {
     opacity: 0.4, // visually indicate disabled
   },
   header: {
