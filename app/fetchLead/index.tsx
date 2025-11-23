@@ -62,7 +62,7 @@ export default function FetchLead() {
           setActions([]);
         }
       } catch (err) {
-        console.error("Error fetching buckets:", err);
+        
         setActions([]);
       }
     };
@@ -95,7 +95,7 @@ export default function FetchLead() {
       dispatch(unsetCurrentLead());
       router.push("/dashboard");
     } catch (err) {
-      console.error("Update status error:", err);
+     
       Alert.alert("Error", "Something went wrong");
     }
   };
@@ -119,7 +119,7 @@ export default function FetchLead() {
       setRemarkInput("");
       setAddRemarkVisible(false);
     } catch (err) {
-      console.error("Add remark error:", err);
+      
       Alert.alert("Error", "Something went wrong");
     }
   };
