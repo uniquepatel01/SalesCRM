@@ -141,7 +141,6 @@ export default function AddLead() {
       Alert.alert("Success", "Lead saved successfully");
       router.back();
     } catch (err: any) {
-      console.error("Error saving lead:", err);
       Alert.alert("Error", err.message || "Failed to save lead");
     }
   };

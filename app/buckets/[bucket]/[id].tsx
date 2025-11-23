@@ -85,7 +85,6 @@ export default function LeadDetailsPage() {
           setActions([]);
         }
       } catch (err) {
-        console.error("Error fetching buckets:", err);
         setActions([]);
       }
     };
