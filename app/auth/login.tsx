@@ -2,10 +2,8 @@ import { setAgent } from "@/store/agentSlice";
 import { useAppDispatch } from "@/store/hook";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-// import { StatusBar } from "expo-status-bar";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react-native";
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import {
   Alert,
   Image,
@@ -80,7 +78,7 @@ export default function Login() {
 
       router.replace("/dashboard");
     } catch (err: any) {
-      console.error("Login error:", err);
+      
       Alert.alert("Login failed", err?.message || "Please try again");
     } finally {
       setLoading(false);

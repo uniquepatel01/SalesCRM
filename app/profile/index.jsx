@@ -20,7 +20,6 @@ import { getSavedAgent, getToken } from "../../services/auth";
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 import { setAgent } from "../../store/agentSlice";
-import { ActivityIndicator } from "react-native";
 import Loading from "../../components/ui/Loading";
 import { useTheme } from "../../ThemeContext";
 

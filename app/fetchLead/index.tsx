@@ -29,7 +29,6 @@ const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
 export default function FetchLead() {
   const { darkMode } = useTheme();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [addRemarkVisible, setAddRemarkVisible] = useState(false);
   const [remarkInput, setRemarkInput] = useState("");
   const [, forceUpdate] = useState({});
